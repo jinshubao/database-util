@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane prefWidth="400.0"
+          xmlns="http://javafx.com/javafx/8.0.151"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.jean.database.client.controller.ConnectionController">
+    <columnConstraints>
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="25.0" />
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="75.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints />
+    </rowConstraints>
+    <children>
+        <Label text="数据库" />
+        <ComboBox fx:id="dataBaseType" prefWidth="150.0" GridPane.columnIndex="1" />
+        <Label text="IP地址" GridPane.rowIndex="1" />
+        <TextField fx:id="host" promptText="127.0.0.1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label text="端口" GridPane.rowIndex="2" />
+        <TextField fx:id="port" promptText="3306" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label text="用户名" GridPane.rowIndex="3" />
+        <TextField fx:id="user" promptText="root" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <Label text="密码" GridPane.rowIndex="4" />
+        <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label text="其他参数" GridPane.rowIndex="5" />
+        <TextField fx:id="properties" promptText="useUnicode=true&amp;useSSL=false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <Label text="字符编码" GridPane.rowIndex="6" />
+        <ComboBox fx:id="encoding" editable="true" prefWidth="150.0" promptText="UTF-8" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <Button fx:id="testConnection" mnemonicParsing="false" text="测试连接" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+    </children>
+</GridPane>

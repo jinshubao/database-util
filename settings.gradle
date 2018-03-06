@@ -1,0 +1,3 @@
+rootProject.name = 'database-util'
+include 'database-core'
+
