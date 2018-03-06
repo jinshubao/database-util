@@ -1,5 +1,6 @@
 package com.jean.database.client.view.treeitem;
 
+import com.jean.database.client.view.ISelected;
 import com.jean.database.core.connection.IConnectionConfiguration;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.core.meta.SchemaMetaData;

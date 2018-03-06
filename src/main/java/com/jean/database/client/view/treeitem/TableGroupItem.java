@@ -1,5 +1,6 @@
 package com.jean.database.client.view.treeitem;
 
+import com.jean.database.client.view.ISelected;
 import com.jean.database.core.connection.IConnectionConfiguration;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.core.meta.SchemaMetaData;
@@ -55,7 +56,7 @@ public class TableGroupItem extends GroupItem {
     }
 
     @Override
-    public void onSelected(AbstractTreeItem treeItem) {
+    public void onSelected(ISelected treeItem) {
         super.onSelected(treeItem);
         List<TableMetaData> metaDataList = new ArrayList<>();
         for (TreeItem<Object> item : getChildren()) {

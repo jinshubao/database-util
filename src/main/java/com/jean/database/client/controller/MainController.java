@@ -6,10 +6,8 @@ import com.jean.database.client.factory.MetaDataProviderManager;
 import com.jean.database.client.factory.TreeCellFactory;
 import com.jean.database.client.utils.DialogUtil;
 import com.jean.database.client.view.CustomTableView;
-import com.jean.database.client.view.ItemSelected;
-import com.jean.database.client.view.treeitem.AbstractTreeItem;
+import com.jean.database.client.view.ISelected;
 import com.jean.database.client.view.treeitem.ConnectionTreeItem;
-import com.jean.database.client.view.treeitem.TableGroupItem;
 import com.jean.database.core.connection.IConnectionConfiguration;
 import com.jean.database.core.constant.DatabaseType;
 import com.jean.database.core.meta.CatalogMetaData;
@@ -89,8 +87,9 @@ public class MainController extends BaseController {
         treeView.setRoot(rootItem);
         treeView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                if(newValue instanceof AbstractTreeItem){
-                    ((AbstractTreeItem) newValue).setSelected();
+                if (newValue instanceof ISelected) {
+                    ISelected value = ((ISelected) newValue);
+                    value.onSelected(value);
                 }
             }
         }));
@@ -111,7 +110,6 @@ public class MainController extends BaseController {
     }
 
     /**
-     *
      * @param provider
      * @param catalogMetaData
      * @param schemaMetaData
@@ -159,5 +157,6 @@ public class MainController extends BaseController {
     public void showViewGroups() {
         ObservableList<Node> children = objectPane.getChildren();
         children.clear();
+
     }
 }
