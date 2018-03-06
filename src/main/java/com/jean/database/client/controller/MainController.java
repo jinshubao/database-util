@@ -6,6 +6,7 @@ import com.jean.database.client.factory.MetaDataProviderManager;
 import com.jean.database.client.factory.TreeCellFactory;
 import com.jean.database.client.utils.DialogUtil;
 import com.jean.database.client.view.CustomTableView;
+import com.jean.database.client.view.ItemSelected;
 import com.jean.database.client.view.treeitem.AbstractTreeItem;
 import com.jean.database.client.view.treeitem.ConnectionTreeItem;
 import com.jean.database.client.view.treeitem.TableGroupItem;
@@ -17,7 +18,9 @@ import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.core.provider.IMetadataProvider;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,17 +88,12 @@ public class MainController extends BaseController {
         treeView.setShowRoot(false);
         treeView.setRoot(rootItem);
         treeView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue instanceof AbstractTreeItem) {
-                IConnectionConfiguration configuration = ((AbstractTreeItem) newValue).getConnectionConfiguration();
-                currentConnectionProperty.set(configuration);
-
-                if (newValue instanceof TableGroupItem){
-
+            if (newValue != null) {
+                if(newValue instanceof AbstractTreeItem){
+                    ((AbstractTreeItem) newValue).setSelected();
                 }
-
             }
         }));
-
     }
 
     public void openTable(IConnectionConfiguration configuration,
@@ -112,6 +110,13 @@ public class MainController extends BaseController {
         tablePane.getTabs().add(tab);
     }
 
+    /**
+     *
+     * @param provider
+     * @param catalogMetaData
+     * @param schemaMetaData
+     * @throws Exception
+     */
     public void showAllTables(IMetadataProvider provider, CatalogMetaData catalogMetaData, SchemaMetaData schemaMetaData) throws Exception {
         objectPane.getChildren().clear();
         List<TableMetaData> tables = provider.getTables(currentConnectionProperty.get(),
@@ -141,5 +146,18 @@ public class MainController extends BaseController {
      */
     public IConnectionConfiguration getCurrentConnectionConfiguration() {
         return currentConnectionProperty.get();
+    }
+
+    public void showTableGroups(List<TableMetaData> metaDataList) {
+        ObservableList<Node> children = objectPane.getChildren();
+        children.clear();
+        for (TableMetaData tableMetaData : metaDataList) {
+            children.add(new Label(tableMetaData.getTableName()));
+        }
+    }
+
+    public void showViewGroups() {
+        ObservableList<Node> children = objectPane.getChildren();
+        children.clear();
     }
 }

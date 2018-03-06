@@ -3,6 +3,7 @@ package com.jean.database.client.view.treeitem;
 import com.jean.database.MainApplication;
 import com.jean.database.client.controller.MainController;
 import com.jean.database.client.view.IRefresh;
+import com.jean.database.client.view.ItemSelected;
 import com.jean.database.core.connection.IConnectionConfiguration;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.core.meta.SchemaMetaData;
@@ -17,7 +18,7 @@ import javafx.scene.input.MouseEvent;
 /**
  * @author jinshubao
  */
-public abstract class AbstractTreeItem extends TreeItem<Object> implements IRefresh {
+public abstract class AbstractTreeItem extends TreeItem<Object> implements IRefresh, ItemSelected {
 
     protected IConnectionConfiguration connectionConfiguration;
     protected CatalogMetaData catalogMetaData;
@@ -68,9 +69,6 @@ public abstract class AbstractTreeItem extends TreeItem<Object> implements IRefr
 
     }
 
-    public void onClick(MouseEvent event) {
-    }
-
     /**
      * 鼠标左键双击
      *
@@ -112,5 +110,15 @@ public abstract class AbstractTreeItem extends TreeItem<Object> implements IRefr
 
     public void setTableMetaData(TableMetaData tableMetaData) {
         this.tableMetaData = tableMetaData;
+    }
+
+    @Override
+    public void setSelected() {
+        onSelected(this);
+    }
+
+    @Override
+    public void onSelected(AbstractTreeItem treeItem) {
+        System.out.println(treeItem);
     }
 }
