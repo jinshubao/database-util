@@ -1,9 +1,10 @@
 package com.jean.database.core.constant;
 
 /**
+ * "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
+ *
  * @author jinshubao
  */
-
 public enum TableType {
     TABLE("TABLE"),
     VIEW("VIEW"),

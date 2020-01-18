@@ -1,0 +1,36 @@
+apply plugin: 'application'
+apply plugin: 'javafx-gradle-plugin'
+
+version '1.0-SNAPSHOT'
+mainClassName = 'com.jean.database.client.MainApplication'
+
+dependencies {
+    compile project(":database-core")
+    compile project(":database-mysql")
+}
+
+jfx {
+    // gradle common
+    jfxMainAppJarName = "database-gui.jar"
+    jfxAppOutputDir = "build/jfx/app"
+    mainClass = mainClassName
+    // gradle native
+    appName = "database-gui"
+    vendor = "黄老邪"
+    jvmArgs = ["-Xmx512M",                      //堆最大
+               "-Xms256M",                      //堆初始
+               "-Xmn200M",                      //新生代
+               "-Xss1M",                        //线程栈
+               "-XX:MaxMetaspaceSize=128M",
+               "-XX:MetaspaceSize=128M",
+               "-XX:+UseParallelGC",
+               "-XX:+UseAdaptiveSizePolicy",
+               "-XX:MaxGCPauseMillis=100",
+               "-XX:+PrintGCDetails",
+               "-XX:+PrintGCDateStamps",
+               "-XX:+PrintCommandLineFlags",
+               "-verbose:class"]
+    jvmProperties = [:]
+    userJvmArgs = [:]
+    launcherArguments = []
+}
