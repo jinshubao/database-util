@@ -2,7 +2,6 @@ package com.jean.database.core.mysql;
 
 
 import com.jean.database.core.IConnectionConfiguration;
-import com.jean.database.core.utils.StringUtil;
 
 import java.util.Properties;
 
@@ -15,7 +14,7 @@ public class MySQLConnectionConfiguration implements IConnectionConfiguration {
 
     private static final String URL_TEMPLATE = "jdbc:mysql://%s:%d";
 
-    private String customName;
+    private String connectionName;
 
     private String host;
 
@@ -27,67 +26,53 @@ public class MySQLConnectionConfiguration implements IConnectionConfiguration {
 
     private Properties properties;
 
-    public MySQLConnectionConfiguration(String customName, String host, Integer port, String user, String password, Properties properties) {
-        this.customName = customName;
+    public MySQLConnectionConfiguration(String connectionName, String host, Integer port, String user, String password, Properties properties) {
+        this.connectionName = connectionName;
         this.host = host;
         this.port = port;
         this.user = user;
         this.password = password;
-        this.properties = properties;
-        if (this.properties == null) {
-            this.properties = new Properties();
+        this.properties = new Properties();
+        if (properties != null) {
+            this.properties.putAll(properties);
         }
-        if (!this.properties.contains("serverTimezone")) {
-            this.properties.put("serverTimezone", "UTC");
+        if (!this.properties.contains("user") && user != null) {
+            this.properties.put("user", user);
         }
-        if (!this.properties.contains("useUnicode")) {
-            this.properties.put("useUnicode", "true");
-        }
-        if (!this.properties.contains("characterEncoding")) {
-            this.properties.put("characterEncoding", "utf8");
+        if (!this.properties.contains("password") && password != null) {
+            this.properties.put("password", password);
         }
     }
 
     @Override
+    public String getConnectionName() {
+        return connectionName;
+    }
+
     public String getHost() {
         return host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    @Override
     public Integer getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    @Override
     public String getUser() {
         return user;
     }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    @Override
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public Properties getProperties() {
+        return properties;
     }
 
     @Override
     public String getUrl() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format(URL_TEMPLATE, getHost(), getPort()));
+        builder.append(String.format(URL_TEMPLATE, host, port));
         if (this.properties != null && !this.properties.isEmpty()) {
             builder.append("?");
             this.properties.forEach((key, value) -> builder.append(key).append("=").append(value).append(PROPERTY_SEPARATOR));
@@ -97,12 +82,14 @@ public class MySQLConnectionConfiguration implements IConnectionConfiguration {
     }
 
     @Override
-    public Properties getProperties() {
-        return this.properties;
-    }
-
-    @Override
     public String toString() {
-        return StringUtil.isNotBlank(this.customName) ? this.customName : (this.host + ":" + this.port);
+        return "MySQLConnectionConfiguration{" +
+                "connectionName='" + connectionName + '\'' +
+                ", host='" + host + '\'' +
+                ", port=" + port +
+                ", user='" + user + '\'' +
+                ", password='" + password + '\'' +
+                ", properties=" + properties +
+                '}';
     }
 }

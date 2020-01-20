@@ -1,5 +1,7 @@
 package com.jean.database.core.meta;
 
+import com.jean.database.core.utils.StringUtil;
+
 /**
  * 表信息
  *
@@ -91,6 +93,14 @@ public class TableMetaData extends SchemaMetaData {
         this.refGeneration = refGeneration;
     }
 
+    public String getFullName() {
+        String fullName = getTableCat();
+        if (StringUtil.isNotBlank(getTableSchem())) {
+            fullName += ("." + getTableSchem());
+        }
+        fullName += ("." + getTableName());
+        return fullName;
+    }
 
     @Override
     public String toString() {

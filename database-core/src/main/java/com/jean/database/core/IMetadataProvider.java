@@ -6,6 +6,7 @@ import com.jean.database.core.meta.SchemaMetaData;
 import com.jean.database.core.meta.TableMetaData;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -14,13 +15,17 @@ import java.util.List;
  */
 public interface IMetadataProvider {
 
-    List<CatalogMetaData> getCatalogs(Connection connection) throws Exception;
+    List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException;
 
-    List<SchemaMetaData> getSchemas(Connection connection, String catalog, String schemaPattern) throws Exception;
+    List<SchemaMetaData> getSchemas(Connection connection, String catalog, String schemaPattern) throws SQLException;
 
-    List<TableMetaData> getTableMataData(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws Exception;
+    List<TableMetaData> getTableMataData(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
 
-    List<ColumnMetaData> getColumnMetaData(Connection connection, String catalog, String schema, String tableNamePattern) throws Exception;
+    List<ColumnMetaData> getColumnMetaData(Connection connection, String catalog, String schema, String tableNamePattern) throws SQLException;
 
-    List<String> getTableTypes(Connection connection) throws Exception;
+    List<String> getTableTypes(Connection connection) throws SQLException;
+
+    boolean supportCatalog();
+    
+    boolean supportSchema();
 }

@@ -1,12 +1,8 @@
 package com.jean.database.core.mysql;
 
-import com.jean.database.core.constant.DatabaseType;
 import com.jean.database.core.IDataProvider;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +17,7 @@ public class MySQLDataProvider implements IDataProvider {
     }
 
     @Override
-    public List<Map<String, String>> getTableRows(Connection connection, String catalog, String schema, String tableNamePattern, int pageSize, int pageIndex) throws Exception {
+    public List<Map<String, String>> getTableRows(Connection connection, String catalog, String schema, String tableNamePattern, int pageSize, int pageIndex) throws SQLException {
         int offset = pageSize * pageIndex;
         String sql = "select * from " + catalog + "." + tableNamePattern + " limit " + offset + "," + pageSize;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -44,7 +40,7 @@ public class MySQLDataProvider implements IDataProvider {
     }
 
     @Override
-    public int getTableRowCount(Connection connection, String catalog, String schema, String tableNamePattern) throws Exception {
+    public int getTableRowCount(Connection connection, String catalog, String schema, String tableNamePattern) throws SQLException {
         String sql = "select count(*) from " + catalog + "." + tableNamePattern;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             try (ResultSet rs = statement.executeQuery()) {
@@ -54,11 +50,6 @@ public class MySQLDataProvider implements IDataProvider {
                 return 0;
             }
         }
-    }
-
-    @Override
-    public boolean support(DatabaseType databaseType) {
-        return databaseType == DatabaseType.MySql;
     }
 
 }

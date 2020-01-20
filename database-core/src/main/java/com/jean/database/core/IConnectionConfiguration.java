@@ -1,20 +1,14 @@
 package com.jean.database.core;
 
-
+import java.io.Serializable;
 import java.util.Properties;
 
 /**
  * @author jinshubao
  */
-public interface IConnectionConfiguration {
+public interface IConnectionConfiguration extends Serializable {
 
-    String getHost();
-
-    Integer getPort();
-
-    String getUser();
-
-    String getPassword();
+    String getConnectionName();
 
     String getUrl();
 

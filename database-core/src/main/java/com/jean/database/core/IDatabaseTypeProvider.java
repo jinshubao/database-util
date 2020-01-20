@@ -2,8 +2,14 @@ package com.jean.database.core;
 
 public interface IDatabaseTypeProvider {
 
-    String getName();
+    IDataBaseType getDataBaseType();
 
-    String getDriverClass();
+    IConfigurationProvider getConfigurationProvider();
+
+    IConnectionProvider getConnectionProvider();
+
+    IMetadataProvider getMetadataProvider();
+
+    IDataProvider getDataProvider();
 
 }

@@ -2,7 +2,7 @@ apply plugin: 'application'
 apply plugin: 'javafx-gradle-plugin'
 
 version '1.0-SNAPSHOT'
-mainClassName = 'com.jean.database.client.MainApplication'
+mainClassName = 'com.jean.database.gui.MainApplication'
 
 dependencies {
     compile project(":database-core")

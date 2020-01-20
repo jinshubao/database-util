@@ -9,6 +9,7 @@ import com.jean.database.core.meta.TableMetaData;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class DefaultMetaDataProvider implements IMetadataProvider {
 
     @Override
-    public List<CatalogMetaData> getCatalogs(Connection connection) throws Exception {
+    public List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getCatalogs()) {
             return covertCatalogMetaDataResultSet(resultSet);
@@ -26,7 +27,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
     }
 
     @Override
-    public List<SchemaMetaData> getSchemas(Connection connection, String catalog, String schemaPattern) throws Exception {
+    public List<SchemaMetaData> getSchemas(Connection connection, String catalog, String schemaPattern) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getSchemas(catalog, schemaPattern)) {
             return convertSchemaMetaDataResultSet(resultSet);
@@ -35,7 +36,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
 
 
     @Override
-    public List<TableMetaData> getTableMataData(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws Exception {
+    public List<TableMetaData> getTableMataData(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getTables(catalog, schemaPattern, tableNamePattern, types)) {
             return convertTableMetaDataResultSet(resultSet);
@@ -43,7 +44,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
     }
 
     @Override
-    public List<ColumnMetaData> getColumnMetaData(Connection connection, String catalog, String schema, String tableNamePattern) throws Exception {
+    public List<ColumnMetaData> getColumnMetaData(Connection connection, String catalog, String schema, String tableNamePattern) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getColumns(catalog, schema, tableNamePattern, null)) {
             return convertColumnMetaDataResultSet(resultSet);
@@ -51,7 +52,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
     }
 
     @Override
-    public List<String> getTableTypes(Connection connection) throws Exception {
+    public List<String> getTableTypes(Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getTableTypes()) {
             List<String> list = new ArrayList<>();
@@ -62,7 +63,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
         }
     }
 
-    protected List<CatalogMetaData> covertCatalogMetaDataResultSet(ResultSet resultSet) throws Exception {
+    protected List<CatalogMetaData> covertCatalogMetaDataResultSet(ResultSet resultSet) throws SQLException {
         List<CatalogMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             CatalogMetaData data = new CatalogMetaData();
@@ -73,7 +74,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
         return list;
     }
 
-    protected List<SchemaMetaData> convertSchemaMetaDataResultSet(ResultSet resultSet) throws Exception {
+    protected List<SchemaMetaData> convertSchemaMetaDataResultSet(ResultSet resultSet) throws SQLException {
         List<SchemaMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             SchemaMetaData data = new SchemaMetaData();
@@ -86,7 +87,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
         return list;
     }
 
-    protected List<TableMetaData> convertTableMetaDataResultSet(ResultSet resultSet) throws Exception {
+    protected List<TableMetaData> convertTableMetaDataResultSet(ResultSet resultSet) throws SQLException {
         List<TableMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             TableMetaData data = new TableMetaData();
@@ -109,7 +110,7 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
         return list;
     }
 
-    protected List<ColumnMetaData> convertColumnMetaDataResultSet(ResultSet resultSet) throws Exception {
+    protected List<ColumnMetaData> convertColumnMetaDataResultSet(ResultSet resultSet) throws SQLException {
         List<ColumnMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             ColumnMetaData data = new ColumnMetaData();
@@ -159,4 +160,13 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
         return list;
     }
 
+    @Override
+    public boolean supportCatalog() {
+        return true;
+    }
+
+    @Override
+    public boolean supportSchema() {
+        return false;
+    }
 }
