@@ -1,23 +1,24 @@
 package com.jean.database.gui.controller;
 
 import com.jean.database.core.*;
+import com.jean.database.core.utils.DialogUtil;
+import com.jean.database.core.utils.StringUtil;
 import com.jean.database.gui.factory.TreeCellFactory;
-import com.jean.database.gui.handler.CatalogActionEventHandler;
-import com.jean.database.gui.handler.DataTableActionEventHandler;
-import com.jean.database.gui.handler.ServerActionEventHandler;
-import com.jean.database.gui.handler.TableActionEventHandler;
-import com.jean.database.gui.handler.impl.CatalogActionEventHandlerImpl;
+import com.jean.database.gui.handler.ICatalogItemActionEventHandler;
+import com.jean.database.gui.handler.IDataTableActionEventHandler;
+import com.jean.database.gui.handler.IServerItemActionEventHandler;
+import com.jean.database.gui.handler.ITableItemActionEventHandler;
+import com.jean.database.gui.handler.impl.CatalogItemActionEventHandlerImpl;
 import com.jean.database.gui.handler.impl.DataTableActionEventHandlerImpl;
-import com.jean.database.gui.handler.impl.ServerActionEventHandlerImpl;
-import com.jean.database.gui.handler.impl.TableActionEventHandlerImpl;
+import com.jean.database.gui.handler.impl.ServerItemActionEventHandlerImpl;
+import com.jean.database.gui.handler.impl.TableItemActionEventHandlerImpl;
 import com.jean.database.gui.manager.DatabaseTypeManager;
-import com.jean.database.gui.utils.DialogUtil;
-import com.jean.database.gui.view.ISelecte;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +43,26 @@ public class MainController implements Initializable {
     @FXML
     public Menu newConnectionMenu;
     @FXML
-    public MenuItem newConnection;
+    public MenuButton connectionMenuButton;
     @FXML
-    public ToggleButton tableButton;
+    public ToggleButton tableToggleButton;
+    @FXML
+    public ToggleButton viewToggleButton;
+    @FXML
+    public ToggleButton functionToggleButton;
+    @FXML
+    public ToggleButton eventToggleButton;
+    @FXML
+    public ToggleButton queryToggleButton;
+    @FXML
+    public ToggleButton reportToggleButton;
+    @FXML
+    public ToggleButton backupToggleButton;
+    @FXML
+    public ToggleButton plainToggleButton;
+    @FXML
+    public ToggleButton modelToggleButton;
+
     @FXML
     public TreeView treeView;
     @FXML
@@ -58,56 +76,68 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         this.initializeMenuBar();
+        //noinspection unchecked
         treeView.setCellFactory(TreeCellFactory.forTreeView());
-        treeView.setShowRoot(false);
+        //noinspection unchecked
         treeView.setRoot(new TreeItem<>());
-        treeView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                if (newValue instanceof ISelecte) {
-                    ISelecte value = ((ISelecte) newValue);
-                    value.onSelected(value);
-                }
-            }
-        }));
-
-        tableButton.setOnAction(event -> {
-        });
+        treeView.setShowRoot(false);
     }
 
     private void initializeMenuBar() {
         List<IDatabaseTypeProvider> providers = DatabaseTypeManager.getProviders();
-        ObservableList<MenuItem> items = newConnectionMenu.getItems();
+        newConnectionMenu.getItems().clear();
+        connectionMenuButton.getItems().clear();
         for (IDatabaseTypeProvider provider : providers) {
-            IDataBaseType dataBaseType = provider.getDataBaseType();
-            IConnectionProvider connectionProvider = provider.getConnectionProvider();
-            IMetadataProvider metadataProvider = provider.getMetadataProvider();
-            IDataProvider dataProvider = provider.getDataProvider();
+            IDatabaseType dataBaseType = provider.getDatabaseType();
             MenuItem menuItem = new MenuItem(dataBaseType.getName());
-            menuItem.setUserData(dataBaseType);
-            items.add(menuItem);
-            menuItem.setOnAction(event -> {
-                IConnectionConfiguration configuration = provider.getConfigurationProvider().getConfiguration(dataBaseType);
-                logger.debug("new configuration [{}]", configuration);
-                if (configuration != null) {
-                    Connection connection = null;
-                    try {
-                        connection = connectionProvider.getConnection(configuration);
-                    } catch (SQLException e) {
-                        logger.error(e.getMessage(), e);
-                        DialogUtil.error("ERROR", e.getMessage(), e);
-                    }
-                    if (connection != null) {
-                        DataTableActionEventHandler dataTableActionEventHandler = new DataTableActionEventHandlerImpl(connection, metadataProvider, dataProvider);
-                        TableActionEventHandler tableActionEventHandler = new TableActionEventHandlerImpl(tablePane, dataTableActionEventHandler);
-                        CatalogActionEventHandler catalogActionEventHandler = new CatalogActionEventHandlerImpl(metadataProvider, connection, tableActionEventHandler);
-                        ServerActionEventHandler serverActionEventHandler = new ServerActionEventHandlerImpl(metadataProvider, connection, catalogActionEventHandler);
-                        ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), serverActionEventHandler);
-                        treeView.getRoot().getChildren().add(serverTreeItem);
-                    }
-                }
-            });
+            menuItem.setUserData(provider);
+
+            menuItem.setOnAction(event -> newConnection(provider));
+            newConnectionMenu.getItems().add(menuItem);
+
+            MenuItem item = new MenuItem(dataBaseType.getName());
+            item.setUserData(provider);
+            item.setOnAction(event -> newConnection(provider));
+            connectionMenuButton.getItems().add(item);
+
+            String icon = dataBaseType.getIcon();
+            if (StringUtil.isNotBlank(icon)) {
+                menuItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
+                item.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
+            }
         }
+    }
+
+    private void newConnection(IDatabaseTypeProvider provider) {
+        IDatabaseType dataBaseType = provider.getDatabaseType();
+        IConnectionProvider connectionProvider = provider.getConnectionProvider();
+        IMetadataProvider metadataProvider = provider.getMetadataProvider();
+        IDataProvider dataProvider = provider.getDataProvider();
+        IConnectionConfiguration configuration = provider.getConfigurationProvider().getConfiguration(dataBaseType);
+        logger.debug("new configuration [{}]", configuration);
+        if (configuration != null) {
+            Connection connection = null;
+            try {
+                connection = connectionProvider.getConnection(configuration);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+                DialogUtil.error("ERROR", e.getMessage(), e);
+            }
+            if (connection != null) {
+                IDataTableActionEventHandler dataTableActionEventHandler = new DataTableActionEventHandlerImpl(connection, metadataProvider, dataProvider);
+                ITableItemActionEventHandler ITableItemActionEventHandler = new TableItemActionEventHandlerImpl(tablePane, dataTableActionEventHandler);
+                ICatalogItemActionEventHandler catalogActionEventHandler = new CatalogItemActionEventHandlerImpl(metadataProvider, connection, ITableItemActionEventHandler);
+                IServerItemActionEventHandler serverActionEventHandler = new ServerItemActionEventHandlerImpl(metadataProvider, connection, catalogActionEventHandler);
+                ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), serverActionEventHandler);
+                String icon = dataBaseType.getIcon();
+                if (StringUtil.isNotBlank(icon)) {
+                    serverTreeItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
+                }
+                //noinspection unchecked
+                treeView.getRoot().getChildren().add(serverTreeItem);
+            }
+        }
+
     }
 }

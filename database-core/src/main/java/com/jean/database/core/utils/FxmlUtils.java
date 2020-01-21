@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
 
 public final class FxmlUtils {
 
-
     public static Parent loadFxml(String name, String resource, Locale locale) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         if (resource != null) {

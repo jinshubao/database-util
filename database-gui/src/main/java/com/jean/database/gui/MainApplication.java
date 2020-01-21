@@ -1,10 +1,9 @@
 package com.jean.database.gui;
 
+import com.jean.database.core.utils.DialogUtil;
 import com.jean.database.core.utils.FxmlUtils;
 import com.jean.database.core.utils.StringUtil;
-import com.jean.database.gui.constant.CommonConstant;
-import com.jean.database.gui.constant.StageType;
-import com.jean.database.gui.utils.DialogUtil;
+import com.jean.database.gui.constant.Images;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.scene.Parent;
@@ -47,19 +46,18 @@ public class MainApplication extends Application {
                 }));
     }
 
-    public void applicationStart(Stage stage) throws Exception {
+    private void applicationStart(Stage stage) throws Exception {
         Parent root = FxmlUtils.loadFxml("/fxml/Scene.fxml", "message.scene", locale);
-        CommonConstant.SCENES.put(StageType.MAIN, root);
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
         String name = "database-gui";
         String version = "0.1-snapshot";
         String title = StringUtil.join(Arrays.asList(name, version), " --");
         stage.setTitle(title);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream(CommonConstant.LOGO_IMAGE)));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream(Images.LOGO_IMAGE)));
         stage.setScene(scene);
         stage.show();
-
+        DialogUtil.setLogImage(new Image(getClass().getResourceAsStream(Images.LOGO_IMAGE)));
     }
 
     /**

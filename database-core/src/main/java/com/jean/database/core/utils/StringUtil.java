@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class StringUtil {
+public final class StringUtil {
 
     public static Map<String, String> parseMysqlProperties(String properties) {
         Map<String, String> map = new HashMap<>();

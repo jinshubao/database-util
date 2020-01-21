@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<TabPane xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <Tab text="常规">
+        <GridPane prefWidth="400.0">
+            <columnConstraints>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="25.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="75.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints/>
+            </rowConstraints>
+            <Label text="连接名称" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="name" promptText="Oracle-localhost" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="主机名或IP地址" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="host" promptText="localhost" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="端口" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <TextField fx:id="port" promptText="3306" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label text="用户名" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <TextField fx:id="user" promptText="root" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label text="密码" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            <Label text="其它参数" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <TextField fx:id="properties" promptText="useUnicode=true&amp;useSSL=false" GridPane.columnIndex="1"
+                       GridPane.rowIndex="5"/>
+        </GridPane>
+    </Tab>
+    <Tab text="高级">
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="25.0"/>
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="75.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+                <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+            </rowConstraints>
+            <Label text="位置" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label text="编码" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <ComboBox editable="true" prefWidth="150.0" promptText="UTF-8" GridPane.columnIndex="1"
+                      GridPane.rowIndex="1"/>
+        </GridPane>
+    </Tab>
+</TabPane>

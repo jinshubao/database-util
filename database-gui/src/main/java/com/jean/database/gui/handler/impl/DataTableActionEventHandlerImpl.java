@@ -4,21 +4,23 @@ import com.jean.database.core.IDataProvider;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.ColumnMetaData;
 import com.jean.database.core.meta.TableMetaData;
+import com.jean.database.core.utils.DialogUtil;
 import com.jean.database.gui.factory.TableCellFactory;
-import com.jean.database.gui.handler.DataTableActionEventHandler;
-import com.jean.database.gui.utils.DialogUtil;
+import com.jean.database.gui.handler.IDataTableActionEventHandler;
 import com.jean.database.gui.view.CustomTableView;
-import javafx.beans.property.SimpleStringProperty;
+import com.jean.database.gui.view.DataColumn;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataTableActionEventHandlerImpl implements DataTableActionEventHandler {
+public class DataTableActionEventHandlerImpl implements IDataTableActionEventHandler {
 
     private static final Integer PAGE_SIZE = 1000;
 
@@ -35,20 +37,20 @@ public class DataTableActionEventHandlerImpl implements DataTableActionEventHand
 
     @Override
     public void refresh(CustomTableView customTableView) {
-        TableView<Map<String, String>> tableView = customTableView.getTableView();
+        TableView<Map<String, Object>> tableView = customTableView.getTableView();
         TableMetaData tableMetaData = customTableView.getTableMetaData();
         try {
-            List<ColumnMetaData> columns = metadataProvider.getColumnMetaData(connection, tableMetaData.getTableCat(),
-                    tableMetaData.getTableSchem(), tableMetaData.getTableName());
-            for (ColumnMetaData column : columns) {
-                String columnName = column.getColumnName();
-                TableColumn<Map<String, String>, String> tableColumn = new TableColumn<>(columnName);
-                tableColumn.setPrefWidth(100d);
-                tableColumn.setMinWidth(50d);
+            List<ColumnMetaData> columnMetaDataList = metadataProvider.getColumnMetaData(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName());
+
+            List<TableColumn<Map<String, Object>, Object>> columns = new ArrayList<>(columnMetaDataList.size());
+            for (ColumnMetaData columnMetaData : columnMetaDataList) {
+                TableColumn<Map<String, Object>, Object> tableColumn = new DataColumn(columnMetaData);
                 tableColumn.setCellFactory(TableCellFactory.forTableView());
-                tableColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(columnName)));
-                tableView.getColumns().add(tableColumn);
+                String columnName = columnMetaData.getColumnName();
+                tableColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().get(columnName)));
+                columns.add(tableColumn);
             }
+            tableView.getColumns().addAll(columns);
             tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             tableView.getSelectionModel().setCellSelectionEnabled(true);
             int pageCount = getPageCount(tableMetaData);
@@ -62,17 +64,17 @@ public class DataTableActionEventHandlerImpl implements DataTableActionEventHand
         }
     }
 
-    protected int getPageCount(TableMetaData tableMetaData) throws SQLException {
+    private int getPageCount(TableMetaData tableMetaData) throws SQLException {
         int count = dataProvider.getTableRowCount(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName());
         return count / PAGE_SIZE + ((count % PAGE_SIZE) > 0 ? 1 : 0);
     }
 
     public void refresh(CustomTableView customTableView, int page) {
-        TableView<Map<String, String>> tableView = customTableView.getTableView();
+        TableView<Map<String, Object>> tableView = customTableView.getTableView();
         tableView.getItems().clear();
         TableMetaData tableMetaData = customTableView.getTableMetaData();
         try {
-            List<Map<String, String>> tableRows = dataProvider.getTableRows(connection,
+            List<Map<String, Object>> tableRows = dataProvider.getTableRows(connection,
                     tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName(), PAGE_SIZE, page);
             tableView.getItems().addAll(tableRows);
         } catch (SQLException e) {

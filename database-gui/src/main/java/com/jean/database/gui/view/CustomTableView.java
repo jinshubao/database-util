@@ -2,7 +2,7 @@ package com.jean.database.gui.view;
 
 
 import com.jean.database.core.meta.TableMetaData;
-import com.jean.database.gui.handler.DataTableActionEventHandler;
+import com.jean.database.gui.handler.IDataTableActionEventHandler;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
@@ -16,13 +16,13 @@ import java.util.Map;
  */
 public class CustomTableView extends VBox {
 
-    private final TableView<Map<String, String>> tableView;
+    private final TableView<Map<String, Object>> tableView;
 
     private final Pagination pagination;
 
     private final TableMetaData tableMetaData;
 
-    public CustomTableView(TableMetaData tableMetaData, DataTableActionEventHandler eventHandler) {
+    public CustomTableView(TableMetaData tableMetaData, IDataTableActionEventHandler eventHandler) {
         this.tableMetaData = tableMetaData;
         tableView = new TableView<>();
         VBox.setVgrow(tableView, Priority.ALWAYS);
@@ -42,7 +42,7 @@ public class CustomTableView extends VBox {
         return tableMetaData;
     }
 
-    public TableView<Map<String, String>> getTableView() {
+    public TableView<Map<String, Object>> getTableView() {
         return tableView;
     }
 

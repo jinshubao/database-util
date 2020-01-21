@@ -1,1 +1,1 @@
-com.jean.database.core.mysql.MySQLDatabaseTypeProvider
+com.jean.database.mysql.MySQLDatabaseTypeProvider

@@ -7,6 +7,7 @@ mainClassName = 'com.jean.database.gui.MainApplication'
 dependencies {
     compile project(":database-core")
     compile project(":database-mysql")
+    compile project(":database-oracle")
 }
 
 jfx {

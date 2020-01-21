@@ -2,7 +2,7 @@ package com.jean.database.core;
 
 public interface IDatabaseTypeProvider {
 
-    IDataBaseType getDataBaseType();
+    IDatabaseType getDatabaseType();
 
     IConfigurationProvider getConfigurationProvider();
 

@@ -2,7 +2,6 @@ package com.jean.database.gui.factory;
 
 import com.jean.database.gui.view.IContextMenu;
 import com.jean.database.gui.view.IDoubleClick;
-import com.jean.database.gui.view.IIcon;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -29,11 +28,7 @@ public class TreeCellFactory {
             } else {
                 setText(item.toString());
                 TreeItem<T> treeItem = getTreeItem();
-                if (treeItem instanceof IIcon) {
-                    setGraphic(((IIcon) treeItem).getIcon());
-                } else {
-                    setGraphic(null);
-                }
+                setGraphic(treeItem.getGraphic());
                 if (treeItem instanceof IContextMenu) {
                     IContextMenu node = (IContextMenu) treeItem;
                     setContextMenu(node.getContextMenu());

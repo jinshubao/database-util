@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface IDataProvider {
 
-    List<Map<String, String>> getTableRows(Connection connection, String catalog, String schema, String tableNamePattern, int pageSize, int pageIndex) throws SQLException;
+    List<Map<String, Object>> getTableRows(Connection connection, String catalog, String schema, String tableNamePattern, int pageSize, int pageIndex) throws SQLException;
 
     int getTableRowCount(Connection connection, String catalog, String schema, String tableNamePattern) throws SQLException;
 }

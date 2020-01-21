@@ -1,7 +1,8 @@
 package com.jean.database.gui.view.treeitem;
 
 import com.jean.database.core.meta.CatalogMetaData;
-import com.jean.database.gui.handler.CatalogActionEventHandler;
+import com.jean.database.gui.constant.Images;
+import com.jean.database.gui.handler.ICatalogItemActionEventHandler;
 import com.jean.database.gui.view.IContextMenu;
 import com.jean.database.gui.view.IDoubleClick;
 import javafx.beans.property.BooleanProperty;
@@ -9,6 +10,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -22,14 +25,15 @@ public class CatalogTreeItem extends TreeItem<CatalogMetaData> implements IConte
 
     private final CatalogMetaData catalogMetaData;
 
-    private final CatalogActionEventHandler eventHandler;
+    private final ICatalogItemActionEventHandler eventHandler;
 
 
-    public CatalogTreeItem(CatalogMetaData catalogMetaData, CatalogActionEventHandler eventHandler) {
+    public CatalogTreeItem(CatalogMetaData catalogMetaData, ICatalogItemActionEventHandler eventHandler) {
         super(catalogMetaData);
         this.catalogMetaData = catalogMetaData;
         this.eventHandler = eventHandler;
         this.contextMenu = this.createContextMenu();
+        setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Images.DATABASE_IMAGE))));
     }
 
     private ContextMenu createContextMenu() {
@@ -45,13 +49,13 @@ public class CatalogTreeItem extends TreeItem<CatalogMetaData> implements IConte
         MenuItem create = new MenuItem("新建数据库...");
         create.setOnAction(event -> eventHandler.createCatalog(CatalogTreeItem.this));
 
-        MenuItem delete = new MenuItem("删除数据库");
+        MenuItem delete = new MenuItem("删除数据库", new ImageView(new Image(getClass().getResourceAsStream(Images.DELETE_IMAGE))));
         delete.setOnAction(event -> eventHandler.deleteCatalog(CatalogTreeItem.this));
 
         MenuItem properties = new MenuItem("数据库属性...");
         properties.setOnAction(event -> eventHandler.catalogProperties(CatalogTreeItem.this));
 
-        MenuItem refresh = new MenuItem("刷新");
+        MenuItem refresh = new MenuItem("刷新", new ImageView(new Image(getClass().getResourceAsStream(Images.REFRESH_IMAGE))));
         refresh.setOnAction(event -> eventHandler.refresh(CatalogTreeItem.this));
 
         contextMenu.getItems().addAll(open, close, create, delete, properties, refresh);

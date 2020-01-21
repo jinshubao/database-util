@@ -6,21 +6,29 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
+
+import java.util.Map;
 
 /**
  * @author jinshubao
  */
 public class TableCellFactory {
 
-    public static <S, T> Callback<TableColumn<S, T>, TableCell<S, T>> forTableView() {
-        return param -> new CustomTableCell<>();
+
+    private static final Callback<TableColumn<Map<String, Object>, Object>, TableCell<Map<String, Object>, Object>> default_cell_factory = param -> new CustomTableCell<>();
+
+
+    public static Callback<TableColumn<Map<String, Object>, Object>, TableCell<Map<String, Object>, Object>> forTableView() {
+        return default_cell_factory;
     }
 
 
     private static class CustomTableCell<S, T> extends TableCell<S, T> {
 
         public CustomTableCell() {
+            super();
             ContextMenu contextMenu = new ContextMenu();
             MenuItem copy = new MenuItem("复制");
             copy.setOnAction(event -> {
@@ -39,8 +47,8 @@ public class TableCellFactory {
                 setText(null);
             } else {
                 setText(toString(item));
+                setWrapText(false);
             }
-
         }
 
         private String toString(T item) {

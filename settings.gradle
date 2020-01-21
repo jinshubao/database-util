@@ -2,4 +2,5 @@ rootProject.name = 'database-util'
 include 'database-core'
 include 'database-gui'
 include 'database-mysql'
+include 'database-oracle'
 
