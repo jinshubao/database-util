@@ -65,7 +65,7 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
     }
 
     private int getPageCount(TableMetaData tableMetaData) throws SQLException {
-        int count = dataProvider.getTableRowCount(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName());
+        int count = dataProvider.getTableRowCount(connection, tableMetaData);
         return count / PAGE_SIZE + ((count % PAGE_SIZE) > 0 ? 1 : 0);
     }
 
@@ -74,8 +74,7 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
         tableView.getItems().clear();
         TableMetaData tableMetaData = customTableView.getTableMetaData();
         try {
-            List<Map<String, Object>> tableRows = dataProvider.getTableRows(connection,
-                    tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName(), PAGE_SIZE, page);
+            List<Map<String, Object>> tableRows = dataProvider.getTableRows(connection, tableMetaData, PAGE_SIZE, page);
             tableView.getItems().addAll(tableRows);
         } catch (SQLException e) {
             DialogUtil.error("ERROR", e.getMessage(), e);
