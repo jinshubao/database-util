@@ -4,7 +4,8 @@ import com.jean.database.common.utils.StringUtil;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IDatabaseProvider;
 import com.jean.database.core.IMetadataProvider;
-import com.jean.database.core.meta.TableMetaData;
+import com.jean.database.core.meta.KeyValuePairData;
+import com.jean.database.core.meta.TableSummaries;
 import com.jean.database.gui.factory.ActionLoggerWrapper;
 import com.jean.database.gui.factory.TreeCellFactory;
 import com.jean.database.gui.handler.IServerItemActionEventHandler;
@@ -13,7 +14,7 @@ import com.jean.database.gui.listener.WeakChangeListener;
 import com.jean.database.gui.manager.DatabaseTypeManager;
 import com.jean.database.gui.view.action.ISelectAction;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -67,9 +67,9 @@ public class MainController implements Initializable {
     @FXML
     public TreeView treeView;
     @FXML
-    public TableView<TableMetaData> objectTableView;
+    public TableView<TableSummaries> objectTableView;
     @FXML
-    public TableView<Map.Entry<String, String>> infoTableView;
+    public TableView<KeyValuePairData> infoTableView;
 
     private final ChangeListener<Number> treeViewItemSelectedIndexChangeListener;
 
@@ -128,17 +128,17 @@ public class MainController implements Initializable {
     @SuppressWarnings("unchecked")
     private void initializeTab() {
         objectTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(0)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableName()));
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(1)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableCat()));
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(2)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableSchem()));
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(3)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTypeSchema()));
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(4)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableType()));
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(5)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getSelfReferencingColName()));
-        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(6)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getRemarks()));
+        objectTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getTableName()));
+        objectTableView.getColumns().get(1).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getAutoIncrement()));
+        objectTableView.getColumns().get(2).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getModifyTime()));
+        objectTableView.getColumns().get(3).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getDataLength()));
+        objectTableView.getColumns().get(4).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getTableType()));
+        objectTableView.getColumns().get(5).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getTableRows()));
+        objectTableView.getColumns().get(6).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getComments()));
 
         infoTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        ((TableColumn<Map.Entry<String, String>, String>) infoTableView.getColumns().get(0)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getKey()));
-        ((TableColumn<Map.Entry<String, String>, String>) infoTableView.getColumns().get(1)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue()));
+        infoTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getName()));
+        infoTableView.getColumns().get(1).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getValue()));
     }
 
     private void newConnection(IDatabaseProvider provider) {

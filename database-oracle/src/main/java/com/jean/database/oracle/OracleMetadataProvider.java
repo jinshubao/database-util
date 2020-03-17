@@ -1,7 +1,9 @@
 package com.jean.database.oracle;
 
 import com.jean.database.core.AbstractMetaDataProvider;
+import com.jean.database.core.meta.KeyValuePairData;
 import com.jean.database.core.meta.TableMetaData;
+import com.jean.database.core.meta.TableSummaries;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,6 +23,18 @@ public class OracleMetadataProvider extends AbstractMetaDataProvider {
     public int getTableRowCount(Connection connection, TableMetaData tableMetaData) throws SQLException {
         //TODO
         return 0;
+    }
+
+    @Override
+    public List<TableSummaries> getTableSummaries(Connection connection, String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException {
+        //TODO
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<KeyValuePairData> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+        //TODO
+        return Collections.emptyList();
     }
 
 }

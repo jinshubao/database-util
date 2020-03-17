@@ -1,10 +1,11 @@
 package com.jean.database.gui.handler.impl;
 
+import com.jean.database.common.utils.DialogUtil;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.core.meta.TableMetaData;
-import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.core.meta.TableTypeMetaData;
 import com.jean.database.gui.factory.ActionLoggerWrapper;
 import com.jean.database.gui.handler.ICatalogItemActionEventHandler;
 import com.jean.database.gui.handler.ITableItemActionEventHandler;
@@ -54,13 +55,14 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
                 List<TableMetaData> tableMataData = metadataProvider.getTableMataData(connection, catalogMetaData.getTableCat(), null, null, null);
                 if (tableMataData != null && !tableMataData.isEmpty()) {
                     for (String tableType : tableTypes) {
-                        List<TableMetaData> metaDataList = tableMataData.stream()
+
+                        TableTypeMetaData tableTypeMetaData = new TableTypeMetaData(catalogMetaData, tableType);
+                        TreeItem typeItem = new TableTypeTreeItem(tableTypeMetaData, tableTypeItemActionEventHandler);
+
+                        List<TableTreeItem> items = tableMataData.stream()
                                 .filter(metaData -> metaData.getTableType().equals(tableType))
-                                .collect(Collectors.toList());
-                        List<TableTreeItem> items = metaDataList.stream()
                                 .map(metaData -> new TableTreeItem(metaData, tableItemActionEventHandler))
                                 .collect(Collectors.toList());
-                        TreeItem typeItem = new TableTypeTreeItem(tableType, metaDataList, tableTypeItemActionEventHandler);
                         //noinspection unchecked
                         children.add(typeItem);
                         if (!items.isEmpty()) {

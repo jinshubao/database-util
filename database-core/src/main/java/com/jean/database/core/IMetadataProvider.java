@@ -1,9 +1,6 @@
 package com.jean.database.core;
 
-import com.jean.database.core.meta.CatalogMetaData;
-import com.jean.database.core.meta.ColumnMetaData;
-import com.jean.database.core.meta.SchemaMetaData;
-import com.jean.database.core.meta.TableMetaData;
+import com.jean.database.core.meta.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -34,5 +31,9 @@ public interface IMetadataProvider {
     List<Map<String, Object>> getTableRows(Connection connection, TableMetaData tableMetaData, int pageSize, int pageIndex) throws SQLException;
 
     int getTableRowCount(Connection connection, TableMetaData tableMetaData) throws SQLException;
+
+    List<TableSummaries> getTableSummaries(Connection connection, String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException;
+
+    List<KeyValuePairData> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
 
 }

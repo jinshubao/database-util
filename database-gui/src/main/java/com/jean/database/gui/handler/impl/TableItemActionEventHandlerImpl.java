@@ -1,7 +1,9 @@
 package com.jean.database.gui.handler.impl;
 
+import com.jean.database.common.utils.DialogUtil;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
+import com.jean.database.core.meta.KeyValuePairData;
 import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.gui.factory.ActionLoggerWrapper;
 import com.jean.database.gui.handler.IDataTableActionEventHandler;
@@ -9,13 +11,13 @@ import com.jean.database.gui.handler.ITableItemActionEventHandler;
 import com.jean.database.gui.view.DataTableView;
 import com.jean.database.gui.view.treeitem.TableTreeItem;
 import javafx.scene.Node;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public class TableItemActionEventHandlerImpl implements ITableItemActionEventHandler {
@@ -25,13 +27,20 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
     private final IDataTableActionEventHandler dataTableActionEventHandler;
     private final TabPane tablePane;
     private final TabPane infoPane;
-    private final GridPane infoGridPane;
+    private final TableView<KeyValuePairData> infoTableView;
+    private final TextArea ddlTextArea;
+
+    private final IConnectionConfiguration connectionConfiguration;
+    private final IMetadataProvider metadataProvider;
 
     public TableItemActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
+        this.connectionConfiguration = connectionConfiguration;
+        this.metadataProvider = metadataProvider;
         this.dataTableActionEventHandler = ActionLoggerWrapper.warp(new DataTableActionEventHandlerImpl(connectionConfiguration, metadataProvider));
         this.tablePane = (TabPane) root.lookup("#tablePane");
         this.infoPane = (TabPane) root.lookup("#infoPane");
-        this.infoGridPane = (GridPane) root.lookup("#infoGridPane");
+        this.infoTableView = (TableView<KeyValuePairData>) root.lookup("#infoTableView");
+        this.ddlTextArea = (TextArea) root.lookup("#ddlTextArea");
     }
 
     @Override
@@ -102,6 +111,15 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
 
     @Override
     public void onSelected(TableTreeItem tableTreeItem) {
-
+        infoTableView.getItems().clear();
+        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
+            TableMetaData tableMetaData = tableTreeItem.getTableMetaData();
+            List<KeyValuePairData> tableDetails = metadataProvider.getTableDetails(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName(), new String[]{tableMetaData.getTableType()});
+            if (tableDetails != null && !tableDetails.isEmpty()) {
+                infoTableView.getItems().addAll(tableDetails);
+            }
+        } catch (SQLException e) {
+            DialogUtil.error(e);
+        }
     }
 }

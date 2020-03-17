@@ -7,9 +7,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.util.Callback;
 
-import java.awt.*;
 import java.util.Map;
 
 /**
@@ -28,6 +28,8 @@ public class TableCellFactory {
 
     private static class CustomTableCell<S, T> extends TableCell<S, T> {
 
+        private final Paint defaultTextFill;
+
         public CustomTableCell() {
             super();
             ContextMenu contextMenu = new ContextMenu();
@@ -39,6 +41,7 @@ public class TableCellFactory {
             });
             contextMenu.getItems().addAll(copy);
             setContextMenu(contextMenu);
+            defaultTextFill = getTextFill();
         }
 
         @Override
@@ -56,7 +59,7 @@ public class TableCellFactory {
                         setTextFill(Color.LIGHTGRAY);
                         setText("EMPTY");
                     } else {
-                        setTextFill(Color.BLACK);
+                        setTextFill(defaultTextFill);
                         setText(toString(item));
                         setWrapText(false);
                     }
