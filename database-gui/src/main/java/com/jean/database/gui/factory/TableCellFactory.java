@@ -9,6 +9,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
+import java.awt.*;
 import java.util.Map;
 
 /**
@@ -43,11 +44,23 @@ public class TableCellFactory {
         @Override
         protected void updateItem(T item, boolean empty) {
             super.updateItem(item, empty);
-            if (empty || item == null) {
+            if (empty) {
                 setText(null);
+                setGraphic(null);
             } else {
-                setText(toString(item));
-                setWrapText(false);
+                if (item == null) {
+                    setTextFill(Color.LIGHTGRAY);
+                    setText("NULL");
+                } else {
+                    if ("".equals(item)) {
+                        setTextFill(Color.LIGHTGRAY);
+                        setText("EMPTY");
+                    } else {
+                        setTextFill(Color.BLACK);
+                        setText(toString(item));
+                        setWrapText(false);
+                    }
+                }
             }
         }
 

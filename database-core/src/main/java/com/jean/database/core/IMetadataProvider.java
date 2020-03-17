@@ -6,14 +6,20 @@ import com.jean.database.core.meta.SchemaMetaData;
 import com.jean.database.core.meta.TableMetaData;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jinshubao
  * @date 2017/4/9
  */
 public interface IMetadataProvider {
+
+    default Connection getConnection(IConnectionConfiguration configuration) throws SQLException {
+        return DriverManager.getConnection(configuration.getUrl(), configuration.getProperties());
+    }
 
     List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException;
 
@@ -25,7 +31,8 @@ public interface IMetadataProvider {
 
     List<String> getTableTypes(Connection connection) throws SQLException;
 
-    boolean supportCatalog();
-    
-    boolean supportSchema();
+    List<Map<String, Object>> getTableRows(Connection connection, TableMetaData tableMetaData, int pageSize, int pageIndex) throws SQLException;
+
+    int getTableRowCount(Connection connection, TableMetaData tableMetaData) throws SQLException;
+
 }

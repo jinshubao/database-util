@@ -1,8 +1,8 @@
 package com.jean.database.gui;
 
-import com.jean.database.core.utils.DialogUtil;
-import com.jean.database.core.utils.FxmlUtils;
-import com.jean.database.core.utils.StringUtil;
+import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.common.utils.FxmlUtils;
+import com.jean.database.common.utils.StringUtil;
 import com.jean.database.gui.constant.Images;
 import javafx.application.Application;
 import javafx.application.Preloader;
@@ -25,7 +25,6 @@ import java.util.Locale;
 public class MainApplication extends Application {
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
     private List<String> params;
-    private Locale locale = Locale.SIMPLIFIED_CHINESE;
 
     @Override
     public void init() throws Exception {
@@ -47,7 +46,7 @@ public class MainApplication extends Application {
     }
 
     private void applicationStart(Stage stage) throws Exception {
-        Parent root = FxmlUtils.loadFxml("/fxml/Scene.fxml", "message.scene", locale);
+        Parent root = FxmlUtils.loadFxml("/fxml/Scene.fxml", "message.scene", Locale.SIMPLIFIED_CHINESE);
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
         String name = "database-gui";

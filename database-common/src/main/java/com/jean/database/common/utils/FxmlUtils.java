@@ -1,4 +1,4 @@
-package com.jean.database.core.utils;
+package com.jean.database.common.utils;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

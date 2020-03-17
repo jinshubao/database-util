@@ -1,7 +1,7 @@
 package com.jean.database.gui.factory;
 
-import com.jean.database.gui.view.IContextMenu;
-import com.jean.database.gui.view.IDoubleClick;
+import com.jean.database.gui.view.action.IContextMenu;
+import com.jean.database.gui.view.action.IMouseClickAction;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -35,16 +35,15 @@ public class TreeCellFactory {
                 } else {
                     setContextMenu(null);
                 }
-                if (treeItem instanceof IDoubleClick) {
-                    IDoubleClick node = (IDoubleClick) treeItem;
-                    setOnMouseClicked(event -> {
-                        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                            node.doubleClick(event);
+
+                setOnMouseClicked(event -> {
+                    if (treeItem instanceof IMouseClickAction) {
+                        IMouseClickAction node = (IMouseClickAction) treeItem;
+                        if (event.getButton() == MouseButton.PRIMARY) {
+                            node.click(event);
                         }
-                    });
-                } else {
-                    setOnMouseClicked(null);
-                }
+                    }
+                });
             }
         }
     }

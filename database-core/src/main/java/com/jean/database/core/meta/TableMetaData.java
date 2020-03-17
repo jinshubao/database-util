@@ -1,6 +1,6 @@
 package com.jean.database.core.meta;
 
-import com.jean.database.core.utils.StringUtil;
+import com.jean.database.common.utils.StringUtil;
 
 /**
  * 表信息

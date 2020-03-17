@@ -1,13 +1,9 @@
 package com.jean.database.mysql;
 
-
 import com.jean.database.core.IConnectionConfiguration;
 
 import java.util.Properties;
 
-/**
- * @author jinshubao
- */
 public class MySQLConnectionConfiguration implements IConnectionConfiguration {
 
     private static final String PROPERTY_SEPARATOR = "&";
@@ -26,7 +22,7 @@ public class MySQLConnectionConfiguration implements IConnectionConfiguration {
 
     private Properties properties;
 
-    public MySQLConnectionConfiguration(String connectionName, String host, Integer port, String user, String password, Properties properties) {
+    MySQLConnectionConfiguration(String connectionName, String host, Integer port, String user, String password, Properties properties) {
         this.connectionName = connectionName;
         this.host = host;
         this.port = port;
@@ -49,19 +45,19 @@ public class MySQLConnectionConfiguration implements IConnectionConfiguration {
         return connectionName;
     }
 
-    public String getHost() {
+    String getHost() {
         return host;
     }
 
-    public Integer getPort() {
+    Integer getPort() {
         return port;
     }
 
-    public String getUser() {
+    String getUser() {
         return user;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 

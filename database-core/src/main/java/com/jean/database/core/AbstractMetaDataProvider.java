@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author jinshubao
  */
-public class DefaultMetaDataProvider implements IMetadataProvider {
+public abstract class AbstractMetaDataProvider implements IMetadataProvider {
 
     @Override
     public List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException {
@@ -158,15 +158,5 @@ public class DefaultMetaDataProvider implements IMetadataProvider {
             list.add(data);
         }
         return list;
-    }
-
-    @Override
-    public boolean supportCatalog() {
-        return true;
-    }
-
-    @Override
-    public boolean supportSchema() {
-        return false;
     }
 }

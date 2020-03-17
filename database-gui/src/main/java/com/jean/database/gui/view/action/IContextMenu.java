@@ -1,4 +1,4 @@
-package com.jean.database.gui.view;
+package com.jean.database.gui.view.action;
 
 import javafx.scene.control.ContextMenu;
 

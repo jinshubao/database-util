@@ -1,8 +1,8 @@
 package com.jean.database.gui.handler;
 
-import com.jean.database.gui.view.CustomTableView;
+import com.jean.database.gui.view.DataTableView;
 
-public interface IDataTableActionEventHandler extends IRefreshActionEventHandler<CustomTableView> {
+public interface IDataTableActionEventHandler extends IRefreshActionEventHandler<DataTableView> {
 
-    void refresh(CustomTableView customTableView, int page);
+    void refresh(DataTableView dataTableView, int page);
 }

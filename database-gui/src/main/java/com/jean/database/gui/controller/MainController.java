@@ -1,32 +1,32 @@
 package com.jean.database.gui.controller;
 
-import com.jean.database.core.*;
-import com.jean.database.core.utils.DialogUtil;
-import com.jean.database.core.utils.StringUtil;
+import com.jean.database.common.utils.StringUtil;
+import com.jean.database.core.IConnectionConfiguration;
+import com.jean.database.core.IDatabaseProvider;
+import com.jean.database.core.IMetadataProvider;
+import com.jean.database.core.meta.TableMetaData;
+import com.jean.database.gui.factory.ActionLoggerWrapper;
 import com.jean.database.gui.factory.TreeCellFactory;
-import com.jean.database.gui.handler.ICatalogItemActionEventHandler;
-import com.jean.database.gui.handler.IDataTableActionEventHandler;
 import com.jean.database.gui.handler.IServerItemActionEventHandler;
-import com.jean.database.gui.handler.ITableItemActionEventHandler;
-import com.jean.database.gui.handler.impl.CatalogItemActionEventHandlerImpl;
-import com.jean.database.gui.handler.impl.DataTableActionEventHandlerImpl;
 import com.jean.database.gui.handler.impl.ServerItemActionEventHandlerImpl;
-import com.jean.database.gui.handler.impl.TableItemActionEventHandlerImpl;
+import com.jean.database.gui.listener.WeakChangeListener;
 import com.jean.database.gui.manager.DatabaseTypeManager;
+import com.jean.database.gui.view.action.ISelectAction;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.BorderPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -36,6 +36,8 @@ public class MainController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
+    @FXML
+    public BorderPane root;
     @FXML
     public MenuBar menuBar;
     @FXML
@@ -62,46 +64,50 @@ public class MainController implements Initializable {
     public ToggleButton plainToggleButton;
     @FXML
     public ToggleButton modelToggleButton;
-
     @FXML
     public TreeView treeView;
     @FXML
-    public TabPane tablePane;
+    public TableView<TableMetaData> objectTableView;
     @FXML
-    public Tab objectTab;
-    @FXML
-    public FlowPane objectPane;
-    @FXML
-    public SplitPane splitPane;
+    public TableView<Map.Entry<String, String>> infoTableView;
+
+    private final ChangeListener<Number> treeViewItemSelectedIndexChangeListener;
+
+    public MainController() {
+        this.treeViewItemSelectedIndexChangeListener = (observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                TreeItem treeItem = treeView.getTreeItem(newValue.intValue());
+                if (treeItem instanceof ISelectAction) {
+                    ((ISelectAction) treeItem).selected();
+                }
+            }
+        };
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.initializeMenuBar();
-        //noinspection unchecked
-        treeView.setCellFactory(TreeCellFactory.forTreeView());
-        //noinspection unchecked
-        treeView.setRoot(new TreeItem<>());
-        treeView.setShowRoot(false);
+        this.initializeTree();
+        this.initializeTab();
     }
 
     private void initializeMenuBar() {
-        List<IDatabaseTypeProvider> providers = DatabaseTypeManager.getProviders();
+        List<IDatabaseProvider> providers = DatabaseTypeManager.getProviders();
         newConnectionMenu.getItems().clear();
         connectionMenuButton.getItems().clear();
-        for (IDatabaseTypeProvider provider : providers) {
-            IDatabaseType dataBaseType = provider.getDatabaseType();
-            MenuItem menuItem = new MenuItem(dataBaseType.getName());
+        for (IDatabaseProvider provider : providers) {
+            MenuItem menuItem = new MenuItem(provider.getName());
             menuItem.setUserData(provider);
 
             menuItem.setOnAction(event -> newConnection(provider));
             newConnectionMenu.getItems().add(menuItem);
 
-            MenuItem item = new MenuItem(dataBaseType.getName());
+            MenuItem item = new MenuItem(provider.getName());
             item.setUserData(provider);
             item.setOnAction(event -> newConnection(provider));
             connectionMenuButton.getItems().add(item);
 
-            String icon = dataBaseType.getIcon();
+            String icon = provider.getIcon();
             if (StringUtil.isNotBlank(icon)) {
                 menuItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
                 item.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
@@ -109,34 +115,45 @@ public class MainController implements Initializable {
         }
     }
 
-    private void newConnection(IDatabaseTypeProvider provider) {
-        IDatabaseType dataBaseType = provider.getDatabaseType();
-        IConnectionProvider connectionProvider = provider.getConnectionProvider();
+
+    private void initializeTree() {
+        //noinspection unchecked
+        treeView.setCellFactory(TreeCellFactory.forTreeView());
+        //noinspection unchecked
+        treeView.setRoot(new TreeItem<>());
+        treeView.setShowRoot(false);
+        treeView.getSelectionModel().selectedIndexProperty().addListener(new WeakChangeListener<>(treeViewItemSelectedIndexChangeListener));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initializeTab() {
+        objectTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(0)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableName()));
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(1)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableCat()));
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(2)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableSchem()));
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(3)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTypeSchema()));
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(4)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTableType()));
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(5)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getSelfReferencingColName()));
+        ((TableColumn<TableMetaData, String>) objectTableView.getColumns().get(6)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getRemarks()));
+
+        infoTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        ((TableColumn<Map.Entry<String, String>, String>) infoTableView.getColumns().get(0)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getKey()));
+        ((TableColumn<Map.Entry<String, String>, String>) infoTableView.getColumns().get(1)).setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getValue()));
+    }
+
+    private void newConnection(IDatabaseProvider provider) {
+        IConnectionConfiguration configuration = provider.getConfiguration();
         IMetadataProvider metadataProvider = provider.getMetadataProvider();
-        IDataProvider dataProvider = provider.getDataProvider();
-        IConnectionConfiguration configuration = provider.getConfigurationProvider().getConfiguration(dataBaseType);
         logger.debug("new configuration [{}]", configuration);
         if (configuration != null) {
-            Connection connection = null;
-            try {
-                connection = connectionProvider.getConnection(configuration);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-                DialogUtil.error("ERROR", e.getMessage(), e);
+            IServerItemActionEventHandler serverActionEventHandler = ActionLoggerWrapper.warp(new ServerItemActionEventHandlerImpl(configuration, metadataProvider, root));
+            ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), serverActionEventHandler);
+            String icon = provider.getIcon();
+            if (StringUtil.isNotBlank(icon)) {
+                serverTreeItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
             }
-            if (connection != null) {
-                IDataTableActionEventHandler dataTableActionEventHandler = new DataTableActionEventHandlerImpl(connection, metadataProvider, dataProvider);
-                ITableItemActionEventHandler ITableItemActionEventHandler = new TableItemActionEventHandlerImpl(tablePane, dataTableActionEventHandler);
-                ICatalogItemActionEventHandler catalogActionEventHandler = new CatalogItemActionEventHandlerImpl(metadataProvider, connection, ITableItemActionEventHandler);
-                IServerItemActionEventHandler serverActionEventHandler = new ServerItemActionEventHandlerImpl(metadataProvider, connection, catalogActionEventHandler);
-                ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), serverActionEventHandler);
-                String icon = dataBaseType.getIcon();
-                if (StringUtil.isNotBlank(icon)) {
-                    serverTreeItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
-                }
-                //noinspection unchecked
-                treeView.getRoot().getChildren().add(serverTreeItem);
-            }
+            //noinspection unchecked
+            treeView.getRoot().getChildren().add(serverTreeItem);
         }
 
     }

@@ -1,7 +1,6 @@
 package com.jean.database.core;
 
-
-public interface IDatabaseType {
+public interface IDatabaseProvider {
 
     String getIdentifier();
 
@@ -15,11 +14,21 @@ public interface IDatabaseType {
         return null;
     }
 
-    default String getSchema() {
+    default String getSchemaIcon() {
         return null;
     }
 
     default String getTableIcon() {
         return null;
     }
+
+    IConnectionConfiguration getConfiguration();
+
+    IMetadataProvider getMetadataProvider();
+
+    boolean supportCatalog();
+
+    boolean supportSchema();
+
+
 }

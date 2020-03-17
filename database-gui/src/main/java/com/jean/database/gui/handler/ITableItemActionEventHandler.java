@@ -2,11 +2,12 @@ package com.jean.database.gui.handler;
 
 import com.jean.database.gui.view.treeitem.TableTreeItem;
 
-public interface ITableItemActionEventHandler extends IRefreshActionEventHandler<TableTreeItem> {
+public interface ITableItemActionEventHandler extends
+        ICommonActionEventHandler<TableTreeItem>,
+        IRefreshActionEventHandler<TableTreeItem>,
+        IMouseClickEventHandler<TableTreeItem>,
+        ISelectedActionEventHandler<TableTreeItem> {
 
-    void openTable(TableTreeItem tableTreeItem);
+    void onCopy(TableTreeItem tableTreeItem);
 
-    void copyTable(TableTreeItem tableTreeItem);
-
-    void deleteTable(TableTreeItem tableTreeItem);
 }

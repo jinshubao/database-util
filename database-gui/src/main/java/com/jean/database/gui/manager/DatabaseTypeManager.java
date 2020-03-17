@@ -1,6 +1,6 @@
 package com.jean.database.gui.manager;
 
-import com.jean.database.core.IDatabaseTypeProvider;
+import com.jean.database.core.IDatabaseProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,17 +11,17 @@ public final class DatabaseTypeManager {
 
     private static final DatabaseTypeManager providerManager = new DatabaseTypeManager();
 
-    private final List<IDatabaseTypeProvider> providers;
+    private final List<IDatabaseProvider> providers;
 
     private DatabaseTypeManager() {
         providers = new ArrayList<>();
-        ServiceLoader<IDatabaseTypeProvider> serviceLoader = ServiceLoader.load(IDatabaseTypeProvider.class);
-        for (IDatabaseTypeProvider provider : serviceLoader) {
+        ServiceLoader<IDatabaseProvider> serviceLoader = ServiceLoader.load(IDatabaseProvider.class);
+        for (IDatabaseProvider provider : serviceLoader) {
             providers.add(provider);
         }
     }
 
-    public static List<IDatabaseTypeProvider> getProviders() {
+    public static List<IDatabaseProvider> getProviders() {
         return Collections.unmodifiableList(providerManager.providers);
     }
 }

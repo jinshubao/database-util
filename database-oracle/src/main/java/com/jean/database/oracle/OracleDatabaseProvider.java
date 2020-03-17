@@ -1,9 +1,10 @@
 package com.jean.database.oracle;
 
-import com.jean.database.core.IConfigurationProvider;
 import com.jean.database.core.IConnectionConfiguration;
-import com.jean.database.core.utils.DialogUtil;
-import com.jean.database.core.utils.FxmlUtils;
+import com.jean.database.core.IDatabaseProvider;
+import com.jean.database.core.IMetadataProvider;
+import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.common.utils.FxmlUtils;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
@@ -14,26 +15,84 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 
-public class OracleConfigurationProvider implements IConfigurationProvider {
+public class OracleDatabaseProvider implements IDatabaseProvider {
+
+    private static final String ID = "Oracle";
+    private String identifier;
+    private String name;
+
+    private String icon;
+    private String catalogIcon;
+    private String schemaIcon;
+    private String tableIcon;
 
     private final Properties defaultProperties;
 
     private final StringConverter<Properties> propertiesStringConverter;
 
+    public OracleDatabaseProvider() {
 
-    public OracleConfigurationProvider() {
+        this.identifier = ID;
+        this.name = name = ID;
+        this.icon = "/oracle/oracle.png";
+        this.catalogIcon = "/oracle/catalog.png";
+        this.schemaIcon = null;
+        this.tableIcon = "/oracle/table.png";
+
         this.defaultProperties = new Properties();
         this.propertiesStringConverter = new PropertiesStringConverter();
     }
 
+
     @Override
-    public IConnectionConfiguration getConfiguration(Object prams) {
-        OracleConnectionConfiguration configuration =
-                new OracleConnectionConfiguration("oracle-127.0.0.1", "127.0.0.1", 3306, "root", "", this.defaultProperties);
-        return this.getConfiguration(prams, configuration);
+    public String getIdentifier() {
+        return identifier;
     }
 
-    private IConnectionConfiguration getConfiguration(Object prams, OracleConnectionConfiguration initValue) {
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getIcon() {
+        return this.icon;
+    }
+
+    @Override
+    public String getCatalogIcon() {
+        return this.catalogIcon;
+    }
+
+    @Override
+    public String getTableIcon() {
+        return this.tableIcon;
+    }
+
+    @Override
+    public IConnectionConfiguration getConfiguration() {
+        com.jean.database.oracle.OracleConnectionConfiguration configuration =
+                new com.jean.database.oracle.OracleConnectionConfiguration("oracle-127.0.0.1", "127.0.0.1", 3306, "root", "", this.defaultProperties);
+        return this.getConfiguration(configuration);
+    }
+
+
+    @Override
+    public IMetadataProvider getMetadataProvider() {
+        return new OracleMetadataProvider();
+    }
+
+    @Override
+    public boolean supportCatalog() {
+        return true;
+    }
+
+    @Override
+    public boolean supportSchema() {
+        return false;
+    }
+
+    private IConnectionConfiguration getConfiguration(com.jean.database.oracle.OracleConnectionConfiguration initValue) {
         try {
             Parent root = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml", "message.oracle", Locale.SIMPLIFIED_CHINESE);
 
@@ -56,7 +115,7 @@ public class OracleConfigurationProvider implements IConfigurationProvider {
             TextField propertiesFiled = (TextField) root.lookup("#properties");
             propertiesFiled.setText(propString);
 
-            Callback<ButtonType, OracleConnectionConfiguration> callback = buttonType -> {
+            Callback<ButtonType, com.jean.database.oracle.OracleConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     String nameText = nameFiled.getText();
                     String hostText = hostFiled.getText();
@@ -65,13 +124,13 @@ public class OracleConfigurationProvider implements IConfigurationProvider {
                     String passwordText = passwordFiled.getText();
                     String propertiesText = propertiesFiled.getText();
                     Properties properties = propertiesStringConverter.fromString(propertiesText);
-                    return new OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
+                    return new com.jean.database.oracle.OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
                 }
                 return null;
             };
             return DialogUtil.customizeDialog("New Oracle connection", root, callback).orElse(null);
         } catch (IOException e) {
-            DialogUtil.error("ERROR", e.getMessage(), e);
+            DialogUtil.error(e);
         }
         return null;
     }
@@ -90,4 +149,5 @@ public class OracleConfigurationProvider implements IConfigurationProvider {
             return new Properties();
         }
     }
+
 }

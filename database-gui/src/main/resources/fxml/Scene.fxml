@@ -1,85 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.gui.controller.MainController">
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.211" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.gui.controller.MainController">
     <top>
-        <VBox>
+        <VBox alignment="TOP_CENTER">
             <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
                 <Menu fx:id="fileMenu" mnemonicParsing="false" text="文件">
-                    <Menu fx:id="newConnectionMenu" mnemonicParsing="false" text="新建连接"/>
-                    <MenuItem mnemonicParsing="false" text="打开连接"/>
-                    <MenuItem mnemonicParsing="false" text="关闭连接"/>
-                    <MenuItem mnemonicParsing="false" text="导出连接..."/>
-                    <MenuItem mnemonicParsing="false" text="导入连接..."/>
-                    <MenuItem mnemonicParsing="false" text="关闭"/>
-                    <MenuItem mnemonicParsing="false" text="退出"/>
+                    <Menu fx:id="newConnectionMenu" mnemonicParsing="false" text="新建连接" />
+                    <MenuItem mnemonicParsing="false" text="打开连接" />
+                    <MenuItem mnemonicParsing="false" text="关闭连接" />
+                    <MenuItem mnemonicParsing="false" text="导出连接..." />
+                    <MenuItem mnemonicParsing="false" text="导入连接..." />
+                    <MenuItem mnemonicParsing="false" text="关闭" />
+                    <MenuItem mnemonicParsing="false" text="退出" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="查看">
-                    <MenuItem mnemonicParsing="false" text="Delete"/>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="收藏夹">
-                    <MenuItem mnemonicParsing="false" text="Collections"/>
+                    <MenuItem mnemonicParsing="false" text="Collections" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="工具">
-                    <MenuItem mnemonicParsing="false" text="Tools"/>
+                    <MenuItem mnemonicParsing="false" text="Tools" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="窗口">
-                    <MenuItem mnemonicParsing="false" text="View"/>
+                    <MenuItem mnemonicParsing="false" text="View" />
                 </Menu>
                 <Menu mnemonicParsing="false" text="帮助">
-                    <MenuItem mnemonicParsing="false" text="Help"/>
+                    <MenuItem mnemonicParsing="false" text="Help" />
                 </Menu>
             </MenuBar>
-            <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: #999;" VBox.vgrow="NEVER">
+            <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="NEVER">
                 <VBox.margin>
-                    <Insets/>
+                    <Insets />
                 </VBox.margin>
                 <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                 </padding>
-                <MenuButton fx:id="connectionMenuButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                            style="-fx-background-radius: 10;" text="连接"/>
-                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="用户">
+                <MenuButton fx:id="connectionMenuButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="连接" />
+                <ToggleButton mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="用户">
                     <toggleGroup>
-                        <ToggleGroup fx:id="topbuttons"/>
+                        <ToggleGroup fx:id="topbuttons" />
                     </toggleGroup>
                 </ToggleButton>
-                <ToggleButton fx:id="tableToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="表" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="viewToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="视图" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="functionToggleButton" mnemonicParsing="false" prefHeight="40.0"
-                              prefWidth="85.0" style="-fx-background-radius: 10;" text="函数"
-                              toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="eventToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="事件" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="queryToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="查询" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="reportToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="报表" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="backupToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="备份" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="plainToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="计划" toggleGroup="$topbuttons"/>
-                <ToggleButton fx:id="modelToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0"
-                              style="-fx-background-radius: 10;" text="模型" toggleGroup="$topbuttons"/>
+                <ToggleButton fx:id="tableToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="表" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="viewToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="视图" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="functionToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="函数" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="eventToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="事件" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="queryToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="查询" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="reportToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="报表" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="backupToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="备份" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="plainToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="计划" toggleGroup="$topbuttons" />
+                <ToggleButton fx:id="modelToggleButton" mnemonicParsing="false" prefHeight="40.0" prefWidth="85.0" style="-fx-background-radius: 10;" text="模型" toggleGroup="$topbuttons" />
             </HBox>
         </VBox>
     </top>
     <center>
-        <SplitPane fx:id="splitPane" dividerPositions="0.2" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
-            <TreeView fx:id="treeView" layoutY="30.0"/>
-            <TabPane fx:id="tablePane" prefHeight="200.0" prefWidth="200.0">
-                <Tab fx:id="objectTab" closable="false" text="   对象    ">
-                    <FlowPane fx:id="objectPane" hgap="10.0" layoutX="207.0" layoutY="120.0" orientation="VERTICAL" vgap="10.0">
-                        <padding>
-                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                        </padding>
-                    </FlowPane>
+        <SplitPane fx:id="splitPane" dividerPositions="0.2, 0.75" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
+            <TreeView fx:id="treeView" />
+            <TabPane fx:id="tablePane" tabClosingPolicy="ALL_TABS">
+                <Tab fx:id="objectTab" closable="false" text="对象">
+               <content>
+                  <TableView fx:id="objectTableView">
+                    <columns>
+                      <TableColumn text="表名" />
+                      <TableColumn text="自动递增值" />
+                      <TableColumn text="修改日期" />
+                      <TableColumn text="数据长度" />
+                      <TableColumn text="表类型" />
+                      <TableColumn text="行数" />
+                      <TableColumn text="注释" />
+                    </columns>
+                  </TableView>
+               </content>
+                </Tab>
+            </TabPane>
+            <TabPane fx:id="infoPane" tabClosingPolicy="UNAVAILABLE">
+                <Tab fx:id="infoTab" closable="false" text="常规">
+               <content>
+                   <TableView fx:id="infoTableView">
+                       <columns>
+                           <TableColumn text="名" />
+                           <TableColumn text="值" />
+                       </columns>
+                   </TableView>
+               </content>
+                </Tab>
+                <Tab fx:id="ddlTab" closable="false" text="DDL">
+                    <TextArea fx:id="ddlTextArea" editable="false" wrapText="true" />
                 </Tab>
             </TabPane>
         </SplitPane>

@@ -1,15 +1,22 @@
 package com.jean.database.gui.handler.impl;
 
+import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.core.meta.TableMetaData;
+import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.gui.factory.ActionLoggerWrapper;
 import com.jean.database.gui.handler.ICatalogItemActionEventHandler;
 import com.jean.database.gui.handler.ITableItemActionEventHandler;
-import com.jean.database.core.utils.DialogUtil;
+import com.jean.database.gui.handler.ITableTypeItemActionEventHandler;
 import com.jean.database.gui.view.treeitem.CatalogTreeItem;
 import com.jean.database.gui.view.treeitem.TableTreeItem;
+import com.jean.database.gui.view.treeitem.TableTypeTreeItem;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,36 +25,44 @@ import java.util.stream.Collectors;
 
 public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEventHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(CatalogItemActionEventHandlerImpl.class);
+
     private final IMetadataProvider metadataProvider;
 
-    private final Connection connection;
+    private final IConnectionConfiguration connectionConfiguration;
 
-    private final ITableItemActionEventHandler eventHandler;
+    private final ITableItemActionEventHandler tableItemActionEventHandler;
 
-    public CatalogItemActionEventHandlerImpl(IMetadataProvider metadataProvider, Connection connection, ITableItemActionEventHandler eventHandler) {
+    private final ITableTypeItemActionEventHandler tableTypeItemActionEventHandler;
+
+    public CatalogItemActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
+        this.connectionConfiguration = connectionConfiguration;
         this.metadataProvider = metadataProvider;
-        this.connection = connection;
-        this.eventHandler = eventHandler;
+
+        this.tableItemActionEventHandler = ActionLoggerWrapper.warp(new TableItemActionEventHandlerImpl(connectionConfiguration, metadataProvider, root));
+        this.tableTypeItemActionEventHandler = ActionLoggerWrapper.warp(new TableTypeItemActionEventHandlerImpl(connectionConfiguration, metadataProvider, root));
     }
 
 
     @Override
-    public void openCatalog(CatalogTreeItem catalogTreeItem) {
+    public void onOpen(CatalogTreeItem catalogTreeItem) {
         if (!catalogTreeItem.getOpen()) {
             ObservableList children = catalogTreeItem.getChildren();
             CatalogMetaData catalogMetaData = catalogTreeItem.getCatalogMetaData();
-            try {
+            try (Connection connection = metadataProvider.getConnection(this.connectionConfiguration)) {
                 List<String> tableTypes = metadataProvider.getTableTypes(connection);
                 List<TableMetaData> tableMataData = metadataProvider.getTableMataData(connection, catalogMetaData.getTableCat(), null, null, null);
                 if (tableMataData != null && !tableMataData.isEmpty()) {
                     for (String tableType : tableTypes) {
-                        TreeItem typeItem = new TreeItem<>(tableType);
+                        List<TableMetaData> metaDataList = tableMataData.stream()
+                                .filter(metaData -> metaData.getTableType().equals(tableType))
+                                .collect(Collectors.toList());
+                        List<TableTreeItem> items = metaDataList.stream()
+                                .map(metaData -> new TableTreeItem(metaData, tableItemActionEventHandler))
+                                .collect(Collectors.toList());
+                        TreeItem typeItem = new TableTypeTreeItem(tableType, metaDataList, tableTypeItemActionEventHandler);
                         //noinspection unchecked
                         children.add(typeItem);
-                        List<TableTreeItem> items = tableMataData.stream()
-                                .filter(metaData -> metaData.getTableType().equals(tableType))
-                                .map(metaData -> new TableTreeItem( metaData, eventHandler))
-                                .collect(Collectors.toList());
                         if (!items.isEmpty()) {
                             //noinspection unchecked
                             typeItem.getChildren().addAll(items);
@@ -58,32 +73,33 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
                     catalogTreeItem.setOpen(true);
                 }
             } catch (SQLException e) {
-                DialogUtil.error("ERROR", e.getMessage(), e);
+                logger.error(e.getMessage(), e);
+                DialogUtil.error(e);
             }
         }
     }
 
     @Override
-    public void closeCatalog(CatalogTreeItem catalogTreeItem) {
+    public void onClose(CatalogTreeItem catalogTreeItem) {
         catalogTreeItem.getChildren().clear();
         catalogTreeItem.setExpanded(false);
         catalogTreeItem.setOpen(false);
     }
 
     @Override
-    public void createCatalog(CatalogTreeItem catalogTreeItem) {
+    public void onCreate(CatalogTreeItem catalogTreeItem) {
         //TODO
     }
 
     @Override
-    public void deleteCatalog(CatalogTreeItem catalogTreeItem) {
+    public void onDelete(CatalogTreeItem catalogTreeItem) {
         catalogTreeItem.getChildren().clear();
         catalogTreeItem.getParent().getChildren().remove(catalogTreeItem);
         catalogTreeItem.setOpen(false);
     }
 
     @Override
-    public void catalogProperties(CatalogTreeItem catalogTreeItem) {
+    public void onDetails(CatalogTreeItem catalogTreeItem) {
         //TODO
     }
 
@@ -91,6 +107,21 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
     public void refresh(CatalogTreeItem treeItem) {
         treeItem.getChildren().clear();
         treeItem.setOpen(false);
-        this.openCatalog(treeItem);
+        this.onOpen(treeItem);
+    }
+
+    @Override
+    public void onMouseClick(CatalogTreeItem catalogTreeItem) {
+    }
+
+    @Override
+    public void onMouseDoubleClick(CatalogTreeItem catalogTreeItem) {
+        this.refresh(catalogTreeItem);
+    }
+
+
+    @Override
+    public void onSelected(CatalogTreeItem catalogTreeItem) {
+
     }
 }

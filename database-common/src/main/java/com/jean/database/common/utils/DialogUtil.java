@@ -1,4 +1,4 @@
-package com.jean.database.core.utils;
+package com.jean.database.common.utils;
 
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -37,6 +37,10 @@ public final class DialogUtil {
 
     public static Optional<ButtonType> information(String title, String headerText, String text) {
         return alert(Alert.AlertType.INFORMATION, title, headerText, text, ButtonType.CLOSE);
+    }
+
+    public static void error(Throwable ex) {
+        error("ERROR", ex.getMessage(), ex.getMessage(), ex, ButtonType.CLOSE);
     }
 
     public static void error(String title, Throwable ex) {

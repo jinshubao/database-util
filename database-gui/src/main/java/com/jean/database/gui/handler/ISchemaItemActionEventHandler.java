@@ -2,9 +2,9 @@ package com.jean.database.gui.handler;
 
 import com.jean.database.gui.view.treeitem.SchemaTreeItem;
 
-public interface ISchemaItemActionEventHandler extends IRefreshActionEventHandler<SchemaTreeItem> {
+public interface ISchemaItemActionEventHandler extends
+        ICommonActionEventHandler<SchemaTreeItem>,
+        IRefreshActionEventHandler<SchemaTreeItem>,
+        IMouseClickEventHandler<SchemaTreeItem> {
 
-    void openSchema(SchemaTreeItem schemaTreeItem);
-
-    void deleteSchema(SchemaTreeItem schemaTreeItem);
 }

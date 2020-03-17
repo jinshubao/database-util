@@ -1,4 +1,4 @@
-package com.jean.database.core.utils;
+package com.jean.database.common.utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,20 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class StringUtil {
-
-    public static Map<String, String> parseMysqlProperties(String properties) {
-        Map<String, String> map = new HashMap<>();
-        if (properties != null && !properties.isEmpty()) {
-            String[] props = properties.split("&");
-            for (String prop : props) {
-                String[] sp = prop.split("=");
-                if (sp.length == 2) {
-                    map.put(sp[0].trim(), sp[1].trim());
-                }
-            }
-        }
-        return map;
-    }
 
     public static boolean isNotBlank(String text) {
         return !isBlank(text);

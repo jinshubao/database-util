@@ -2,8 +2,8 @@ package com.jean.database.gui.view.treeitem;
 
 import com.jean.database.core.meta.SchemaMetaData;
 import com.jean.database.gui.handler.ISchemaItemActionEventHandler;
-import com.jean.database.gui.view.IContextMenu;
-import com.jean.database.gui.view.IDoubleClick;
+import com.jean.database.gui.view.action.IContextMenu;
+import com.jean.database.gui.view.action.IMouseClickAction;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ContextMenu;
@@ -11,9 +11,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 
-public class SchemaTreeItem extends TreeItem<SchemaMetaData> implements IContextMenu, IDoubleClick {
+public class SchemaTreeItem extends TreeItem<SchemaMetaData> implements IContextMenu, IMouseClickAction {
 
-    private final BooleanProperty open = new SimpleBooleanProperty(this, "open", false);
+    private final BooleanProperty open = new SimpleBooleanProperty(this, "onOpen", false);
 
     private final ContextMenu contextMenu;
 
@@ -33,10 +33,10 @@ public class SchemaTreeItem extends TreeItem<SchemaMetaData> implements IContext
         ContextMenu contextMenu = new ContextMenu();
         MenuItem open = new MenuItem("打开数据库");
         open.disableProperty().bind(this.open);
-        open.setOnAction(event -> eventHandler.openSchema(SchemaTreeItem.this));
+        open.setOnAction(event -> eventHandler.onOpen(SchemaTreeItem.this));
 
         MenuItem delete = new MenuItem("删除数据库");
-        delete.setOnAction(event -> eventHandler.deleteSchema(SchemaTreeItem.this));
+        delete.setOnAction(event -> eventHandler.onDelete(SchemaTreeItem.this));
 
 
         MenuItem refresh = new MenuItem("刷新");
@@ -67,8 +67,9 @@ public class SchemaTreeItem extends TreeItem<SchemaMetaData> implements IContext
         return this.contextMenu;
     }
 
+
     @Override
-    public void doubleClick(MouseEvent event) {
+    public void click(MouseEvent event) {
         eventHandler.refresh(this);
     }
 }
