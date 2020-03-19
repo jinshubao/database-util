@@ -3,7 +3,8 @@ package com.jean.database.gui.view;
 
 import com.jean.database.core.meta.ColumnMetaData;
 import com.jean.database.core.meta.TableMetaData;
-import com.jean.database.gui.handler.IDataTableActionEventHandler;
+import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
+import javafx.css.StyleableProperty;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;

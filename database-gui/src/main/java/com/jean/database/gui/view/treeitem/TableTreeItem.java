@@ -2,10 +2,9 @@ package com.jean.database.gui.view.treeitem;
 
 import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.gui.constant.Images;
-import com.jean.database.gui.handler.ITableItemActionEventHandler;
 import com.jean.database.gui.view.action.IContextMenu;
-import com.jean.database.gui.view.action.IMouseClickAction;
-import com.jean.database.gui.view.action.ISelectAction;
+import com.jean.database.gui.view.action.IMouseAction;
+import com.jean.database.gui.view.handler.ITableItemActionEventHandler;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ContextMenu;
@@ -18,7 +17,7 @@ import javafx.scene.input.MouseEvent;
 /**
  * @author jinshubao
  */
-public class TableTreeItem extends TreeItem<TableMetaData> implements IContextMenu, IMouseClickAction, ISelectAction {
+public class TableTreeItem extends TreeItem<TableMetaData> implements IContextMenu, IMouseAction {
 
     private final BooleanProperty open = new SimpleBooleanProperty(this, "onOpen", false);
 
@@ -41,16 +40,16 @@ public class TableTreeItem extends TreeItem<TableMetaData> implements IContextMe
         ContextMenu contextMenu = new ContextMenu();
         MenuItem open = new MenuItem("打开表");
         open.disableProperty().bind(this.open);
-        open.setOnAction(event -> tableItemActionEventHandler.onOpen(TableTreeItem.this));
+        open.setOnAction(event -> this.tableItemActionEventHandler.onOpen(TableTreeItem.this));
 
         MenuItem copy = new MenuItem("复制表");
-        copy.setOnAction(event -> tableItemActionEventHandler.onCopy(TableTreeItem.this));
+        copy.setOnAction(event -> this.tableItemActionEventHandler.onCopy(TableTreeItem.this));
 
         MenuItem delete = new MenuItem("删除表", new ImageView(new Image(getClass().getResourceAsStream(Images.DELETE_IMAGE))));
-        delete.setOnAction(event -> tableItemActionEventHandler.onDelete(TableTreeItem.this));
+        delete.setOnAction(event -> this.tableItemActionEventHandler.onDelete(TableTreeItem.this));
 
         MenuItem refresh = new MenuItem("刷新", new ImageView(new Image(getClass().getResourceAsStream(Images.REFRESH_IMAGE))));
-        refresh.setOnAction(event -> tableItemActionEventHandler.refresh(TableTreeItem.this));
+        refresh.setOnAction(event -> this.tableItemActionEventHandler.refresh(TableTreeItem.this));
 
         contextMenu.getItems().addAll(open, copy, delete, refresh);
         return contextMenu;
@@ -64,9 +63,9 @@ public class TableTreeItem extends TreeItem<TableMetaData> implements IContextMe
     @Override
     public void click(MouseEvent event) {
         if (event.getClickCount() == 1) {
-            tableItemActionEventHandler.onMouseClick(this);
+            this.tableItemActionEventHandler.onMouseClick(this);
         } else if (event.getClickCount() == 2) {
-            tableItemActionEventHandler.onMouseDoubleClick(this);
+            this.tableItemActionEventHandler.onMouseDoubleClick(this);
         }
     }
 
@@ -87,7 +86,7 @@ public class TableTreeItem extends TreeItem<TableMetaData> implements IContextMe
     }
 
     @Override
-    public void selected() {
+    public void select() {
         this.tableItemActionEventHandler.onSelected(this);
     }
 }

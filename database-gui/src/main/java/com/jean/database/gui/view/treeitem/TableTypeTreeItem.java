@@ -1,13 +1,12 @@
 package com.jean.database.gui.view.treeitem;
 
 import com.jean.database.core.meta.TableTypeMetaData;
-import com.jean.database.gui.handler.ITableTypeItemActionEventHandler;
-import com.jean.database.gui.view.action.IMouseClickAction;
-import com.jean.database.gui.view.action.ISelectAction;
+import com.jean.database.gui.view.action.IMouseAction;
+import com.jean.database.gui.view.handler.ITableTypeItemActionEventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 
-public class TableTypeTreeItem extends TreeItem<TableTypeMetaData> implements IMouseClickAction, ISelectAction {
+public class TableTypeTreeItem extends TreeItem<TableTypeMetaData> implements IMouseAction {
 
     private final ITableTypeItemActionEventHandler tableTypeItemActionEventHandler;
 
@@ -22,18 +21,18 @@ public class TableTypeTreeItem extends TreeItem<TableTypeMetaData> implements IM
     @Override
     public void click(MouseEvent event) {
         if (event.getClickCount() == 1) {
-            tableTypeItemActionEventHandler.onMouseClick(this);
+            this.tableTypeItemActionEventHandler.onMouseClick(this);
         } else if (event.getClickCount() == 2) {
-            tableTypeItemActionEventHandler.onMouseDoubleClick(this);
+            this.tableTypeItemActionEventHandler.onMouseDoubleClick(this);
         }
     }
 
     @Override
-    public void selected() {
-        tableTypeItemActionEventHandler.onSelected(this);
+    public void select() {
+        this.tableTypeItemActionEventHandler.onSelected(this);
     }
 
     public TableTypeMetaData getTableTypeMetaData() {
-        return tableTypeMetaData;
+        return this.tableTypeMetaData;
     }
 }

@@ -1,11 +1,10 @@
 package com.jean.database.gui.factory;
 
 import com.jean.database.gui.view.action.IContextMenu;
-import com.jean.database.gui.view.action.IMouseClickAction;
+import com.jean.database.gui.view.action.IMouseAction;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseButton;
 import javafx.util.Callback;
 
 /**
@@ -25,6 +24,8 @@ public class TreeCellFactory {
             if (empty || item == null) {
                 setText(null);
                 setGraphic(null);
+                setOnMouseClicked(null);
+                setContextMenu(null);
             } else {
                 setText(item.toString());
                 TreeItem<T> treeItem = getTreeItem();
@@ -35,15 +36,12 @@ public class TreeCellFactory {
                 } else {
                     setContextMenu(null);
                 }
-
-                setOnMouseClicked(event -> {
-                    if (treeItem instanceof IMouseClickAction) {
-                        IMouseClickAction node = (IMouseClickAction) treeItem;
-                        if (event.getButton() == MouseButton.PRIMARY) {
-                            node.click(event);
-                        }
-                    }
-                });
+                if (treeItem instanceof IMouseAction) {
+                    IMouseAction node = (IMouseAction) treeItem;
+                    this.setOnMouseClicked(node::click);
+                } else {
+                    setOnMouseClicked(null);
+                }
             }
         }
     }

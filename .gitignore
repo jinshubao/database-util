@@ -22,6 +22,15 @@
 *.pid
 /out/
 
+database-*/.idea
+database-*/.idea/
+database-*/*.iws
+database-*/*.iml
+database-*/*.ipr
+database-*/*.pid
+database-*/out/
+database-*/build/
+
 ### NetBeans ###
 /nbproject/private/
 /build/

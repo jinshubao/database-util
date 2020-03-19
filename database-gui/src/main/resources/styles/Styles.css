@@ -123,8 +123,8 @@ is being used to size a border should also be in pixels.
     -fx-mid-text-color: #333;
     -fx-light-text-color: white;
 
-    /* A bright blue for highlighting/accenting objects.  For example: selected
-     * text; selected items in menus, lists, trees, and tables; progress bars */
+    /* A bright blue for highlighting/accenting objects.  For example: select
+     * text; select items in menus, lists, trees, and tables; progress bars */
     -fx-accent: #c9bd00;
 
     /* Default buttons color, this is similar to accent but more subtle */
@@ -335,7 +335,7 @@ is being used to size a border should also be in pixels.
     -fx-selection-bar: -fx-accent;
 
     /* Background color to use for selection of list cells etc. This is when
-     * the control doesn't have focus or the row of a previously selected item. */
+     * the control doesn't have focus or the row of a previously select item. */
     -fx-selection-bar-non-focused: lightgrey;
 
     /* The color to use as -fx-text-fill when painting text on top of

@@ -1,4 +1,4 @@
-package com.jean.database.gui.handler;
+package com.jean.database.gui.view.handler;
 
 import com.jean.database.gui.view.DataTableView;
 

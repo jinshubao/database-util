@@ -1,4 +1,4 @@
-package com.jean.database.gui.handler.impl;
+package com.jean.database.gui.view.handler.impl;
 
 import com.jean.database.common.utils.DialogUtil;
 import com.jean.database.core.IConnectionConfiguration;
@@ -6,9 +6,11 @@ import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.ColumnMetaData;
 import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.gui.factory.TableCellFactory;
-import com.jean.database.gui.handler.IDataTableActionEventHandler;
+import com.jean.database.gui.view.handler.AbstractEventHandler;
+import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
 import com.jean.database.gui.view.DataTableView;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataTableActionEventHandlerImpl implements IDataTableActionEventHandler {
+public class DataTableActionEventHandlerImpl extends AbstractEventHandler<DataTableView> implements IDataTableActionEventHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DataTableActionEventHandlerImpl.class);
 
@@ -30,7 +32,8 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
     private final IConnectionConfiguration connectionConfiguration;
     private final IMetadataProvider metadataProvider;
 
-    public DataTableActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+    public DataTableActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
+        super(root);
         this.connectionConfiguration = connectionConfiguration;
         this.metadataProvider = metadataProvider;
     }
@@ -40,8 +43,8 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
     public void refresh(DataTableView dataTableView) {
         TableView<Map<String, Object>> tableView = dataTableView.getTableView();
         TableMetaData tableMetaData = dataTableView.getTableMetaData();
-        try (Connection connection = metadataProvider.getConnection(this.connectionConfiguration)) {
-            List<ColumnMetaData> columnMetaDataList = metadataProvider.getColumnMetaData(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName());
+        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
+            List<ColumnMetaData> columnMetaDataList = this.metadataProvider.getColumnMetaData(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName());
             List<TableColumn<Map<String, Object>, Object>> columns = new ArrayList<>(columnMetaDataList.size());
             for (ColumnMetaData columnMetaData : columnMetaDataList) {
                 TableColumn<Map<String, Object>, Object> tableColumn = new DataTableView.DataColumn(columnMetaData);
@@ -66,8 +69,8 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
     }
 
     private int getPageCount(TableMetaData tableMetaData) throws SQLException {
-        try (Connection connection = metadataProvider.getConnection(this.connectionConfiguration)) {
-            int count = metadataProvider.getTableRowCount(connection, tableMetaData);
+        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
+            int count = this.metadataProvider.getTableRowCount(connection, tableMetaData);
             return count / PAGE_SIZE + ((count % PAGE_SIZE) > 0 ? 1 : 0);
         }
     }
@@ -76,8 +79,8 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
         TableView<Map<String, Object>> tableView = dataTableView.getTableView();
         tableView.getItems().clear();
         TableMetaData tableMetaData = dataTableView.getTableMetaData();
-        try (Connection connection = metadataProvider.getConnection(this.connectionConfiguration)) {
-            List<Map<String, Object>> tableRows = metadataProvider.getTableRows(connection, tableMetaData, PAGE_SIZE, page);
+        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
+            List<Map<String, Object>> tableRows = this.metadataProvider.getTableRows(connection, tableMetaData, PAGE_SIZE, page);
             tableView.getItems().addAll(tableRows);
         } catch (SQLException e) {
             DialogUtil.error(e);

@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({"SqlResolve", "SqlNoDataSourceInspection"})
 public class MySQLMetadataProvider extends AbstractMetaDataProvider {
 
     @Override
@@ -19,7 +20,10 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
         String quoteString = metaData.getIdentifierQuoteString();
         String separator = metaData.getCatalogSeparator();
         int offset = pageSize * pageIndex;
-        String sql = "SELECT * FROM " + quoteString + tableMetaData.getTableCat() + quoteString + separator + quoteString + tableMetaData.getTableName() + quoteString + " LIMIT " + offset + "," + pageSize;
+
+        String sql = "SELECT * FROM " + quoteString + tableMetaData.getTableCat() + quoteString + separator + quoteString + tableMetaData.getTableName() + quoteString +
+                " LIMIT " + offset + "," + pageSize;
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             try (ResultSet rs = statement.executeQuery()) {
                 List<Map<String, Object>> list = new ArrayList<>();
@@ -29,7 +33,7 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
                     Map<String, Object> row = new LinkedHashMap<>();
                     for (int i = 1; i <= columnCount; i++) {
                         String columnName = rsMetaData.getColumnName(i);
-                        Object value = rs.getObject(columnName);
+                        Object value = rs.getObject(i);
                         row.put(columnName, value);
                     }
                     list.add(row);
@@ -44,7 +48,10 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
         DatabaseMetaData metaData = connection.getMetaData();
         String quoteString = metaData.getIdentifierQuoteString();
         String separator = metaData.getCatalogSeparator();
+
+
         String sql = "SELECT COUNT(*) FROM " + quoteString + tableMetaData.getTableCat() + quoteString + separator + quoteString + tableMetaData.getTableName() + quoteString;
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
@@ -62,9 +69,7 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
         String quoteString = metaData.getIdentifierQuoteString();
         String separator = metaData.getCatalogSeparator();
 
-        @SuppressWarnings("SqlResolve")
-        String sql =
-                "SELECT TABLE_NAME, AUTO_INCREMENT, UPDATE_TIME, DATA_LENGTH, ENGINE, TABLE_ROWS, TABLE_COMMENT" +
+        String sql = "SELECT TABLE_NAME, AUTO_INCREMENT, UPDATE_TIME, DATA_LENGTH, ENGINE, TABLE_ROWS, TABLE_COMMENT" +
                 " FROM " + quoteString + "information_schema" + quoteString + separator + quoteString + "TABLES" + quoteString +
                 " WHERE TABLE_CATALOG = ? AND TABLE_SCHEMA = ? AND TABLE_TYPE = ?";
 
@@ -73,19 +78,17 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
             statement.setString(2, catalog);
             statement.setString(3, "BASE TABLE");
             try (ResultSet rs = statement.executeQuery()) {
-                ResultSetMetaData rsMetaData = rs.getMetaData();
-                int columnCount = rsMetaData.getColumnCount();
-                List<TableSummaries> result = new ArrayList<>(columnCount);
+                List<TableSummaries> result = new ArrayList<>();
                 while (rs.next()) {
-                    result.add(new TableSummaries(
+                    TableSummaries summaries = new TableSummaries(
                             rs.getObject("TABLE_NAME"),
                             rs.getObject("AUTO_INCREMENT"),
                             rs.getObject("UPDATE_TIME"),
                             rs.getObject("DATA_LENGTH"),
                             rs.getObject("ENGINE"),
                             rs.getObject("TABLE_ROWS"),
-                            rs.getObject("TABLE_COMMENT"))
-                    );
+                            rs.getObject("TABLE_COMMENT"));
+                    result.add(summaries);
                 }
                 return result;
             }
@@ -98,7 +101,6 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
         String quoteString = metaData.getIdentifierQuoteString();
         String separator = metaData.getCatalogSeparator();
 
-        @SuppressWarnings("SqlResolve")
         String sql = "SELECT * FROM " + quoteString + "information_schema" + quoteString + separator + quoteString + "TABLES" + quoteString +
                 " WHERE TABLE_CATALOG = ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND TABLE_TYPE = ?";
 

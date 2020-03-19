@@ -8,11 +8,11 @@ import com.jean.database.core.meta.KeyValuePairData;
 import com.jean.database.core.meta.TableSummaries;
 import com.jean.database.gui.factory.ActionLoggerWrapper;
 import com.jean.database.gui.factory.TreeCellFactory;
-import com.jean.database.gui.handler.IServerItemActionEventHandler;
-import com.jean.database.gui.handler.impl.ServerItemActionEventHandlerImpl;
 import com.jean.database.gui.listener.WeakChangeListener;
 import com.jean.database.gui.manager.DatabaseTypeManager;
-import com.jean.database.gui.view.action.ISelectAction;
+import com.jean.database.gui.view.action.IMouseAction;
+import com.jean.database.gui.view.handler.IServerItemActionEventHandler;
+import com.jean.database.gui.view.handler.impl.ServerItemActionEventHandlerImpl;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -77,8 +77,8 @@ public class MainController implements Initializable {
         this.treeViewItemSelectedIndexChangeListener = (observable, oldValue, newValue) -> {
             if (newValue != null) {
                 TreeItem treeItem = treeView.getTreeItem(newValue.intValue());
-                if (treeItem instanceof ISelectAction) {
-                    ((ISelectAction) treeItem).selected();
+                if (treeItem instanceof IMouseAction) {
+                    ((IMouseAction) treeItem).select();
                 }
             }
         };

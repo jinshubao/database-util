@@ -9,6 +9,8 @@ import java.lang.reflect.Proxy;
 
 /**
  * 日志动态代理
+ *
+ * @author jinshubao
  */
 public class ActionLoggerWrapper {
 

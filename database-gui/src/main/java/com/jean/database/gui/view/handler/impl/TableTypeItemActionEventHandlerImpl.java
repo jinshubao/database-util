@@ -1,4 +1,4 @@
-package com.jean.database.gui.handler.impl;
+package com.jean.database.gui.view.handler.impl;
 
 import com.jean.database.common.utils.DialogUtil;
 import com.jean.database.core.IConnectionConfiguration;
@@ -6,63 +6,52 @@ import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.constant.TableType;
 import com.jean.database.core.meta.TableSummaries;
 import com.jean.database.core.meta.TableTypeMetaData;
-import com.jean.database.gui.handler.ITableTypeItemActionEventHandler;
+import com.jean.database.gui.view.handler.AbstractEventHandler;
+import com.jean.database.gui.view.handler.ITableTypeItemActionEventHandler;
 import com.jean.database.gui.view.treeitem.TableTypeTreeItem;
 import javafx.scene.Node;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javafx.scene.control.TextArea;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class TableTypeItemActionEventHandlerImpl implements ITableTypeItemActionEventHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(TableTypeItemActionEventHandlerImpl.class);
+public class TableTypeItemActionEventHandlerImpl extends AbstractEventHandler<TableTypeTreeItem> implements ITableTypeItemActionEventHandler {
 
     private final IConnectionConfiguration connectionConfiguration;
     private final IMetadataProvider metadataProvider;
 
-    private final TabPane tabPane;
-    private final Tab objectTab;
+    private final TabPane tablePane;
     private final TableView<TableSummaries> objectTableView;
+    private final TextArea ddlTextArea;
 
 
     public TableTypeItemActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
+        super(root);
         this.connectionConfiguration = connectionConfiguration;
         this.metadataProvider = metadataProvider;
-        this.tabPane = (TabPane) root.lookup("#tablePane");
-        this.objectTab = tabPane.getTabs().get(0);
-        this.objectTableView = (TableView<TableSummaries>) objectTab.getContent();
-    }
-
-    @Override
-    public void onMouseClick(TableTypeTreeItem tableTypeTreeItem) {
-
-    }
-
-    @Override
-    public void onMouseDoubleClick(TableTypeTreeItem tableTypeTreeItem) {
-
+        this.tablePane = this.lookup("#tablePane");
+        this.objectTableView = this.lookup("#objectTableView");
+        this.ddlTextArea = this.lookup("#ddlTextArea");
     }
 
     @Override
     public void onSelected(TableTypeTreeItem tableTypeTreeItem) {
-        objectTableView.getItems().clear();
         TableTypeMetaData tableTypeMetaData = tableTypeTreeItem.getValue();
+        this.objectTableView.getItems().clear();
         if (TableType.TABLE.equals(tableTypeMetaData.getTableType())) {
             try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
                 List<TableSummaries> tableSummaries = metadataProvider.getTableSummaries(connection, tableTypeMetaData.getTableCat(), tableTypeMetaData.getTableSchem(), null, null);
                 if (tableSummaries != null && !tableSummaries.isEmpty()) {
-                    objectTableView.getItems().addAll(tableSummaries);
+                    this.objectTableView.getItems().addAll(tableSummaries);
                 }
-                tabPane.getSelectionModel().select(objectTab);
+                tablePane.getSelectionModel().select(0);
             } catch (SQLException e) {
                 DialogUtil.error(e);
             }
         }
+        this.ddlTextArea.setText(tableTypeTreeItem.getValue().getTableType());
     }
 }

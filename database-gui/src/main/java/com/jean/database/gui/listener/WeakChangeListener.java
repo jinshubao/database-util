@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
  * 弱引用监听器，防止内存泄露
  *
  * @param <T> 监听器
+ * @author jinshubao
  */
 public class WeakChangeListener<T> implements ChangeListener<T>, WeakListener {
 

@@ -1,5 +1,8 @@
-package com.jean.database.gui.handler;
+package com.jean.database.gui.view.handler;
 
+/**
+ * @author jinshubao
+ */
 public interface ICommonActionEventHandler<T> {
 
     /**

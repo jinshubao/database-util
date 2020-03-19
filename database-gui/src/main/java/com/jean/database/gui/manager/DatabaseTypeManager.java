@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 
+/**
+ * @author jinshubao
+ */
 public final class DatabaseTypeManager {
 
     private static final DatabaseTypeManager providerManager = new DatabaseTypeManager();
