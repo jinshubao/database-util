@@ -1,113 +1,79 @@
 package com.jean.database.gui.view.handler.impl;
 
-import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.common.utils.NodeUtils;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
-import com.jean.database.core.meta.CatalogMetaData;
-import com.jean.database.core.meta.TableMetaData;
-import com.jean.database.core.meta.TableTypeMetaData;
-import com.jean.database.gui.factory.ActionLoggerWrapper;
-import com.jean.database.gui.view.handler.AbstractEventHandler;
+import com.jean.database.core.meta.*;
+import com.jean.database.gui.manager.TaskManger;
+import com.jean.database.gui.task.BaseTask;
+import com.jean.database.gui.view.action.ICloseable;
 import com.jean.database.gui.view.handler.ICatalogItemActionEventHandler;
-import com.jean.database.gui.view.handler.ITableItemActionEventHandler;
-import com.jean.database.gui.view.handler.ITableTypeItemActionEventHandler;
 import com.jean.database.gui.view.treeitem.CatalogTreeItem;
 import com.jean.database.gui.view.treeitem.TableTreeItem;
 import com.jean.database.gui.view.treeitem.TableTypeTreeItem;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * @author jinshubao
  */
-public class CatalogItemActionEventHandlerImpl extends AbstractEventHandler<CatalogTreeItem> implements ICatalogItemActionEventHandler {
+public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEventHandler {
 
-    private final IConnectionConfiguration connectionConfiguration;
-    private final IMetadataProvider metadataProvider;
-
-    private final ITableItemActionEventHandler tableItemActionEventHandler;
-    private final ITableTypeItemActionEventHandler tableTypeItemActionEventHandler;
-
+    private final TableView<TableSummaries> objectTableView;
+    private final TableView<KeyValuePairData> infoTableView;
     private final TextArea ddlTextArea;
 
-    public CatalogItemActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
-        super(root);
-        this.connectionConfiguration = connectionConfiguration;
-        this.metadataProvider = metadataProvider;
-        this.tableItemActionEventHandler = ActionLoggerWrapper.warp(new TableItemActionEventHandlerImpl(connectionConfiguration, metadataProvider, root));
-        this.tableTypeItemActionEventHandler = ActionLoggerWrapper.warp(new TableTypeItemActionEventHandlerImpl(connectionConfiguration, metadataProvider, root));
-
-        this.ddlTextArea = this.lookup("#ddlTextArea");
+    public CatalogItemActionEventHandlerImpl(Node root) {
+        this.objectTableView = NodeUtils.lookup(root, "#objectTableView");
+        this.infoTableView = NodeUtils.lookup(root, "#infoTableView");
+        this.ddlTextArea = NodeUtils.lookup(root, "#ddlTextArea");
     }
 
 
     @Override
     public void onOpen(CatalogTreeItem catalogTreeItem) {
-        if (!catalogTreeItem.getOpen()) {
-            ObservableList children = catalogTreeItem.getChildren();
-            CatalogMetaData catalogMetaData = catalogTreeItem.getCatalogMetaData();
-            try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
-                List<String> tableTypes = this.metadataProvider.getTableTypes(connection);
-                List<TableMetaData> tableMataData = this.metadataProvider.getTableMataData(connection, catalogMetaData.getTableCat(), null, null, null);
-                if (tableMataData != null && !tableMataData.isEmpty()) {
-                    for (String tableType : tableTypes) {
-
-                        TableTypeMetaData tableTypeMetaData = new TableTypeMetaData(catalogMetaData, tableType);
-                        TreeItem typeItem = new TableTypeTreeItem(tableTypeMetaData, this.tableTypeItemActionEventHandler);
-
-                        List<TableTreeItem> items = tableMataData.stream()
-                                .filter(metaData -> metaData.getTableType().equals(tableType))
-                                .map(metaData -> new TableTreeItem(metaData, this.tableItemActionEventHandler))
-                                .collect(Collectors.toList());
-                        //noinspection unchecked
-                        children.add(typeItem);
-                        if (!items.isEmpty()) {
-                            //noinspection unchecked
-                            typeItem.getChildren().addAll(items);
-                            typeItem.setExpanded(true);
-                        }
-                    }
-                    catalogTreeItem.setExpanded(true);
-                    catalogTreeItem.setOpen(true);
-                }
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-                DialogUtil.error(e);
-            }
+        if (!catalogTreeItem.isOpen()) {
+            this.refresh(catalogTreeItem);
         }
     }
 
     @Override
     public void onClose(CatalogTreeItem catalogTreeItem) {
-        catalogTreeItem.getChildren().clear();
+        catalogTreeItem.getChildren().forEach(item -> {
+            if (item instanceof ICloseable) {
+                ((ICloseable) item).close();
+            }
+        });
         catalogTreeItem.setExpanded(false);
         catalogTreeItem.setOpen(false);
+        catalogTreeItem.getChildren().clear();
+
+        //清空对象信息
+        objectTableView.getItems().clear();
+        infoTableView.getItems().clear();
+        ddlTextArea.clear();
     }
 
     @Override
     public void onDelete(CatalogTreeItem catalogTreeItem) {
-        catalogTreeItem.getChildren().clear();
+        this.onClose(catalogTreeItem);
         catalogTreeItem.getParent().getChildren().remove(catalogTreeItem);
-        catalogTreeItem.setOpen(false);
     }
 
     @Override
-    public void refresh(CatalogTreeItem treeItem) {
-        treeItem.getChildren().clear();
-        treeItem.setOpen(false);
-        this.onOpen(treeItem);
+    public void refresh(CatalogTreeItem catalogTreeItem) {
+        TaskManger.execute(new OpenCatalogTask(catalogTreeItem));
     }
 
     @Override
-    public void onMouseDoubleClick(CatalogTreeItem catalogTreeItem) {
-        this.refresh(catalogTreeItem);
+    public void onDoubleClick(CatalogTreeItem catalogTreeItem) {
+        this.onOpen(catalogTreeItem);
     }
 
     @Override
@@ -154,5 +120,58 @@ public class CatalogItemActionEventHandlerImpl extends AbstractEventHandler<Cata
     @Override
     public void onFind(CatalogTreeItem catalogTreeItem) {
 
+    }
+
+
+    private static class OpenCatalogTask extends BaseTask<List<TableMetaData>> {
+
+        private final CatalogTreeItem catalogTreeItem;
+        private List<String> tableTypes = null;
+
+        private OpenCatalogTask(CatalogTreeItem catalogTreeItem) {
+            this.catalogTreeItem = catalogTreeItem;
+        }
+
+        @Override
+        protected List<TableMetaData> call() throws Exception {
+
+            CatalogMetaData catalogMetaData = catalogTreeItem.getValue();
+            IMetadataProvider metadataProvider = catalogTreeItem.getMetadataProvider();
+            IConnectionConfiguration connectionConfiguration = catalogTreeItem.getConnectionConfiguration();
+
+            try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
+                this.tableTypes = metadataProvider.getTableTypes(connection);
+                return metadataProvider.getTableMataData(connection, catalogMetaData.getTableCat(), null, null, null);
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            List<TableMetaData> tableMataData = getValue();
+            CatalogMetaData catalogMetaData = catalogTreeItem.getValue();
+            IConnectionConfiguration connectionConfiguration = catalogTreeItem.getConnectionConfiguration();
+            IMetadataProvider metadataProvider = catalogTreeItem.getMetadataProvider();
+            catalogTreeItem.getChildren().clear();
+            if (tableMataData != null && !tableMataData.isEmpty()) {
+                for (String tableType : tableTypes) {
+                    TableTypeMetaData tableTypeMetaData = new TableTypeMetaData(catalogMetaData, tableType);
+                    TreeItem typeItem = new TableTypeTreeItem(tableTypeMetaData, catalogTreeItem.getRoot(), connectionConfiguration, metadataProvider);
+                    List<TableTreeItem> items = tableMataData.stream()
+                            .filter(metaData -> metaData.getTableType().equals(tableType))
+                            .map(metaData -> new TableTreeItem(metaData, catalogTreeItem.getRoot(), connectionConfiguration, metadataProvider))
+                            .collect(Collectors.toList());
+                    //noinspection unchecked
+                    catalogTreeItem.getChildren().add(typeItem);
+                    if (!items.isEmpty()) {
+                        //noinspection unchecked
+                        typeItem.getChildren().addAll(items);
+                        typeItem.setExpanded(true);
+                    }
+                }
+                catalogTreeItem.setExpanded(true);
+                catalogTreeItem.setOpen(true);
+            }
+        }
     }
 }

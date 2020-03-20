@@ -1,8 +1,8 @@
 package com.jean.database.gui.view.handler;
 
-import com.jean.database.gui.view.DataTableView;
+import com.jean.database.gui.view.DataTableTab;
 
-public interface IDataTableActionEventHandler extends IRefreshActionEventHandler<DataTableView> {
+public interface IDataTableActionEventHandler extends IRefreshActionEventHandler<DataTableTab> {
 
-    void refresh(DataTableView dataTableView, int page);
+    void refresh(DataTableTab dataTableView, int page);
 }

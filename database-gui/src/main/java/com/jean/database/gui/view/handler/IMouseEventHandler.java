@@ -2,11 +2,15 @@ package com.jean.database.gui.view.handler;
 
 public interface IMouseEventHandler<T> {
 
-    void onMouseClick(T t);
+    default void onClick(T t) {
+    }
 
-    void onMouseDoubleClick(T t);
+    default void onDoubleClick(T t) {
+    }
 
-    void onSelected(T t);
+    default void onSelected(T t) {
+    }
 
-    void onCopy(T t);
+    default void onCopy(T t) {
+    }
 }

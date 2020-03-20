@@ -6,7 +6,7 @@ import com.jean.database.core.IDatabaseProvider;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.KeyValuePairData;
 import com.jean.database.core.meta.TableSummaries;
-import com.jean.database.gui.factory.ActionLoggerWrapper;
+import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.factory.TreeCellFactory;
 import com.jean.database.gui.listener.WeakChangeListener;
 import com.jean.database.gui.manager.DatabaseTypeManager;
@@ -71,9 +71,12 @@ public class MainController implements Initializable {
     @FXML
     public TableView<KeyValuePairData> infoTableView;
 
-    private final ChangeListener<Number> treeViewItemSelectedIndexChangeListener;
+    private ChangeListener<Number> treeViewItemSelectedIndexChangeListener;
 
-    public MainController() {
+    @Override
+    @SuppressWarnings("unchecked")
+    public void initialize(URL location, ResourceBundle resources) {
+
         this.treeViewItemSelectedIndexChangeListener = (observable, oldValue, newValue) -> {
             if (newValue != null) {
                 TreeItem treeItem = treeView.getTreeItem(newValue.intValue());
@@ -82,16 +85,7 @@ public class MainController implements Initializable {
                 }
             }
         };
-    }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        this.initializeMenuBar();
-        this.initializeTree();
-        this.initializeTab();
-    }
-
-    private void initializeMenuBar() {
         List<IDatabaseProvider> providers = DatabaseTypeManager.getProviders();
         newConnectionMenu.getItems().clear();
         connectionMenuButton.getItems().clear();
@@ -113,20 +107,14 @@ public class MainController implements Initializable {
                 item.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
             }
         }
-    }
 
-
-    private void initializeTree() {
         //noinspection unchecked
         treeView.setCellFactory(TreeCellFactory.forTreeView());
         //noinspection unchecked
         treeView.setRoot(new TreeItem<>());
         treeView.setShowRoot(false);
         treeView.getSelectionModel().selectedIndexProperty().addListener(new WeakChangeListener<>(treeViewItemSelectedIndexChangeListener));
-    }
 
-    @SuppressWarnings("unchecked")
-    private void initializeTab() {
         objectTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         objectTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getTableName()));
         objectTableView.getColumns().get(1).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getAutoIncrement()));
@@ -146,8 +134,7 @@ public class MainController implements Initializable {
         IMetadataProvider metadataProvider = provider.getMetadataProvider();
         logger.debug("new configuration [{}]", configuration);
         if (configuration != null) {
-            IServerItemActionEventHandler serverActionEventHandler = ActionLoggerWrapper.warp(new ServerItemActionEventHandlerImpl(configuration, metadataProvider, root));
-            ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), serverActionEventHandler);
+            ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), root, configuration, metadataProvider);
             String icon = provider.getIcon();
             if (StringUtil.isNotBlank(icon)) {
                 serverTreeItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));

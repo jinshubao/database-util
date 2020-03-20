@@ -1,12 +1,14 @@
 package com.jean.database.gui.view.treeitem;
 
+import com.jean.database.core.IConnectionConfiguration;
+import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.gui.constant.Images;
-import com.jean.database.gui.view.action.IContextMenu;
-import com.jean.database.gui.view.action.IMouseAction;
+import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.view.handler.ICatalogItemActionEventHandler;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import com.jean.database.gui.view.handler.IMouseEventHandler;
+import com.jean.database.gui.view.handler.impl.CatalogItemActionEventHandlerImpl;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -17,32 +19,41 @@ import javafx.scene.image.ImageView;
 /**
  * @author jinshubao
  */
-public class CatalogTreeItem extends AbstractTreeItem<CatalogMetaData> implements IContextMenu, IMouseAction {
-
-    private final BooleanProperty open = new SimpleBooleanProperty(this, "onOpen", false);
+public class CatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
 
     private final ContextMenu contextMenu;
-
-    private final CatalogMetaData catalogMetaData;
-
     private final ICatalogItemActionEventHandler catalogItemActionEventHandler;
 
-    public CatalogTreeItem(CatalogMetaData catalogMetaData, ICatalogItemActionEventHandler catalogItemActionEventHandler) {
-        super(catalogMetaData, catalogItemActionEventHandler);
-        this.catalogItemActionEventHandler = catalogItemActionEventHandler;
-        this.catalogMetaData = catalogMetaData;
+    public CatalogTreeItem(CatalogMetaData value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+        super(value, root, connectionConfiguration, metadataProvider);
+        this.catalogItemActionEventHandler = LoggerWrapper.warp(new CatalogItemActionEventHandlerImpl(root));
         this.contextMenu = this.createContextMenu();
         this.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Images.DATABASE_IMAGE))));
+    }
+
+    @Override
+    public ContextMenu getContextMenu() {
+        return this.contextMenu;
+    }
+
+    @Override
+    public IMouseEventHandler getMouseEventHandler() {
+        return this.catalogItemActionEventHandler;
+    }
+
+    @Override
+    public void close() {
+        catalogItemActionEventHandler.onClose(this);
     }
 
     private ContextMenu createContextMenu() {
 
         MenuItem open = new MenuItem("打开数据库");
-        open.disableProperty().bind(this.open);
+        open.disableProperty().bind(this.openProperty());
         open.setOnAction(event -> this.catalogItemActionEventHandler.onOpen(this));
 
         MenuItem close = new MenuItem("关闭数据库");
-        close.disableProperty().bind(this.open.not());
+        close.disableProperty().bind(this.openProperty().not());
         close.setOnAction(event -> this.catalogItemActionEventHandler.onClose(this));
 
         MenuItem create = new MenuItem("新建数据库...");
@@ -92,20 +103,4 @@ public class CatalogTreeItem extends AbstractTreeItem<CatalogMetaData> implement
         return contextMenu;
     }
 
-    @Override
-    public ContextMenu getContextMenu() {
-        return this.contextMenu;
-    }
-
-    public CatalogMetaData getCatalogMetaData() {
-        return this.catalogMetaData;
-    }
-
-    public boolean getOpen() {
-        return open.get();
-    }
-
-    public void setOpen(boolean open) {
-        this.open.set(open);
-    }
 }

@@ -1,38 +1,37 @@
 package com.jean.database.gui.view.treeitem;
 
+import com.jean.database.core.IConnectionConfiguration;
+import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.TableTypeMetaData;
-import com.jean.database.gui.view.action.IMouseAction;
+import com.jean.database.gui.factory.LoggerWrapper;
+import com.jean.database.gui.view.handler.IMouseEventHandler;
 import com.jean.database.gui.view.handler.ITableTypeItemActionEventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.input.MouseEvent;
+import com.jean.database.gui.view.handler.impl.TableTypeItemActionEventHandlerImpl;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 
-public class TableTypeTreeItem extends TreeItem<TableTypeMetaData> implements IMouseAction {
+public class TableTypeTreeItem extends BaseTreeItem<TableTypeMetaData> {
 
     private final ITableTypeItemActionEventHandler tableTypeItemActionEventHandler;
 
-    private final TableTypeMetaData tableTypeMetaData;
 
-    public TableTypeTreeItem(TableTypeMetaData tableTypeMetaData, ITableTypeItemActionEventHandler tableTypeItemActionEventHandler) {
-        super(tableTypeMetaData);
-        this.tableTypeMetaData = tableTypeMetaData;
-        this.tableTypeItemActionEventHandler = tableTypeItemActionEventHandler;
+    public TableTypeTreeItem(TableTypeMetaData value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+        super(value, root, connectionConfiguration, metadataProvider);
+        this.tableTypeItemActionEventHandler = LoggerWrapper.warp(new TableTypeItemActionEventHandlerImpl(root));
     }
 
     @Override
-    public void click(MouseEvent event) {
-        if (event.getClickCount() == 1) {
-            this.tableTypeItemActionEventHandler.onMouseClick(this);
-        } else if (event.getClickCount() == 2) {
-            this.tableTypeItemActionEventHandler.onMouseDoubleClick(this);
-        }
+    public IMouseEventHandler getMouseEventHandler() {
+        return this.tableTypeItemActionEventHandler;
     }
 
     @Override
-    public void select() {
-        this.tableTypeItemActionEventHandler.onSelected(this);
+    public ContextMenu getContextMenu() {
+        return null;
     }
 
-    public TableTypeMetaData getTableTypeMetaData() {
-        return this.tableTypeMetaData;
+    @Override
+    public void close() {
+        tableTypeItemActionEventHandler.onClose(this);
     }
 }

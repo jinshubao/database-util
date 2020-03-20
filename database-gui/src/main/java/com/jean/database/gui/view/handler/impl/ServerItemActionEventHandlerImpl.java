@@ -1,74 +1,54 @@
 package com.jean.database.gui.view.handler.impl;
 
-import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.common.utils.NodeUtils;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.CatalogMetaData;
-import com.jean.database.gui.factory.ActionLoggerWrapper;
-import com.jean.database.gui.view.handler.AbstractEventHandler;
-import com.jean.database.gui.view.handler.ICatalogItemActionEventHandler;
+import com.jean.database.gui.manager.TaskManger;
+import com.jean.database.gui.task.BaseTask;
+import com.jean.database.gui.view.action.ICloseable;
 import com.jean.database.gui.view.handler.IServerItemActionEventHandler;
 import com.jean.database.gui.view.treeitem.CatalogTreeItem;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-public class ServerItemActionEventHandlerImpl extends AbstractEventHandler<ServerTreeItem> implements IServerItemActionEventHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(ServerItemActionEventHandlerImpl.class);
-
-    private final IConnectionConfiguration connectionConfiguration;
-    private final IMetadataProvider metadataProvider;
-    private final ICatalogItemActionEventHandler catalogItemActionEventHandler;
+public class ServerItemActionEventHandlerImpl implements IServerItemActionEventHandler {
 
     private final TextArea ddlTextArea;
 
-    public ServerItemActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
-        super(root);
-        this.connectionConfiguration = connectionConfiguration;
-        this.metadataProvider = metadataProvider;
-        this.catalogItemActionEventHandler = ActionLoggerWrapper.warp(new CatalogItemActionEventHandlerImpl(connectionConfiguration, metadataProvider, root));
-        this.ddlTextArea = this.lookup("#ddlTextArea");
+    public ServerItemActionEventHandlerImpl(Node root) {
+        this.ddlTextArea = NodeUtils.lookup(root, "#ddlTextArea");
     }
 
     @Override
     public void onOpen(ServerTreeItem serverTreeItem) {
-        if (!serverTreeItem.getOpen()) {
-            try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
-                ObservableList children = serverTreeItem.getChildren();
-                List<CatalogMetaData> catalogs = this.metadataProvider.getCatalogs(connection);
-                for (CatalogMetaData metaData : catalogs) {
-                    CatalogTreeItem item = new CatalogTreeItem(metaData, this.catalogItemActionEventHandler);
-                    //noinspection unchecked
-                    children.add(item);
-                }
-                serverTreeItem.setExpanded(true);
-                serverTreeItem.setOpen(true);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-                DialogUtil.error(e);
-            }
+        if (!serverTreeItem.isOpen()) {
+            TaskManger.execute(new OpenServerTask(serverTreeItem));
         }
     }
 
     @Override
     public void onClose(ServerTreeItem serverTreeItem) {
-        serverTreeItem.getChildren().clear();
+        serverTreeItem.getChildren().forEach(item -> {
+            if (item instanceof ICloseable) {
+                ((ICloseable) item).close();
+            }
+        });
+        serverTreeItem.setExpanded(false);
         serverTreeItem.setOpen(false);
+        serverTreeItem.getChildren().clear();
+
     }
 
     @Override
     public void onDelete(ServerTreeItem serverTreeItem) {
-        serverTreeItem.getChildren().clear();
+        this.onClose(serverTreeItem);
         serverTreeItem.getParent().getChildren().remove(serverTreeItem);
-        serverTreeItem.setOpen(false);
     }
 
     @Override
@@ -79,8 +59,8 @@ public class ServerItemActionEventHandlerImpl extends AbstractEventHandler<Serve
     }
 
     @Override
-    public void onMouseDoubleClick(ServerTreeItem serverTreeItem) {
-        this.refresh(serverTreeItem);
+    public void onDoubleClick(ServerTreeItem serverTreeItem) {
+        this.onOpen(serverTreeItem);
     }
 
     @Override
@@ -101,5 +81,39 @@ public class ServerItemActionEventHandlerImpl extends AbstractEventHandler<Serve
     @Override
     public void onTransformData(ServerTreeItem catalogTreeItem) {
 
+    }
+
+    private static class OpenServerTask extends BaseTask<List<CatalogMetaData>> {
+
+        private final ServerTreeItem serverTreeItem;
+
+        private OpenServerTask(ServerTreeItem serverTreeItem) {
+            this.serverTreeItem = serverTreeItem;
+        }
+
+        @Override
+        protected List<CatalogMetaData> call() throws Exception {
+            try (Connection connection = serverTreeItem.getMetadataProvider().getConnection(serverTreeItem.getConnectionConfiguration())) {
+                return this.serverTreeItem.getMetadataProvider().getCatalogs(connection);
+            }
+        }
+
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            IConnectionConfiguration connectionConfiguration = serverTreeItem.getConnectionConfiguration();
+            IMetadataProvider metadataProvider = serverTreeItem.getMetadataProvider();
+            ObservableList children = this.serverTreeItem.getChildren();
+            children.clear();
+            List<CatalogMetaData> value = getValue();
+            for (CatalogMetaData metaData : value) {
+                CatalogTreeItem item = new CatalogTreeItem(metaData, serverTreeItem.getRoot(), connectionConfiguration, metadataProvider);
+                //noinspection unchecked
+                children.add(item);
+            }
+            serverTreeItem.setExpanded(true);
+            serverTreeItem.setOpen(true);
+        }
     }
 }

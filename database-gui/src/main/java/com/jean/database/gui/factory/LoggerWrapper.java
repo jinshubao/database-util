@@ -12,7 +12,7 @@ import java.lang.reflect.Proxy;
  *
  * @author jinshubao
  */
-public class ActionLoggerWrapper {
+public class LoggerWrapper {
 
     @SuppressWarnings("unchecked")
     public static <T> T warp(T instance) {

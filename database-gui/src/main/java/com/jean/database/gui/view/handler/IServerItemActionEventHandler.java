@@ -1,6 +1,5 @@
 package com.jean.database.gui.view.handler;
 
-import com.jean.database.gui.view.treeitem.CatalogTreeItem;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
 
 /**
@@ -20,6 +19,7 @@ public interface IServerItemActionEventHandler extends
 
     /**
      * 运行SQL文件
+     *
      * @param serverTreeItem server节点
      */
     void onExecuteSqlFile(ServerTreeItem serverTreeItem);

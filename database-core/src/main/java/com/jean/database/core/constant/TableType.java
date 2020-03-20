@@ -1,5 +1,8 @@
 package com.jean.database.core.constant;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
  *
@@ -14,5 +17,9 @@ public class TableType {
     public static final String LOCAL_TEMPORARY = "LOCAL TEMPORARY";
     public static final String ALIAS = "ALIAS";
     public static final String SYNONYM = "SYNONYM";
+
+
+    public static List<String> tableTypes = Arrays.asList(TABLE, VIEW, SYSTEM_TABLE, GLOBAL_TEMPORARY, LOCAL_TEMPORARY, ALIAS, SYNONYM);
+
 
 }

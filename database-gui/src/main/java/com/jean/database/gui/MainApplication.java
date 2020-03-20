@@ -4,6 +4,7 @@ import com.jean.database.common.utils.DialogUtil;
 import com.jean.database.common.utils.FxmlUtils;
 import com.jean.database.common.utils.StringUtil;
 import com.jean.database.gui.constant.Images;
+import com.jean.database.gui.manager.TaskManger;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.scene.Parent;
@@ -11,8 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.Locale;
  * @date 2017/4/8
  */
 public class MainApplication extends Application {
-    private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
     private List<String> params;
 
     @Override
@@ -43,6 +41,12 @@ public class MainApplication extends Application {
                         event.consume();
                     }
                 }));
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        TaskManger.shutdown();
     }
 
     private void applicationStart(Stage stage) throws Exception {

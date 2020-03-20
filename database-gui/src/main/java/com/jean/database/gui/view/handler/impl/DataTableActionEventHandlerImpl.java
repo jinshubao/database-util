@@ -1,89 +1,67 @@
 package com.jean.database.gui.view.handler.impl;
 
-import com.jean.database.common.utils.DialogUtil;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
-import com.jean.database.core.meta.ColumnMetaData;
 import com.jean.database.core.meta.TableMetaData;
-import com.jean.database.gui.factory.TableCellFactory;
-import com.jean.database.gui.view.handler.AbstractEventHandler;
+import com.jean.database.gui.manager.TaskManger;
+import com.jean.database.gui.task.BaseTask;
+import com.jean.database.gui.view.DataTableTab;
 import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
-import com.jean.database.gui.view.DataTableView;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataTableActionEventHandlerImpl extends AbstractEventHandler<DataTableView> implements IDataTableActionEventHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(DataTableActionEventHandlerImpl.class);
+public class DataTableActionEventHandlerImpl implements IDataTableActionEventHandler {
 
     private static final Integer PAGE_SIZE = 1000;
 
-    private final IConnectionConfiguration connectionConfiguration;
-    private final IMetadataProvider metadataProvider;
 
-    public DataTableActionEventHandlerImpl(IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider, Node root) {
-        super(root);
-        this.connectionConfiguration = connectionConfiguration;
-        this.metadataProvider = metadataProvider;
+    public DataTableActionEventHandlerImpl(Node root) {
     }
 
 
     @Override
-    public void refresh(DataTableView dataTableView) {
-        TableView<Map<String, Object>> tableView = dataTableView.getTableView();
-        TableMetaData tableMetaData = dataTableView.getTableMetaData();
-        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
-            List<ColumnMetaData> columnMetaDataList = this.metadataProvider.getColumnMetaData(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName());
-            List<TableColumn<Map<String, Object>, Object>> columns = new ArrayList<>(columnMetaDataList.size());
-            for (ColumnMetaData columnMetaData : columnMetaDataList) {
-                TableColumn<Map<String, Object>, Object> tableColumn = new DataTableView.DataColumn(columnMetaData);
-                tableColumn.setCellFactory(TableCellFactory.forTableView());
-                String columnName = columnMetaData.getColumnName();
-                tableColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().get(columnName)));
-                columns.add(tableColumn);
-            }
-            tableView.getColumns().addAll(columns);
-            tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            tableView.getSelectionModel().setCellSelectionEnabled(true);
-            int pageCount = getPageCount(tableMetaData);
-            dataTableView.getPagination().setPageCount(pageCount);
-            dataTableView.getPagination().setVisible(pageCount > 1);
-            if (pageCount > 0) {
-                this.refresh(dataTableView, 0);
-            }
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-            DialogUtil.error(e);
-        }
+    public void refresh(DataTableTab dataTableView) {
+        this.refresh(dataTableView, 0);
     }
 
-    private int getPageCount(TableMetaData tableMetaData) throws SQLException {
-        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
-            int count = this.metadataProvider.getTableRowCount(connection, tableMetaData);
-            return count / PAGE_SIZE + ((count % PAGE_SIZE) > 0 ? 1 : 0);
-        }
+
+    public void refresh(DataTableTab dataTableView, int page) {
+        TaskManger.execute(new RefreshDataTable(dataTableView, page, PAGE_SIZE));
     }
 
-    public void refresh(DataTableView dataTableView, int page) {
-        TableView<Map<String, Object>> tableView = dataTableView.getTableView();
-        tableView.getItems().clear();
-        TableMetaData tableMetaData = dataTableView.getTableMetaData();
-        try (Connection connection = this.metadataProvider.getConnection(this.connectionConfiguration)) {
-            List<Map<String, Object>> tableRows = this.metadataProvider.getTableRows(connection, tableMetaData, PAGE_SIZE, page);
-            tableView.getItems().addAll(tableRows);
-        } catch (SQLException e) {
-            DialogUtil.error(e);
+    private static class RefreshDataTable extends BaseTask<List<Map<String, Object>>> {
+
+        private final DataTableTab dataTableView;
+        private final int page;
+        private final int pageSize;
+
+        public RefreshDataTable(DataTableTab dataTableView, int page, int pageSize) {
+            this.dataTableView = dataTableView;
+            this.page = page;
+            this.pageSize = pageSize;
+        }
+
+        @Override
+        protected List<Map<String, Object>> call() throws Exception {
+            IMetadataProvider metadataProvider = dataTableView.getMetadataProvider();
+            IConnectionConfiguration connectionConfiguration = dataTableView.getConnectionConfiguration();
+            TableMetaData tableMetaData = dataTableView.getTableMetaData();
+            try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
+                return metadataProvider.getTableRows(connection, tableMetaData, pageSize, page);
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            dataTableView.getItems().clear();
+            List<Map<String, Object>> value = getValue();
+            if (value != null && !value.isEmpty()) {
+                dataTableView.getItems().addAll(value);
+            }
         }
     }
 

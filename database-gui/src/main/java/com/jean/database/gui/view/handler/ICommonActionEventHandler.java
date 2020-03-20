@@ -8,27 +8,32 @@ public interface ICommonActionEventHandler<T> {
     /**
      * 新增
      */
-    void onCreate(T t);
+    default void onCreate(T t) {
+    }
 
     /**
      * 打开
      */
-    void onOpen(T t);
+    default void onOpen(T t) {
+    }
 
     /**
      * 关闭
      */
-    void onClose(T t);
+    default void onClose(T t) {
+    }
 
     /**
      * 删除
      */
-    void onDelete(T t);
+    default void onDelete(T t) {
+    }
 
     /**
      * 详情
      */
-    void onDetails(T t);
+    default void onDetails(T t) {
+    }
 
 
 }
