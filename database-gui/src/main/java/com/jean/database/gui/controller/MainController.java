@@ -6,17 +6,12 @@ import com.jean.database.core.IDatabaseProvider;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.KeyValuePairData;
 import com.jean.database.core.meta.TableSummaries;
-import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.factory.TreeCellFactory;
-import com.jean.database.gui.listener.WeakChangeListener;
 import com.jean.database.gui.manager.DatabaseTypeManager;
+import com.jean.database.gui.utils.ViewUtils;
 import com.jean.database.gui.view.action.IMouseAction;
-import com.jean.database.gui.view.handler.IServerItemActionEventHandler;
-import com.jean.database.gui.view.handler.impl.ServerItemActionEventHandlerImpl;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -29,62 +24,35 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-/**
- * @author jinshubao
- */
 public class MainController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    @FXML
     public BorderPane root;
-    @FXML
     public MenuBar menuBar;
-    @FXML
     public Menu fileMenu;
-    @FXML
     public Menu newConnectionMenu;
-    @FXML
+    public MenuItem closeMenuItem;
+    public MenuItem exitMenuItem;
     public MenuButton connectionMenuButton;
-    @FXML
-    public ToggleButton tableToggleButton;
-    @FXML
-    public ToggleButton viewToggleButton;
-    @FXML
-    public ToggleButton functionToggleButton;
-    @FXML
-    public ToggleButton eventToggleButton;
-    @FXML
-    public ToggleButton queryToggleButton;
-    @FXML
-    public ToggleButton reportToggleButton;
-    @FXML
-    public ToggleButton backupToggleButton;
-    @FXML
-    public ToggleButton plainToggleButton;
-    @FXML
-    public ToggleButton modelToggleButton;
-    @FXML
-    public TreeView treeView;
-    @FXML
+    public TreeView databaseTreeView;
+    public TabPane objectTabPan;
+    public Tab objectTab;
     public TableView<TableSummaries> objectTableView;
-    @FXML
-    public TableView<KeyValuePairData> infoTableView;
+    public TabPane infoTabPane;
+    public Tab generalInfoTab;
+    public TableView<KeyValuePairData> generalInfoTableView;
+    public Tab ddlInfoTab;
+    public TextArea ddlInfoTextArea;
 
-    private ChangeListener<Number> treeViewItemSelectedIndexChangeListener;
+    public MainController() {
+        ViewUtils.init(this);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
-
-        this.treeViewItemSelectedIndexChangeListener = (observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                TreeItem treeItem = treeView.getTreeItem(newValue.intValue());
-                if (treeItem instanceof IMouseAction) {
-                    ((IMouseAction) treeItem).select();
-                }
-            }
-        };
+        logger.debug("initialize [location: {}, resources: {}]", location, resources);
 
         List<IDatabaseProvider> providers = DatabaseTypeManager.getProviders();
         newConnectionMenu.getItems().clear();
@@ -108,12 +76,20 @@ public class MainController implements Initializable {
             }
         }
 
+
         //noinspection unchecked
-        treeView.setCellFactory(TreeCellFactory.forTreeView());
+        databaseTreeView.setCellFactory(TreeCellFactory.forTreeView());
         //noinspection unchecked
-        treeView.setRoot(new TreeItem<>());
-        treeView.setShowRoot(false);
-        treeView.getSelectionModel().selectedIndexProperty().addListener(new WeakChangeListener<>(treeViewItemSelectedIndexChangeListener));
+        databaseTreeView.setRoot(new TreeItem<>());
+        databaseTreeView.setShowRoot(false);
+        databaseTreeView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                TreeItem treeItem = databaseTreeView.getTreeItem(newValue.intValue());
+                if (IMouseAction.class.isInstance(treeItem)) {
+                    ((IMouseAction) treeItem).select();
+                }
+            }
+        });
 
         objectTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         objectTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getTableName()));
@@ -124,24 +100,87 @@ public class MainController implements Initializable {
         objectTableView.getColumns().get(5).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getTableRows()));
         objectTableView.getColumns().get(6).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getComments()));
 
-        infoTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        infoTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getName()));
-        infoTableView.getColumns().get(1).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getValue()));
+        generalInfoTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        generalInfoTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getName()));
+        generalInfoTableView.getColumns().get(1).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getValue()));
     }
 
-    private void newConnection(IDatabaseProvider provider) {
+
+    @SuppressWarnings("unchecked")
+    public void newConnection(IDatabaseProvider provider) {
         IConnectionConfiguration configuration = provider.getConfiguration();
         IMetadataProvider metadataProvider = provider.getMetadataProvider();
-        logger.debug("new configuration [{}]", configuration);
         if (configuration != null) {
-            ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), root, configuration, metadataProvider);
+            ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), configuration, metadataProvider);
             String icon = provider.getIcon();
             if (StringUtil.isNotBlank(icon)) {
                 serverTreeItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
             }
-            //noinspection unchecked
-            treeView.getRoot().getChildren().add(serverTreeItem);
+            databaseTreeView.getRoot().getChildren().add(serverTreeItem);
         }
+    }
 
+    public TreeView getDatabaseTreeView() {
+        return databaseTreeView;
+    }
+
+    public Tab getObjectTab() {
+        return objectTab;
+    }
+
+    public TableView<TableSummaries> getObjectTableView() {
+        return objectTableView;
+    }
+
+    public Tab getGeneralInfoTab() {
+        return generalInfoTab;
+    }
+
+    public TableView<KeyValuePairData> getGeneralInfoTableView() {
+        return generalInfoTableView;
+    }
+
+    public Tab getDdlInfoTab() {
+        return ddlInfoTab;
+    }
+
+    public TextArea getDdlInfoTextArea() {
+        return ddlInfoTextArea;
+    }
+
+    public TabPane getObjectTabPan() {
+        return objectTabPan;
+    }
+
+    public TabPane getInfoTabPane() {
+        return infoTabPane;
+    }
+
+    public BorderPane getRoot() {
+        return root;
+    }
+
+    public MenuBar getMenuBar() {
+        return menuBar;
+    }
+
+    public Menu getFileMenu() {
+        return fileMenu;
+    }
+
+    public Menu getNewConnectionMenu() {
+        return newConnectionMenu;
+    }
+
+    public MenuItem getCloseMenuItem() {
+        return closeMenuItem;
+    }
+
+    public MenuItem getExitMenuItem() {
+        return exitMenuItem;
+    }
+
+    public MenuButton getConnectionMenuButton() {
+        return connectionMenuButton;
     }
 }

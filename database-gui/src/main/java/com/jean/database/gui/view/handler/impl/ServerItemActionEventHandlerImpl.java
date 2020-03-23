@@ -1,19 +1,19 @@
 package com.jean.database.gui.view.handler.impl;
 
-import com.jean.database.common.utils.NodeUtils;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.CatalogMetaData;
 import com.jean.database.gui.manager.TaskManger;
 import com.jean.database.gui.task.BaseTask;
+import com.jean.database.gui.utils.ViewUtils;
 import com.jean.database.gui.view.action.ICloseable;
 import com.jean.database.gui.view.handler.IServerItemActionEventHandler;
 import com.jean.database.gui.view.treeitem.CatalogTreeItem;
 import com.jean.database.gui.view.treeitem.ServerTreeItem;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 
+import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.util.List;
 
@@ -21,8 +21,8 @@ public class ServerItemActionEventHandlerImpl implements IServerItemActionEventH
 
     private final TextArea ddlTextArea;
 
-    public ServerItemActionEventHandlerImpl(Node root) {
-        this.ddlTextArea = NodeUtils.lookup(root, "#ddlTextArea");
+    public ServerItemActionEventHandlerImpl() {
+        this.ddlTextArea = ViewUtils.getInstance().getDdlInfoTextArea();
     }
 
     @Override
@@ -85,16 +85,20 @@ public class ServerItemActionEventHandlerImpl implements IServerItemActionEventH
 
     private static class OpenServerTask extends BaseTask<List<CatalogMetaData>> {
 
-        private final ServerTreeItem serverTreeItem;
+        private final WeakReference<ServerTreeItem> serverTreeItem;
+        private final IMetadataProvider metadataProvider;
+        private final IConnectionConfiguration connectionConfiguration;
 
         private OpenServerTask(ServerTreeItem serverTreeItem) {
-            this.serverTreeItem = serverTreeItem;
+            this.serverTreeItem = new WeakReference<>(serverTreeItem);
+            this.metadataProvider = serverTreeItem.getMetadataProvider();
+            this.connectionConfiguration = serverTreeItem.getConnectionConfiguration();
         }
 
         @Override
         protected List<CatalogMetaData> call() throws Exception {
-            try (Connection connection = serverTreeItem.getMetadataProvider().getConnection(serverTreeItem.getConnectionConfiguration())) {
-                return this.serverTreeItem.getMetadataProvider().getCatalogs(connection);
+            try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
+                return metadataProvider.getCatalogs(connection);
             }
         }
 
@@ -102,13 +106,15 @@ public class ServerItemActionEventHandlerImpl implements IServerItemActionEventH
         @Override
         protected void succeeded() {
             super.succeeded();
-            IConnectionConfiguration connectionConfiguration = serverTreeItem.getConnectionConfiguration();
-            IMetadataProvider metadataProvider = serverTreeItem.getMetadataProvider();
-            ObservableList children = this.serverTreeItem.getChildren();
+            ServerTreeItem serverTreeItem = this.serverTreeItem.get();
+            if (serverTreeItem == null) {
+                return;
+            }
+            ObservableList children = serverTreeItem.getChildren();
             children.clear();
             List<CatalogMetaData> value = getValue();
             for (CatalogMetaData metaData : value) {
-                CatalogTreeItem item = new CatalogTreeItem(metaData, serverTreeItem.getRoot(), connectionConfiguration, metadataProvider);
+                CatalogTreeItem item = new CatalogTreeItem(metaData, connectionConfiguration, metadataProvider);
                 //noinspection unchecked
                 children.add(item);
             }

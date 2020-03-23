@@ -7,7 +7,6 @@ import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.view.handler.IMouseEventHandler;
 import com.jean.database.gui.view.handler.IServerItemActionEventHandler;
 import com.jean.database.gui.view.handler.impl.ServerItemActionEventHandlerImpl;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -22,9 +21,9 @@ public class ServerTreeItem extends BaseTreeItem<String> {
     private final ContextMenu contextMenu;
     private final IServerItemActionEventHandler serverItemActionEventHandler;
 
-    public ServerTreeItem(String value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
-        super(value, root, connectionConfiguration, metadataProvider);
-        this.serverItemActionEventHandler = LoggerWrapper.warp(new ServerItemActionEventHandlerImpl(root));
+    public ServerTreeItem(String value, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+        super(value, connectionConfiguration, metadataProvider);
+        this.serverItemActionEventHandler = LoggerWrapper.warp(new ServerItemActionEventHandlerImpl());
         this.contextMenu = this.createContextMenu();
     }
 

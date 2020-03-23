@@ -70,5 +70,20 @@ public class TableCellFactory {
         private String toString(T item) {
             return item == null ? null : item.toString();
         }
+
+        @Override
+        public void startEdit() {
+            super.startEdit();
+        }
+
+        @Override
+        public void commitEdit(T newValue) {
+            super.commitEdit(newValue);
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+        }
     }
 }

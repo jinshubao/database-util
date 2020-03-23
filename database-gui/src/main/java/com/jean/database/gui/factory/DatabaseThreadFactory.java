@@ -13,7 +13,7 @@ public class DatabaseThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable runnable) {
         Thread thread = this.defaultFactory.newThread(runnable);
-        thread.setName("redis-task-thread-" + this.threadNumber.getAndIncrement());
+        thread.setName("task-thread-" + this.threadNumber.getAndIncrement());
         if (!thread.isDaemon()) {
             thread.setDaemon(true);
         }

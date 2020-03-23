@@ -7,7 +7,6 @@ import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.view.handler.IMouseEventHandler;
 import com.jean.database.gui.view.handler.ISchemaItemActionEventHandler;
 import com.jean.database.gui.view.handler.impl.SchemaItemActionEventHandlerImpl;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
@@ -18,9 +17,9 @@ public class SchemaTreeItem extends BaseTreeItem<SchemaMetaData> {
     private final ISchemaItemActionEventHandler schemaItemActionEventHandler;
 
 
-    public SchemaTreeItem(SchemaMetaData value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
-        super(value, root, connectionConfiguration, metadataProvider);
-        this.schemaItemActionEventHandler = LoggerWrapper.warp(new SchemaItemActionEventHandlerImpl(root));
+    public SchemaTreeItem(SchemaMetaData value, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+        super(value, connectionConfiguration, metadataProvider);
+        this.schemaItemActionEventHandler = LoggerWrapper.warp(new SchemaItemActionEventHandlerImpl());
         this.contextMenu = this.createContextMenu();
     }
 

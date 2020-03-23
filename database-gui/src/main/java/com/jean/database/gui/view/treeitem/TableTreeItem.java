@@ -10,7 +10,6 @@ import com.jean.database.gui.view.action.IMouseAction;
 import com.jean.database.gui.view.handler.IMouseEventHandler;
 import com.jean.database.gui.view.handler.ITableItemActionEventHandler;
 import com.jean.database.gui.view.handler.impl.TableItemActionEventHandlerImpl;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
@@ -29,10 +28,10 @@ public class TableTreeItem extends BaseTreeItem<TableMetaData> implements IConte
 
     private WeakReference<Tab> tabRef;
 
-    public TableTreeItem(TableMetaData value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
-        super(value, root, connectionConfiguration, metadataProvider);
+    public TableTreeItem(TableMetaData value, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+        super(value, connectionConfiguration, metadataProvider);
         this.contextMenu = this.createContextMenu();
-        this.tableItemActionEventHandler = LoggerWrapper.warp(new TableItemActionEventHandlerImpl(root));
+        this.tableItemActionEventHandler = LoggerWrapper.warp(new TableItemActionEventHandlerImpl());
         this.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Images.TABLE_IMAGE))));
     }
 

@@ -24,9 +24,9 @@ public class CatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
     private final ContextMenu contextMenu;
     private final ICatalogItemActionEventHandler catalogItemActionEventHandler;
 
-    public CatalogTreeItem(CatalogMetaData value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
-        super(value, root, connectionConfiguration, metadataProvider);
-        this.catalogItemActionEventHandler = LoggerWrapper.warp(new CatalogItemActionEventHandlerImpl(root));
+    public CatalogTreeItem(CatalogMetaData value, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider) {
+        super(value, connectionConfiguration, metadataProvider);
+        this.catalogItemActionEventHandler = LoggerWrapper.warp(new CatalogItemActionEventHandlerImpl());
         this.contextMenu = this.createContextMenu();
         this.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Images.DATABASE_IMAGE))));
     }

@@ -10,8 +10,6 @@ import com.jean.database.gui.factory.TableCellFactory;
 import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
 import com.jean.database.gui.view.handler.impl.DataTableActionEventHandlerImpl;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -30,8 +28,9 @@ public class DataTableTab extends Tab {
     private final TableView<Map<String, Object>> tableView;
     private final Pagination pagination;
     private final TableMetaData tableMetaData;
+    private final IDataTableActionEventHandler dataTableActionEventHandler;
 
-    public DataTableTab(TableMetaData value, Node root, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider,
+    public DataTableTab(TableMetaData value, IConnectionConfiguration connectionConfiguration, IMetadataProvider metadataProvider,
                         List<ColumnMetaData> columnMetaDataList) {
         this.tableMetaData = value;
 
@@ -53,15 +52,16 @@ public class DataTableTab extends Tab {
 
         this.pagination = new Pagination(0, 0);
         pagination.setVisible(false);
-        IDataTableActionEventHandler eventHandler = LoggerWrapper.warp(new DataTableActionEventHandlerImpl(root));
-        pagination.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> eventHandler.refresh(DataTableTab.this, newValue.intValue()));
+
+        dataTableActionEventHandler = LoggerWrapper.warp(new DataTableActionEventHandlerImpl());
+        pagination.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> dataTableActionEventHandler.refresh(DataTableTab.this, newValue.intValue()));
 
         setId(value.getFullName());
         setClosable(true);
         setText(value.getTableName());
         setTooltip(new Tooltip(value.getFullName()));
         setContent(new VBox(tableView, pagination));
-        eventHandler.refresh(this);
+        dataTableActionEventHandler.refresh(this);
     }
 
 
@@ -78,16 +78,24 @@ public class DataTableTab extends Tab {
         return metadataProvider;
     }
 
-    public ObservableList<Map<String, Object>> getItems() {
-        return tableView.getItems();
+    public void updateItems(List<Map<String, Object>> items) {
+        tableView.getItems().clear();
+        if (items != null && !items.isEmpty()) {
+            tableView.getItems().addAll(items);
+        }
     }
 
     public int getCurrentPageIndex() {
         return pagination.getCurrentPageIndex();
     }
 
-    private static class DataColumn extends TableColumn<Map<String, Object>, Object> {
 
+    @Override
+    public String toString() {
+        return "tab [ text: " + getText() + " ]";
+    }
+
+    private static class DataColumn extends TableColumn<Map<String, Object>, Object> {
         public DataColumn(ColumnMetaData columnMetaData) {
             super(columnMetaData.getColumnName());
         }
