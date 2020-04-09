@@ -81,7 +81,7 @@ public abstract class AbstractMetaDataProvider implements IMetadataProvider {
             //表类别（可能为空）
             data.setTableCat(resultSet.getString(MetaDataColumnName.TABLE_CAT));
             //表模式（可能为空）,在oracle中获取的是命名空间,其它数据库未知
-            data.setTableSchem(resultSet.getString(MetaDataColumnName.TABLE_SCHEM));
+            data.setTableSchema(resultSet.getString(MetaDataColumnName.TABLE_SCHEM));
             list.add(data);
         }
         return list;
@@ -94,7 +94,7 @@ public abstract class AbstractMetaDataProvider implements IMetadataProvider {
             //表类别（可能为空）
             data.setTableCat(resultSet.getString(MetaDataColumnName.TABLE_CAT));
             //表模式（可能为空）,在oracle中获取的是命名空间,其它数据库未知
-            data.setTableSchem(resultSet.getString(MetaDataColumnName.TABLE_SCHEM));
+            data.setTableSchema(resultSet.getString(MetaDataColumnName.TABLE_SCHEM));
             //表名
             data.setTableName(resultSet.getString(MetaDataColumnName.TABLE_NAME));
             //表类型,典型的类型是 "TABLE"、"VIEW"、"SYSTEM TABLE"、"GLOBAL TEMPORARY"、"LOCAL TEMPORARY"、"ALIAS" 和 "SYNONYM"。
@@ -117,7 +117,7 @@ public abstract class AbstractMetaDataProvider implements IMetadataProvider {
             //表类别（可能为空）
             data.setTableCat(resultSet.getString(MetaDataColumnName.TABLE_CAT));
             //表模式（可能为空）,在oracle中获取的是命名空间,其它数据库未知
-            data.setTableSchem(resultSet.getString(MetaDataColumnName.TABLE_SCHEM));
+            data.setTableSchema(resultSet.getString(MetaDataColumnName.TABLE_SCHEM));
             //表名
             data.setTableName(resultSet.getString(MetaDataColumnName.TABLE_NAME));
             //列名
@@ -152,7 +152,7 @@ public abstract class AbstractMetaDataProvider implements IMetadataProvider {
             data.setScopeCatalog(resultSet.getString(MetaDataColumnName.SCOPE_CATALOG));
             data.setScopeSchema(resultSet.getString(MetaDataColumnName.SCOPE_SCHEMA));
             data.setScopeTable(resultSet.getString(MetaDataColumnName.SCOPE_TABLE));
-            data.setSourceDataType(resultSet.getShort(MetaDataColumnName.SOURCE_DATA_TYPE));
+            data.setSourceDataType(resultSet.getInt(MetaDataColumnName.SOURCE_DATA_TYPE));
             data.setIsAutoincrement(resultSet.getString(MetaDataColumnName.IS_AUTOINCREMENT));
             data.setIsGeneratedcolumn(resultSet.getString(MetaDataColumnName.IS_GENERATEDCOLUMN));
             list.add(data);

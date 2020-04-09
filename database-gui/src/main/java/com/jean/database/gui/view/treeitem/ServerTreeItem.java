@@ -76,7 +76,7 @@ public class ServerTreeItem extends BaseTreeItem<String> {
 
         MenuItem refresh = new MenuItem("刷新", new ImageView(new Image(getClass().getResourceAsStream(Images.REFRESH_IMAGE))));
         refresh.disableProperty().bind(openProperty().not());
-        refresh.setOnAction(event -> serverItemActionEventHandler.refresh(ServerTreeItem.this));
+        refresh.setOnAction(event -> serverItemActionEventHandler.onRefresh(ServerTreeItem.this));
 
         return new ContextMenu(open, close, new SeparatorMenuItem(),
                 copy, delete, properties, new SeparatorMenuItem(),

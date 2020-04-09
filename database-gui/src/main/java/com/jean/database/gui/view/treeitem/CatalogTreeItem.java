@@ -8,7 +8,6 @@ import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.view.handler.ICatalogItemActionEventHandler;
 import com.jean.database.gui.view.handler.IMouseEventHandler;
 import com.jean.database.gui.view.handler.impl.CatalogItemActionEventHandlerImpl;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -93,7 +92,7 @@ public class CatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
         findInDatabase.setOnAction(event -> this.catalogItemActionEventHandler.onFind(this));
 
         MenuItem refresh = new MenuItem("刷新", new ImageView(new Image(getClass().getResourceAsStream(Images.REFRESH_IMAGE))));
-        refresh.setOnAction(event -> this.catalogItemActionEventHandler.refresh(this));
+        refresh.setOnAction(event -> this.catalogItemActionEventHandler.onRefresh(this));
 
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(open, close, new SeparatorMenuItem(),

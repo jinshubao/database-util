@@ -1,4 +1,4 @@
-package com.jean.database.common.resource;
+package com.jean.database.resource;
 
 
 import java.io.IOException;

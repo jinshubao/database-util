@@ -1,84 +1,123 @@
 package com.jean.database.core.meta;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+/**
+ * 表信息
+ *
+ * @author jinshubao
+ */
 public class TableSummaries {
 
-    private Object tableName;
+    private StringProperty tableName;
 
-    private Object autoIncrement;
+    private StringProperty autoIncrement;
 
-    private Object modifyTime;
+    private StringProperty modifyTime;
 
-    private Object dataLength;
+    private StringProperty dataLength;
 
-    private Object tableType;
+    private StringProperty tableType;
 
-    private Object tableRows;
+    private StringProperty tableRows;
 
-    private Object comments;
+    private StringProperty comments;
 
-    public TableSummaries(Object tableName, Object autoIncrement, Object modifyTime, Object dataLength, Object tableType, Object tableRows, Object comments) {
-        this.tableName = tableName;
-        this.autoIncrement = autoIncrement;
-        this.modifyTime = modifyTime;
-        this.dataLength = dataLength;
-        this.tableType = tableType;
-        this.tableRows = tableRows;
-        this.comments = comments;
+    public TableSummaries() {
     }
 
-    public Object getTableName() {
+    public TableSummaries(String tableName, String autoIncrement, String modifyTime, String dataLength, String tableType, String tableRows, String comments) {
+        this.tableName = new SimpleStringProperty(this, "tableName", tableName);
+        this.autoIncrement = new SimpleStringProperty(this, "autoIncrement", autoIncrement);
+        this.modifyTime = new SimpleStringProperty(this, "modifyTime", modifyTime);
+        this.dataLength = new SimpleStringProperty(this, "dataLength", dataLength);
+        this.tableType = new SimpleStringProperty(this, "tableType", tableType);
+        this.tableRows = new SimpleStringProperty(this, "tableRows", tableRows);
+        this.comments = new SimpleStringProperty(this, "comments", comments);
+    }
+
+    public String getTableName() {
+        return tableName.get();
+    }
+
+    public StringProperty tableNameProperty() {
         return tableName;
     }
 
-    public void setTableName(Object tableName) {
-        this.tableName = tableName;
+    public void setTableName(String tableName) {
+        this.tableName.set(tableName);
     }
 
-    public Object getAutoIncrement() {
+    public String getAutoIncrement() {
+        return autoIncrement.get();
+    }
+
+    public StringProperty autoIncrementProperty() {
         return autoIncrement;
     }
 
-    public void setAutoIncrement(Object autoIncrement) {
-        this.autoIncrement = autoIncrement;
+    public void setAutoIncrement(String autoIncrement) {
+        this.autoIncrement.set(autoIncrement);
     }
 
-    public Object getModifyTime() {
+    public String getModifyTime() {
+        return modifyTime.get();
+    }
+
+    public StringProperty modifyTimeProperty() {
         return modifyTime;
     }
 
-    public void setModifyTime(Object modifyTime) {
-        this.modifyTime = modifyTime;
+    public void setModifyTime(String modifyTime) {
+        this.modifyTime.set(modifyTime);
     }
 
-    public Object getDataLength() {
+    public String getDataLength() {
+        return dataLength.get();
+    }
+
+    public StringProperty dataLengthProperty() {
         return dataLength;
     }
 
-    public void setDataLength(Object dataLength) {
-        this.dataLength = dataLength;
+    public void setDataLength(String dataLength) {
+        this.dataLength.set(dataLength);
     }
 
-    public Object getTableType() {
+    public String getTableType() {
+        return tableType.get();
+    }
+
+    public StringProperty tableTypeProperty() {
         return tableType;
     }
 
-    public void setTableType(Object tableType) {
-        this.tableType = tableType;
+    public void setTableType(String tableType) {
+        this.tableType.set(tableType);
     }
 
-    public Object getTableRows() {
+    public String getTableRows() {
+        return tableRows.get();
+    }
+
+    public StringProperty tableRowsProperty() {
         return tableRows;
     }
 
-    public void setTableRows(Object tableRows) {
-        this.tableRows = tableRows;
+    public void setTableRows(String tableRows) {
+        this.tableRows.set(tableRows);
     }
 
-    public Object getComments() {
+    public String getComments() {
+        return comments.get();
+    }
+
+    public StringProperty commentsProperty() {
         return comments;
     }
 
-    public void setComments(Object comments) {
-        this.comments = comments;
+    public void setComments(String comments) {
+        this.comments.set(comments);
     }
 }

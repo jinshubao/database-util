@@ -11,6 +11,4 @@ public interface IMouseEventHandler<T> {
     default void onSelected(T t) {
     }
 
-    default void onCopy(T t) {
-    }
 }

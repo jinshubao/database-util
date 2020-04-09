@@ -52,7 +52,7 @@ public class ServerItemActionEventHandlerImpl implements IServerItemActionEventH
     }
 
     @Override
-    public void refresh(ServerTreeItem treeItem) {
+    public void onRefresh(ServerTreeItem treeItem) {
         treeItem.getChildren().clear();
         treeItem.setOpen(false);
         this.onOpen(treeItem);
@@ -80,6 +80,11 @@ public class ServerItemActionEventHandlerImpl implements IServerItemActionEventH
 
     @Override
     public void onTransformData(ServerTreeItem catalogTreeItem) {
+
+    }
+
+    @Override
+    public void onCopy(ServerTreeItem catalogTreeItem) {
 
     }
 

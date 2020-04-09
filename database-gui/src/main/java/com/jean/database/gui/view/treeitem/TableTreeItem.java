@@ -76,7 +76,7 @@ public class TableTreeItem extends BaseTreeItem<TableMetaData> implements IConte
 
         MenuItem refresh = new MenuItem("刷新", new ImageView(new Image(getClass().getResourceAsStream(Images.REFRESH_IMAGE))));
         refresh.disableProperty().bind(openProperty().not());
-        refresh.setOnAction(event -> this.tableItemActionEventHandler.refresh(TableTreeItem.this));
+        refresh.setOnAction(event -> this.tableItemActionEventHandler.onRefresh(TableTreeItem.this));
 
         contextMenu.getItems().addAll(open, copy, delete, refresh);
         return contextMenu;

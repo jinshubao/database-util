@@ -1,30 +1,80 @@
 package com.jean.database.core.meta;
 
-public class TableTypeMetaData extends SchemaMetaData {
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
-    private String tableType;
+/**
+ * 表类型信息
+ *
+ * @author jinshubao
+ */
+public class TableTypeMetaData {
 
-    public TableTypeMetaData(SchemaMetaData schemaMetaData, String tableType) {
-        this((CatalogMetaData) schemaMetaData, tableType);
-        this.setTableSchem(schemaMetaData.getTableSchem());
+    private StringProperty tableCat = new SimpleStringProperty(this, "tableCat");
+    private StringProperty quoteString = new SimpleStringProperty(this, "quoteString");
+    private StringProperty separator = new SimpleStringProperty(this, "separator");
+    private StringProperty tableSchema = new SimpleStringProperty(this, "tableSchema");
+    private StringProperty tableType = new SimpleStringProperty(this, "tableType");
+
+    public String getTableCat() {
+        return tableCat.get();
     }
 
-    public TableTypeMetaData(CatalogMetaData catalogMetaData, String tableType) {
-        this.setTableCat(catalogMetaData.getTableCat());
-        this.setQuoteString(catalogMetaData.getQuoteString());
-        this.setSeparator(catalogMetaData.getSeparator());
-        this.tableType = tableType;
+    public StringProperty tableCatProperty() {
+        return tableCat;
+    }
 
+    public void setTableCat(String tableCat) {
+        this.tableCat.set(tableCat);
+    }
+
+    public String getQuoteString() {
+        return quoteString.get();
+    }
+
+    public StringProperty quoteStringProperty() {
+        return quoteString;
+    }
+
+    public void setQuoteString(String quoteString) {
+        this.quoteString.set(quoteString);
+    }
+
+    public String getSeparator() {
+        return separator.get();
+    }
+
+    public StringProperty separatorProperty() {
+        return separator;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator.set(separator);
+    }
+
+    public String getTableSchema() {
+        return tableSchema.get();
+    }
+
+    public StringProperty tableSchemaProperty() {
+        return tableSchema;
+    }
+
+    public void setTableSchema(String tableSchema) {
+        this.tableSchema.set(tableSchema);
     }
 
     public String getTableType() {
+        return tableType.get();
+    }
+
+    public StringProperty tableTypeProperty() {
         return tableType;
     }
 
     public void setTableType(String tableType) {
-        this.tableType = tableType;
+        this.tableType.set(tableType);
     }
-
 
     @Override
     public String toString() {

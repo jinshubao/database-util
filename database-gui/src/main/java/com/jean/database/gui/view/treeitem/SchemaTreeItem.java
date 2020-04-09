@@ -48,7 +48,7 @@ public class SchemaTreeItem extends BaseTreeItem<SchemaMetaData> {
 
         MenuItem refresh = new MenuItem("刷新");
         refresh.disableProperty().bind(this.openProperty().not());
-        refresh.setOnAction(event -> this.schemaItemActionEventHandler.refresh(SchemaTreeItem.this));
+        refresh.setOnAction(event -> this.schemaItemActionEventHandler.onRefresh(SchemaTreeItem.this));
 
         return new ContextMenu(open, delete, refresh);
     }

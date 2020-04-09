@@ -1,7 +1,7 @@
 package com.jean.database.oracle;
 
 import com.jean.database.core.AbstractMetaDataProvider;
-import com.jean.database.core.meta.KeyValuePairData;
+import com.jean.database.core.meta.KeyValuePair;
 import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.core.meta.TableSummaries;
 
@@ -32,7 +32,7 @@ public class OracleMetadataProvider extends AbstractMetaDataProvider {
     }
 
     @Override
-    public List<KeyValuePairData> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+    public List<KeyValuePair<String, Object>> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
         //TODO
         return Collections.emptyList();
     }

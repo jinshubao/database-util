@@ -3,6 +3,7 @@ package com.jean.database.core;
 import com.jean.database.core.meta.*;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,6 +17,10 @@ public interface IMetadataProvider {
 
     default Connection getConnection(IConnectionConfiguration configuration) throws SQLException {
         return DriverManager.getConnection(configuration.getUrl(), configuration.getProperties());
+    }
+
+    default DatabaseMetaData getDatabaseMetaData(Connection connection) throws SQLException{
+        return connection.getMetaData();
     }
 
     List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException;
@@ -34,6 +39,6 @@ public interface IMetadataProvider {
 
     List<TableSummaries> getTableSummaries(Connection connection, String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException;
 
-    List<KeyValuePairData> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
+    List<KeyValuePair<String, Object>> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
 
 }

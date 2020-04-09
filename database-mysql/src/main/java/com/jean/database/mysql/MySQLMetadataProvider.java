@@ -1,10 +1,11 @@
 package com.jean.database.mysql;
 
 import com.jean.database.core.AbstractMetaDataProvider;
-import com.jean.database.core.meta.KeyValuePairData;
+import com.jean.database.core.meta.KeyValuePair;
 import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.core.meta.TableSummaries;
 
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -81,13 +82,13 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
                 List<TableSummaries> result = new ArrayList<>();
                 while (rs.next()) {
                     TableSummaries summaries = new TableSummaries(
-                            rs.getObject("TABLE_NAME"),
-                            rs.getObject("AUTO_INCREMENT"),
-                            rs.getObject("UPDATE_TIME"),
-                            rs.getObject("DATA_LENGTH"),
-                            rs.getObject("ENGINE"),
-                            rs.getObject("TABLE_ROWS"),
-                            rs.getObject("TABLE_COMMENT"));
+                            rs.getString("TABLE_NAME"),
+                            rs.getString("AUTO_INCREMENT"),
+                            rs.getString("UPDATE_TIME"),
+                            rs.getString("DATA_LENGTH"),
+                            rs.getString("ENGINE"),
+                            rs.getString("TABLE_ROWS"),
+                            rs.getString("TABLE_COMMENT"));
                     result.add(summaries);
                 }
                 return result;
@@ -96,7 +97,7 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
     }
 
     @Override
-    public List<KeyValuePairData> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+    public List<KeyValuePair<String, Object>> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         String quoteString = metaData.getIdentifierQuoteString();
         String separator = metaData.getCatalogSeparator();
@@ -112,12 +113,12 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
             try (ResultSet rs = statement.executeQuery()) {
                 ResultSetMetaData rsMetaData = rs.getMetaData();
                 int columnCount = rsMetaData.getColumnCount();
-                List<KeyValuePairData> result = new ArrayList<>(columnCount);
+                List<KeyValuePair<String, Object>> result = new ArrayList<>(columnCount);
                 if (rs.next()) {
                     for (int i = 1; i <= columnCount; i++) {
                         String columnName = rsMetaData.getColumnName(i);
                         Object value = rs.getObject(columnName);
-                        result.add(new KeyValuePairData(columnName, value));
+                        result.add(new KeyValuePair<>(columnName, value));
                     }
                 }
                 return result;

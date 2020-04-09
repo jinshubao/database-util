@@ -29,9 +29,7 @@ public interface IMouseAction {
         }
     }
 
-    default IMouseEventHandler getMouseEventHandler() {
-        return null;
-    }
+    IMouseEventHandler getMouseEventHandler();
 
 
 }

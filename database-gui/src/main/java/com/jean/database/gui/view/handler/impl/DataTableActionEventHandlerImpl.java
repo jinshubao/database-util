@@ -7,11 +7,15 @@ import com.jean.database.gui.manager.TaskManger;
 import com.jean.database.gui.task.BaseTask;
 import com.jean.database.gui.view.DataTableTab;
 import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.lang.ref.WeakReference;
 import java.sql.Connection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataTableActionEventHandlerImpl implements IDataTableActionEventHandler {
 
@@ -23,7 +27,7 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
 
 
     @Override
-    public void refresh(DataTableTab dataTableView) {
+    public void onRefresh(DataTableTab dataTableView) {
         this.refresh(dataTableView, 0);
     }
 
@@ -32,7 +36,7 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
         TaskManger.execute(new RefreshDataTableTask(dataTableView, page, PAGE_SIZE));
     }
 
-    private static class RefreshDataTableTask extends BaseTask<List<Map<String, Object>>> {
+    private static class RefreshDataTableTask extends BaseTask<List<Map<String, ObjectProperty>>> {
         private final WeakReference<DataTableTab> dataTableView;
 
         private final IMetadataProvider metadataProvider;
@@ -51,9 +55,16 @@ public class DataTableActionEventHandlerImpl implements IDataTableActionEventHan
         }
 
         @Override
-        protected List<Map<String, Object>> call() throws Exception {
+        protected List<Map<String, ObjectProperty>> call() throws Exception {
             try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
-                return metadataProvider.getTableRows(connection, tableMetaData, pageSize, page);
+                List<Map<String, Object>> tableRows = metadataProvider.getTableRows(connection, tableMetaData, pageSize, page);
+                return tableRows.stream().map(value->{
+                    Map<String, ObjectProperty> row =  new LinkedHashMap<>(value.size());
+                    for (Map.Entry<String, Object> entry : value.entrySet()) {
+                        row.put(entry.getKey(), new SimpleObjectProperty(entry.getValue()));
+                    }
+                    return row;
+                }).collect(Collectors.toList());
             }
         }
 

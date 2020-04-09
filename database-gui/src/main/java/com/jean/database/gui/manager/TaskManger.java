@@ -1,6 +1,6 @@
 package com.jean.database.gui.manager;
 
-import com.jean.database.gui.factory.DatabaseThreadFactory;
+import com.jean.database.gui.factory.TaskThreadFactory;
 import com.jean.database.gui.task.BaseTask;
 
 import java.util.concurrent.ExecutorService;
@@ -12,7 +12,7 @@ public class TaskManger {
 
     static {
         int thread_num = Runtime.getRuntime().availableProcessors() * 2;
-        executorService = Executors.newFixedThreadPool(thread_num, new DatabaseThreadFactory());
+        executorService = Executors.newFixedThreadPool(thread_num, new TaskThreadFactory());
     }
 
     private TaskManger() {

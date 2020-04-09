@@ -8,7 +8,7 @@ public interface IRefreshActionEventHandler<T> {
     /**
      * 刷新
      */
-    default void refresh(T t) {
+    default void onRefresh(T t) {
     }
 
 }

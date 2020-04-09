@@ -26,5 +26,5 @@ public interface IServerItemActionEventHandler extends
 
     void onTransformData(ServerTreeItem catalogTreeItem);
 
-
+    void onCopy(ServerTreeItem catalogTreeItem);
 }

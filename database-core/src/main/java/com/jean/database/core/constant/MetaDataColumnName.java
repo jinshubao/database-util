@@ -38,6 +38,8 @@ package com.jean.database.core.constant;
  *      YES --- if this a generated column
  *      NO --- if this not a generated column
  *      empty string --- if it cannot be determined whether this is a generated column
+ *
+ * @author jinshubao
  */
 public class MetaDataColumnName {
 

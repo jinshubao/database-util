@@ -7,4 +7,6 @@ public interface ITableItemActionEventHandler extends
         IRefreshActionEventHandler<TableTreeItem>,
         IMouseEventHandler<TableTreeItem> {
 
+    void onCopy(TableTreeItem catalogTreeItem);
+
 }

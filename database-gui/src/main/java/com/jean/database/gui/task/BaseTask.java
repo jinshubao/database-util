@@ -1,6 +1,6 @@
 package com.jean.database.gui.task;
 
-import com.jean.database.common.utils.DialogUtil;
+import com.jean.database.utils.DialogUtil;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

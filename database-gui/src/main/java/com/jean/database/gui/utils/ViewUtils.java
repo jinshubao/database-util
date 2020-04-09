@@ -1,6 +1,6 @@
 package com.jean.database.gui.utils;
 
-import com.jean.database.core.meta.KeyValuePairData;
+import com.jean.database.core.meta.KeyValuePair;
 import com.jean.database.core.meta.TableSummaries;
 import com.jean.database.gui.controller.MainController;
 import javafx.scene.control.*;
@@ -19,8 +19,6 @@ public class ViewUtils {
     public static void init(MainController mainController) {
         if (instance == null) {
             instance = new ViewUtils(mainController);
-        } else {
-            throw new RuntimeException("不能重复初始化");
         }
     }
 
@@ -44,7 +42,7 @@ public class ViewUtils {
         return mainController.getGeneralInfoTab();
     }
 
-    public TableView<KeyValuePairData> getGeneralInfoTableView() {
+    public TableView<KeyValuePair> getGeneralInfoTableView() {
         return mainController.getGeneralInfoTableView();
     }
 
@@ -68,27 +66,4 @@ public class ViewUtils {
         return mainController.getRoot();
     }
 
-    public MenuBar getMenuBar() {
-        return mainController.getMenuBar();
-    }
-
-    public Menu getFileMenu() {
-        return mainController.getFileMenu();
-    }
-
-    public Menu getNewConnectionMenu() {
-        return mainController.getNewConnectionMenu();
-    }
-
-    public MenuItem getClose() {
-        return mainController.getCloseMenuItem();
-    }
-
-    public MenuItem getExitMenuItem() {
-        return mainController.getExitMenuItem();
-    }
-
-    public MenuButton getConnectionMenuButton() {
-        return mainController.getConnectionMenuButton();
-    }
 }

@@ -1,5 +1,6 @@
 package com.jean.database.gui.factory;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
@@ -18,10 +19,10 @@ import java.util.Map;
 public class TableCellFactory {
 
 
-    private static final Callback<TableColumn<Map<String, Object>, Object>, TableCell<Map<String, Object>, Object>> default_cell_factory = param -> new CustomTableCell<>();
+    private static final Callback<TableColumn<Map<String, ObjectProperty>, ObjectProperty>, TableCell<Map<String, ObjectProperty>, ObjectProperty>> default_cell_factory = param -> new CustomTableCell<>();
 
 
-    public static Callback<TableColumn<Map<String, Object>, Object>, TableCell<Map<String, Object>, Object>> forTableView() {
+    public static Callback<TableColumn<Map<String, ObjectProperty>, ObjectProperty>, TableCell<Map<String, ObjectProperty>, ObjectProperty>> forTableView() {
         return default_cell_factory;
     }
 
@@ -42,6 +43,7 @@ public class TableCellFactory {
             contextMenu.getItems().addAll(copy);
             setContextMenu(contextMenu);
             defaultTextFill = getTextFill();
+
         }
 
         @Override

@@ -1,14 +1,12 @@
 apply plugin: 'application'
 apply plugin: 'javafx-gradle-plugin'
 
-version '1.0-SNAPSHOT'
 mainClassName = 'com.jean.database.gui.MainApplication'
 
 dependencies {
-    compile project(":database-common")
     compile project(":database-core")
-    compile project(":database-mysql")
-    compile project(":database-oracle")
+    runtimeOnly project(":database-mysql")
+    runtimeOnly project(":database-oracle")
 }
 
 jfx {
@@ -34,5 +32,5 @@ jfx {
                "-verbose:class"]
     jvmProperties = [:]
     userJvmArgs = [:]
-    launcherArguments = []
+    launcherArguments = ["--name=DB-GUI", "--version=0.1-snapshot"]
 }

@@ -9,8 +9,9 @@ import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.factory.TableCellFactory;
 import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
 import com.jean.database.gui.view.handler.impl.DataTableActionEventHandlerImpl;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -25,7 +26,7 @@ public class DataTableTab extends Tab {
     private final IConnectionConfiguration connectionConfiguration;
     private final IMetadataProvider metadataProvider;
 
-    private final TableView<Map<String, Object>> tableView;
+    private final TableView<Map<String, ObjectProperty>> tableView;
     private final Pagination pagination;
     private final TableMetaData tableMetaData;
     private final IDataTableActionEventHandler dataTableActionEventHandler;
@@ -38,15 +39,18 @@ public class DataTableTab extends Tab {
         this.metadataProvider = metadataProvider;
 
         tableView = new TableView<>();
-        VBox.setVgrow(tableView, Priority.ALWAYS);
+        tableView.setEditable(true);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tableView.getSelectionModel().setCellSelectionEnabled(true);
+        tableView.getSelectionModel().setCellSelectionEnabled(false);
+
+        VBox.setVgrow(tableView, Priority.ALWAYS);
 
         for (ColumnMetaData columnMetaData : columnMetaDataList) {
-            TableColumn<Map<String, Object>, Object> tableColumn = new DataTableTab.DataColumn(columnMetaData);
+            TableColumn<Map<String, ObjectProperty>, ObjectProperty> tableColumn = new DataTableTab.DataColumn(columnMetaData);
+            tableColumn.setEditable(true);
             tableColumn.setCellFactory(TableCellFactory.forTableView());
             String columnName = columnMetaData.getColumnName();
-            tableColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().get(columnName)));
+            tableColumn.setCellValueFactory(param -> param.getValue().get(columnName));
             tableView.getColumns().add(tableColumn);
         }
 
@@ -61,7 +65,7 @@ public class DataTableTab extends Tab {
         setText(value.getTableName());
         setTooltip(new Tooltip(value.getFullName()));
         setContent(new VBox(tableView, pagination));
-        dataTableActionEventHandler.refresh(this);
+        dataTableActionEventHandler.onRefresh(this);
     }
 
 
@@ -78,7 +82,7 @@ public class DataTableTab extends Tab {
         return metadataProvider;
     }
 
-    public void updateItems(List<Map<String, Object>> items) {
+    public void updateItems(List<Map<String, ObjectProperty>> items) {
         tableView.getItems().clear();
         if (items != null && !items.isEmpty()) {
             tableView.getItems().addAll(items);
@@ -95,7 +99,7 @@ public class DataTableTab extends Tab {
         return "tab [ text: " + getText() + " ]";
     }
 
-    private static class DataColumn extends TableColumn<Map<String, Object>, Object> {
+    private static class DataColumn extends TableColumn<Map<String, ObjectProperty>, ObjectProperty> {
         public DataColumn(ColumnMetaData columnMetaData) {
             super(columnMetaData.getColumnName());
         }

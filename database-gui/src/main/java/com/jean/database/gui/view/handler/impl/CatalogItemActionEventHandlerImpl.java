@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEventHandler {
 
     private final TableView<TableSummaries> objectTableView;
-    private final TableView<KeyValuePairData> infoTableView;
+    private final TableView<KeyValuePair> infoTableView;
     private final TextArea ddlTextArea;
 
     public CatalogItemActionEventHandlerImpl() {
@@ -39,7 +39,7 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
     @Override
     public void onOpen(CatalogTreeItem catalogTreeItem) {
         if (!catalogTreeItem.isOpen()) {
-            this.refresh(catalogTreeItem);
+            this.onRefresh(catalogTreeItem);
         }
     }
 
@@ -67,7 +67,7 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
     }
 
     @Override
-    public void refresh(CatalogTreeItem catalogTreeItem) {
+    public void onRefresh(CatalogTreeItem catalogTreeItem) {
         TaskManger.execute(new OpenCatalogTask(catalogTreeItem));
     }
 
@@ -141,7 +141,6 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
 
         @Override
         protected List<TableMetaData> call() throws Exception {
-
             try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
                 this.tableTypes = metadataProvider.getTableTypes(connection);
                 return metadataProvider.getTableMataData(connection, catalogMetaData.getTableCat(), null, null, null);
@@ -161,7 +160,11 @@ public class CatalogItemActionEventHandlerImpl implements ICatalogItemActionEven
                 return;
             }
             for (String tableType : tableTypes) {
-                TableTypeMetaData tableTypeMetaData = new TableTypeMetaData(catalogMetaData, tableType);
+                TableTypeMetaData tableTypeMetaData = new TableTypeMetaData();
+                tableTypeMetaData.setTableCat(catalogMetaData.getTableCat());
+                tableTypeMetaData.setSeparator(catalogMetaData.getSeparator());
+                tableTypeMetaData.setQuoteString(catalogMetaData.getQuoteString());
+                tableTypeMetaData.setTableType(tableType);
                 TreeItem typeItem = new TableTypeTreeItem(tableTypeMetaData, connectionConfiguration, metadataProvider);
                 List<TableTreeItem> items = tableMataData.stream()
                         .filter(metaData -> metaData.getTableType().equals(tableType))

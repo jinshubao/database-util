@@ -3,13 +3,13 @@ package com.jean.database.gui.view.handler.impl;
 import com.jean.database.core.IConnectionConfiguration;
 import com.jean.database.core.IMetadataProvider;
 import com.jean.database.core.meta.ColumnMetaData;
-import com.jean.database.core.meta.KeyValuePairData;
+import com.jean.database.core.meta.KeyValuePair;
 import com.jean.database.core.meta.TableMetaData;
 import com.jean.database.gui.factory.LoggerWrapper;
 import com.jean.database.gui.manager.TaskManger;
 import com.jean.database.gui.task.BaseTask;
-import com.jean.database.gui.view.DataTableTab;
 import com.jean.database.gui.utils.ViewUtils;
+import com.jean.database.gui.view.DataTableTab;
 import com.jean.database.gui.view.handler.IDataTableActionEventHandler;
 import com.jean.database.gui.view.handler.ITableItemActionEventHandler;
 import com.jean.database.gui.view.treeitem.TableTreeItem;
@@ -27,7 +27,7 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
 
     private final IDataTableActionEventHandler dataTableActionEventHandler;
     private final TabPane tablePane;
-    private final TableView<KeyValuePairData> infoTableView;
+    private final TableView<KeyValuePair> infoTableView;
     private final TextArea ddlTextArea;
 
 
@@ -70,7 +70,7 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
     }
 
     @Override
-    public void refresh(TableTreeItem treeItem) {
+    public void onRefresh(TableTreeItem treeItem) {
         TableMetaData tableMetaData = treeItem.getValue();
         String fullName = tableMetaData.getFullName();
         this.tablePane.getTabs().stream().filter(tab -> fullName.equals(tab.getId())).findFirst().ifPresent(tab -> {
@@ -91,6 +91,11 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
         TableMetaData tableMetaData = tableTreeItem.getValue();
         TaskManger.execute(new RefreshTableInfoTask(connectionConfiguration, metadataProvider, tableMetaData));
         ddlTextArea.setText(tableMetaData.getTableName());
+    }
+
+    @Override
+    public void onCopy(TableTreeItem catalogTreeItem) {
+
     }
 
     private class OpenTableTask extends BaseTask<List<ColumnMetaData>> {
@@ -135,7 +140,7 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
         }
     }
 
-    private class RefreshTableInfoTask extends BaseTask<List<KeyValuePairData>> {
+    private class RefreshTableInfoTask extends BaseTask<List<KeyValuePair<String, Object>>> {
 
         private final IConnectionConfiguration connectionConfiguration;
         private final IMetadataProvider metadataProvider;
@@ -148,9 +153,9 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
         }
 
         @Override
-        protected List<KeyValuePairData> call() throws Exception {
+        protected List<KeyValuePair<String, Object>> call() throws Exception {
             try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
-                return metadataProvider.getTableDetails(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchem(), tableMetaData.getTableName(), new String[]{tableMetaData.getTableType()});
+                return metadataProvider.getTableDetails(connection, tableMetaData.getTableCat(), tableMetaData.getTableSchema(), tableMetaData.getTableName(), new String[]{tableMetaData.getTableType()});
             }
         }
 
@@ -158,7 +163,7 @@ public class TableItemActionEventHandlerImpl implements ITableItemActionEventHan
         protected void succeeded() {
             super.succeeded();
             infoTableView.getItems().clear();
-            List<KeyValuePairData> tableDetails = getValue();
+            List<KeyValuePair<String, Object>> tableDetails = getValue();
             if (tableDetails != null && !tableDetails.isEmpty()) {
                 infoTableView.getItems().addAll(tableDetails);
             }

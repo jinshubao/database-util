@@ -14,7 +14,6 @@ buildscript {
 subprojects {
 
     apply plugin: 'java'
-    apply plugin: 'maven'
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8

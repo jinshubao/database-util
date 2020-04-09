@@ -1,4 +1,4 @@
-package com.jean.database.common.utils;
+package com.jean.database.utils;
 
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;

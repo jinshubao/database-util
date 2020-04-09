@@ -28,6 +28,7 @@ public class TableTypeItemActionEventHandlerImpl implements ITableTypeItemAction
     public TableTypeItemActionEventHandlerImpl() {
         this.objectTablePane = ViewUtils.getInstance().getObjectTabPan();
         this.objectTableView = ViewUtils.getInstance().getObjectTableView();
+        this.objectTableView.setFixedCellSize(-1);
         this.ddlTextArea = ViewUtils.getInstance().getDdlInfoTextArea();
     }
 
@@ -67,7 +68,7 @@ public class TableTypeItemActionEventHandlerImpl implements ITableTypeItemAction
         @Override
         protected List<TableSummaries> call() throws Exception {
             try (Connection connection = metadataProvider.getConnection(connectionConfiguration)) {
-                return metadataProvider.getTableSummaries(connection, tableTypeMetaData.getTableCat(), tableTypeMetaData.getTableSchem(), null, null);
+                return metadataProvider.getTableSummaries(connection, tableTypeMetaData.getTableCat(), tableTypeMetaData.getTableSchema(), null, null);
             }
         }
 
