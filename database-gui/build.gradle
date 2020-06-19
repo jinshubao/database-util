@@ -4,9 +4,14 @@ apply plugin: 'javafx-gradle-plugin'
 mainClassName = 'com.jean.database.gui.MainApplication'
 
 dependencies {
-    compile project(":database-core")
+    compile project(":database-api")
+    compile "org.slf4j:jcl-over-slf4j:1.7.25"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+
     runtimeOnly project(":database-mysql")
     runtimeOnly project(":database-oracle")
+    runtimeOnly project(":database-redis")
+    runtimeOnly project(":database-mongo")
 }
 
 jfx {

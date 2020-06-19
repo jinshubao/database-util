@@ -1,11 +1,11 @@
 package com.jean.database.gui;
 
-import com.jean.database.resource.EncodingResourceBundleControl;
-import com.jean.database.utils.DialogUtil;
-import com.jean.database.utils.StringUtil;
-import com.jean.database.gui.constant.Images;
+import com.jean.database.api.EncodingResourceBundleControl;
+import com.jean.database.api.TaskManger;
+import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.api.utils.StringUtils;
 import com.jean.database.gui.factory.ControllerFactory;
-import com.jean.database.gui.manager.TaskManger;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
  */
 public class MainApplication extends Application implements Callback<Class<?>, Object> {
 
-    private Parameters  parameters;
+    private Parameters parameters;
     private ResourceBundle bundle;
 
     @Override
@@ -41,7 +41,6 @@ public class MainApplication extends Application implements Callback<Class<?>, O
     @Override
     public void start(Stage stage) throws Exception {
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START, this));
-        DialogUtil.setLogImage(new Image(getClass().getResourceAsStream(Images.LOGO_IMAGE)));
         URL resource = getClass().getResource("/fxml/Scene.fxml");
         FXMLLoader loader = new FXMLLoader(resource, bundle, null, new ControllerFactory());
         Parent root = loader.load();
@@ -49,9 +48,9 @@ public class MainApplication extends Application implements Callback<Class<?>, O
         scene.getStylesheets().add("/styles/Styles.css");
         String name = parameters.getNamed().get("name");
         String version = parameters.getNamed().get("version");
-        String title = StringUtil.join(Arrays.asList(name, version), " ");
+        String title = StringUtils.join(Arrays.asList(name, version), " ");
         stage.setTitle(title);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream(Images.LOGO_IMAGE)));
+        stage.getIcons().add(ImageUtils.LOGO_IMAGE);
         stage.setScene(scene);
         stage.show();
         stage.setOnCloseRequest(event -> DialogUtil.confirmation("退出提示", null, "确认退出？")

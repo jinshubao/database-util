@@ -1,19 +1,17 @@
 package com.jean.database.mysql;
 
-import com.jean.database.core.AbstractMetaDataProvider;
-import com.jean.database.core.meta.KeyValuePair;
-import com.jean.database.core.meta.TableMetaData;
-import com.jean.database.core.meta.TableSummaries;
+import com.jean.database.api.KeyValuePair;
+import com.jean.database.sql.AbstractSQLMetaDataProvider;
+import com.jean.database.sql.meta.TableMetaData;
+import com.jean.database.sql.meta.TableSummaries;
 
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"SqlResolve", "SqlNoDataSourceInspection"})
-public class MySQLMetadataProvider extends AbstractMetaDataProvider {
+public class MySQLMetadataProvider extends AbstractSQLMetaDataProvider {
 
     @Override
     public List<Map<String, Object>> getTableRows(Connection connection, TableMetaData tableMetaData, int pageSize, int pageIndex) throws SQLException {
@@ -81,14 +79,14 @@ public class MySQLMetadataProvider extends AbstractMetaDataProvider {
             try (ResultSet rs = statement.executeQuery()) {
                 List<TableSummaries> result = new ArrayList<>();
                 while (rs.next()) {
-                    TableSummaries summaries = new TableSummaries(
-                            rs.getString("TABLE_NAME"),
-                            rs.getString("AUTO_INCREMENT"),
-                            rs.getString("UPDATE_TIME"),
-                            rs.getString("DATA_LENGTH"),
-                            rs.getString("ENGINE"),
-                            rs.getString("TABLE_ROWS"),
-                            rs.getString("TABLE_COMMENT"));
+                    TableSummaries summaries = new TableSummaries();
+                    summaries.setTableName(rs.getString("TABLE_NAME"));
+                    summaries.setAutoIncrement(rs.getString("AUTO_INCREMENT"));
+                    summaries.setModifyTime(rs.getString("UPDATE_TIME"));
+                    summaries.setDataLength(rs.getString("DATA_LENGTH"));
+                    summaries.setTableType(rs.getString("ENGINE"));
+                    summaries.setTableRows(rs.getString("TABLE_ROWS"));
+                    summaries.setComments(rs.getString("TABLE_COMMENT"));
                     result.add(summaries);
                 }
                 return result;

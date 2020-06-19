@@ -1,23 +1,15 @@
 package com.jean.database.gui.controller;
 
-import com.jean.database.core.IConnectionConfiguration;
-import com.jean.database.core.IDatabaseProvider;
-import com.jean.database.core.IMetadataProvider;
-import com.jean.database.core.meta.KeyValuePair;
-import com.jean.database.core.meta.TableSummaries;
-import com.jean.database.gui.constant.Images;
-import com.jean.database.gui.factory.TreeCellFactory;
-import com.jean.database.gui.manager.DatabaseTypeManager;
-import com.jean.database.gui.utils.ViewUtils;
-import com.jean.database.gui.view.action.IMouseAction;
-import com.jean.database.gui.view.treeitem.ServerTreeItem;
-import com.jean.database.utils.StringUtil;
-import javafx.beans.property.SimpleObjectProperty;
+import com.jean.database.api.IDatabaseProvider;
+import com.jean.database.api.TaskManger;
+import com.jean.database.api.TreeCellFactory;
+import com.jean.database.api.ViewManager;
+import com.jean.database.api.view.ViewContext;
+import com.jean.database.api.view.action.IMouseAction;
+import com.jean.database.gui.DatabaseManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,59 +31,14 @@ public class MainController implements Initializable {
     @FXML
     private TabPane objectTabPan;
     @FXML
-    private Tab objectTab;
-    @FXML
-    private TableView<TableSummaries> objectTableView;
-    @FXML
     private TabPane infoTabPane;
-    @FXML
-    private Tab generalInfoTab;
-    @FXML
-    private TableView<KeyValuePair> generalInfoTableView;
-    @FXML
-    private Tab ddlInfoTab;
-    @FXML
-    private TextArea ddlInfoTextArea;
-
 
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
         logger.debug("initialize [location: {}, resources: {}]", location, resources);
-
-        ViewUtils.init(this);
-
-        List<IDatabaseProvider> providers = DatabaseTypeManager.getProviders();
-
-        Menu connectionMenu = new Menu("新建连接");
-        for (IDatabaseProvider provider : providers) {
-            MenuItem menuItem = new MenuItem(provider.getName());
-            menuItem.setUserData(provider);
-
-            menuItem.setOnAction(event -> newConnection(provider));
-            connectionMenu.getItems().add(menuItem);
-            connectionMenu.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(Images.ADD_IMAGE))));
-
-            String icon = provider.getIcon();
-            if (StringUtil.isNotBlank(icon)) {
-                menuItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
-            }
-        }
-
-        Menu fileMenu = new Menu("文件");
-        Menu viewMenu = new Menu("查看");
-        Menu collectionMenu = new Menu("收藏");
-        Menu toolsMenu = new Menu("工具");
-        Menu windowMenu = new Menu("窗口");
-        Menu helpMenu = new Menu("帮助");
-
-        fileMenu.getItems().addAll(connectionMenu);
-
-        this.menuBar.getMenus().addAll(fileMenu, viewMenu, collectionMenu, toolsMenu, windowMenu, helpMenu);
-
-        //noinspection unchecked
+        this.initMenuBar();
         databaseTreeView.setCellFactory(TreeCellFactory.forTreeView());
-        //noinspection unchecked
         databaseTreeView.setRoot(new TreeItem<>());
         databaseTreeView.setShowRoot(false);
         databaseTreeView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
@@ -102,74 +49,36 @@ public class MainController implements Initializable {
                 }
             }
         });
+        objectTabPan.getTabs().clear();
+        infoTabPane.getTabs().clear();
+        ViewManager.init(menuBar, databaseTreeView, objectTabPan, infoTabPane);
+        TaskManger.init(Runtime.getRuntime().availableProcessors() * 2);
 
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(0)).setCellValueFactory(param -> param.getValue().tableNameProperty());
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(1)).setCellValueFactory(param -> param.getValue().autoIncrementProperty());
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(2)).setCellValueFactory(param -> param.getValue().modifyTimeProperty());
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(3)).setCellValueFactory(param -> param.getValue().dataLengthProperty());
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(4)).setCellValueFactory(param -> param.getValue().tableTypeProperty());
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(5)).setCellValueFactory(param -> param.getValue().tableRowsProperty());
-        ((TableColumn<TableSummaries, String>) objectTableView.getColumns().get(6)).setCellValueFactory(param -> param.getValue().commentsProperty());
-        objectTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        DatabaseManager.init();
+        List<IDatabaseProvider> providers = DatabaseManager.getProviders();
 
-        generalInfoTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        generalInfoTableView.getColumns().get(0).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getKey()));
-        generalInfoTableView.getColumns().get(1).setCellValueFactory(param -> new SimpleObjectProperty(param.getValue().getValue()));
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public void newConnection(IDatabaseProvider provider) {
-        IConnectionConfiguration configuration = provider.getConfiguration();
-        IMetadataProvider metadataProvider = provider.getMetadataProvider();
-        if (configuration != null) {
-            ServerTreeItem serverTreeItem = new ServerTreeItem(configuration.getConnectionName(), configuration, metadataProvider);
-            String icon = provider.getIcon();
-            if (StringUtil.isNotBlank(icon)) {
-                serverTreeItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream(icon))));
-            }
-            databaseTreeView.getRoot().getChildren().add(serverTreeItem);
+        ViewContext viewContext = new ViewContext(menuBar, databaseTreeView, objectTabPan, infoTabPane);
+        for (IDatabaseProvider provider : providers) {
+            provider.init(viewContext);
         }
     }
 
-    public TreeView getDatabaseTreeView() {
-        return databaseTreeView;
+    private void initMenuBar() {
+        Menu fileMenu = new Menu("文件");
+        fileMenu.setId(ViewManager.MENU_ID__FILE_MENU);
+        fileMenu.getItems().add(new Menu("新建链接"));
+        Menu viewMenu = new Menu("查看");
+        viewMenu.setId(ViewManager.MENU_ID__VIEW_MENU);
+        Menu collectionMenu = new Menu("收藏");
+        collectionMenu.setId(ViewManager.MENU_ID__COLLECTION_MENU);
+        Menu toolsMenu = new Menu("工具");
+        toolsMenu.setId(ViewManager.MENU_ID__TOOLS_MENU);
+        Menu windowMenu = new Menu("窗口");
+        windowMenu.setId(ViewManager.MENU_ID__WINDOW_MENU);
+        Menu helpMenu = new Menu("帮助");
+        helpMenu.setId(ViewManager.MENU_ID__HELP_MENU);
+        this.menuBar.getMenus().addAll(fileMenu, viewMenu, collectionMenu, toolsMenu, windowMenu, helpMenu);
     }
 
-    public Tab getObjectTab() {
-        return objectTab;
-    }
-
-    public TableView<TableSummaries> getObjectTableView() {
-        return objectTableView;
-    }
-
-    public Tab getGeneralInfoTab() {
-        return generalInfoTab;
-    }
-
-    public TableView<KeyValuePair> getGeneralInfoTableView() {
-        return generalInfoTableView;
-    }
-
-    public Tab getDdlInfoTab() {
-        return ddlInfoTab;
-    }
-
-    public TextArea getDdlInfoTextArea() {
-        return ddlInfoTextArea;
-    }
-
-    public TabPane getObjectTabPan() {
-        return objectTabPan;
-    }
-
-    public TabPane getInfoTabPane() {
-        return infoTabPane;
-    }
-
-    public BorderPane getRoot() {
-        return root;
-    }
 
 }

@@ -1,4 +1,0 @@
-dependencies {
-    compile "org.slf4j:jcl-over-slf4j:1.7.25"
-    compile "ch.qos.logback:logback-classic:1.2.3"
-}

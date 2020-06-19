@@ -1,10 +1,10 @@
 package com.jean.database.oracle;
 
-import com.jean.database.core.IConnectionConfiguration;
-import com.jean.database.core.IDatabaseProvider;
-import com.jean.database.core.IMetadataProvider;
-import com.jean.database.utils.DialogUtil;
-import com.jean.database.utils.FxmlUtils;
+import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.api.utils.FxmlUtils;
+import com.jean.database.sql.SQLConnectionConfiguration;
+import com.jean.database.sql.SQLDatabaseProvider;
+import com.jean.database.sql.SQLMetadataProvider;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 
-public class OracleDatabaseProvider implements IDatabaseProvider {
+public class OracleDatabaseProvider extends SQLDatabaseProvider {
 
     private static final String ID = "Oracle";
     private String identifier;
@@ -30,6 +30,10 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
 
     private final StringConverter<Properties> propertiesStringConverter;
 
+    private final SQLMetadataProvider metadataProvider;
+
+    private final OracleConnectionConfiguration defaultCollectConfiguration;
+
     public OracleDatabaseProvider() {
 
         this.identifier = ID;
@@ -39,10 +43,15 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
         this.schemaIcon = null;
         this.tableIcon = "/oracle/table.png";
 
-        this.defaultProperties = new Properties();
         this.propertiesStringConverter = new PropertiesStringConverter();
-    }
 
+        this.defaultProperties = new Properties();
+
+        this.defaultCollectConfiguration = new OracleConnectionConfiguration("oracle-127.0.0.1",
+                "127.0.0.1", 3306, "root", "", this.defaultProperties);
+
+        this.metadataProvider = new OracleMetadataProvider();
+    }
 
     @Override
     public String getIdentifier() {
@@ -70,16 +79,13 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
     }
 
     @Override
-    public IConnectionConfiguration getConfiguration() {
-        com.jean.database.oracle.OracleConnectionConfiguration configuration =
-                new com.jean.database.oracle.OracleConnectionConfiguration("oracle-127.0.0.1", "127.0.0.1", 3306, "root", "", this.defaultProperties);
-        return this.getConfiguration(configuration);
+    public SQLConnectionConfiguration getConnectionConfiguration() {
+        return this.getConfiguration(this.defaultCollectConfiguration);
     }
 
-
     @Override
-    public IMetadataProvider getMetadataProvider() {
-        return new OracleMetadataProvider();
+    public SQLMetadataProvider getMetadataProvider() {
+        return this.metadataProvider;
     }
 
     @Override
@@ -92,7 +98,7 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
         return false;
     }
 
-    private IConnectionConfiguration getConfiguration(com.jean.database.oracle.OracleConnectionConfiguration initValue) {
+    private SQLConnectionConfiguration getConfiguration(OracleConnectionConfiguration initValue) {
         try {
             Parent root = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml", "message.oracle", Locale.SIMPLIFIED_CHINESE);
 
@@ -115,7 +121,7 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
             TextField propertiesFiled = (TextField) root.lookup("#properties");
             propertiesFiled.setText(propString);
 
-            Callback<ButtonType, com.jean.database.oracle.OracleConnectionConfiguration> callback = buttonType -> {
+            Callback<ButtonType, OracleConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     String nameText = nameFiled.getText();
                     String hostText = hostFiled.getText();
@@ -124,7 +130,7 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
                     String passwordText = passwordFiled.getText();
                     String propertiesText = propertiesFiled.getText();
                     Properties properties = propertiesStringConverter.fromString(propertiesText);
-                    return new com.jean.database.oracle.OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
+                    return new OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
                 }
                 return null;
             };
