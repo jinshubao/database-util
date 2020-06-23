@@ -5,9 +5,7 @@ import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.sql.SQLConnectionConfiguration;
 import com.jean.database.sql.SQLDatabaseProvider;
 import com.jean.database.sql.SQLMetadataProvider;
-import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
@@ -100,41 +98,17 @@ public class OracleDatabaseProvider extends SQLDatabaseProvider {
 
     private SQLConnectionConfiguration getConfiguration(OracleConnectionConfiguration initValue) {
         try {
-            Parent root = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml", "message.oracle", Locale.SIMPLIFIED_CHINESE);
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml", "message.oracle", Locale.SIMPLIFIED_CHINESE);
 
-            TextField nameFiled = (TextField) root.lookup("#name");
-            nameFiled.setText(initValue.getConnectionName());
-
-            TextField hostFiled = (TextField) root.lookup("#host");
-            hostFiled.setText(initValue.getHost());
-
-            TextField portFiled = (TextField) root.lookup("#port");
-            portFiled.setText(String.valueOf(initValue.getPort()));
-
-            TextField userFiled = (TextField) root.lookup("#user");
-            userFiled.setText(initValue.getUser());
-
-            TextField passwordFiled = (TextField) root.lookup("#password");
-            passwordFiled.setText(initValue.getPassword());
-
-            String propString = propertiesStringConverter.toString(initValue.getProperties());
-            TextField propertiesFiled = (TextField) root.lookup("#properties");
-            propertiesFiled.setText(propString);
 
             Callback<ButtonType, OracleConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
-                    String nameText = nameFiled.getText();
-                    String hostText = hostFiled.getText();
-                    Integer portText = Integer.valueOf(portFiled.getText());
-                    String userText = userFiled.getText();
-                    String passwordText = passwordFiled.getText();
-                    String propertiesText = propertiesFiled.getText();
-                    Properties properties = propertiesStringConverter.fromString(propertiesText);
-                    return new OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
+
+                    return defaultCollectConfiguration;
                 }
                 return null;
             };
-            return DialogUtil.customizeDialog("New Oracle connection", root, callback).orElse(null);
+            return DialogUtil.customizeDialog("New Oracle connection", loadFxmlResult.getParent(), callback).orElse(null);
         } catch (IOException e) {
             DialogUtil.error(e);
         }

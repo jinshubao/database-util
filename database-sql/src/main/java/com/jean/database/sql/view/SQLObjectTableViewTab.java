@@ -1,13 +1,13 @@
 package com.jean.database.sql.view;
 
-import com.jean.database.api.view.TableTab;
+import com.jean.database.api.view.TableViewTab;
 import com.jean.database.sql.meta.TableSummaries;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class SQLObjectTab extends TableTab<TableSummaries> {
+public class SQLObjectTableViewTab extends TableViewTab<TableSummaries> {
 
-    public SQLObjectTab(String text) {
+    public SQLObjectTableViewTab(String text) {
         super(text);
     }
 

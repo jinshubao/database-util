@@ -4,11 +4,11 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 
-public abstract class TableTab<T> extends Tab {
+public abstract class TableViewTab<T> extends Tab {
 
     private final TableView<T> tableView;
 
-    public TableTab(String text) {
+    public TableViewTab(String text) {
         super(text);
         TableView<T> tableView = createTableView();
         this.tableView = tableView;

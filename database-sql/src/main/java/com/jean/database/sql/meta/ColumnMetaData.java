@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.Objects;
+
 /**
  * @author jinshubao
  * <p>
@@ -461,4 +463,46 @@ public class ColumnMetaData {
         return columnName.get();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ColumnMetaData that = (ColumnMetaData) o;
+        return Objects.equals(tableCat.get(), that.tableCat.get()) &&
+                Objects.equals(quoteString.get(), that.quoteString.get()) &&
+                Objects.equals(separator.get(), that.separator.get()) &&
+                Objects.equals(tableSchema.get(), that.tableSchema.get()) &&
+                Objects.equals(tableName.get(), that.tableName.get()) &&
+                Objects.equals(tableType.get(), that.tableType.get()) &&
+                Objects.equals(remarks.get(), that.remarks.get()) &&
+                Objects.equals(typeCat.get(), that.typeCat.get()) &&
+                Objects.equals(typeSchema.get(), that.typeSchema.get()) &&
+                Objects.equals(typeName.get(), that.typeName.get()) &&
+                Objects.equals(selfReferencingColName.get(), that.selfReferencingColName.get()) &&
+                Objects.equals(refGeneration.get(), that.refGeneration.get()) &&
+                Objects.equals(columnName.get(), that.columnName.get()) &&
+                Objects.equals(columnDef.get(), that.columnDef.get()) &&
+                Objects.equals(isNullable.get(), that.isNullable.get()) &&
+                Objects.equals(scopeCatalog.get(), that.scopeCatalog.get()) &&
+                Objects.equals(scopeSchema.get(), that.scopeSchema.get()) &&
+                Objects.equals(scopeTable.get(), that.scopeTable.get()) &&
+                Objects.equals(isAutoincrement.get(), that.isAutoincrement.get()) &&
+                Objects.equals(isGeneratedcolumn.get(), that.isGeneratedcolumn.get()) &&
+                Objects.equals(dataType.get(), that.dataType.get()) &&
+                Objects.equals(columnSize.get(), that.columnSize.get()) &&
+                Objects.equals(bufferLength.get(), that.bufferLength.get()) &&
+                Objects.equals(decimalDigits.get(), that.decimalDigits.get()) &&
+                Objects.equals(numPrecRadix.get(), that.numPrecRadix.get()) &&
+                Objects.equals(nullable.get(), that.nullable.get()) &&
+                Objects.equals(sqlDataType.get(), that.sqlDataType.get()) &&
+                Objects.equals(sqlDatetimeSub.get(), that.sqlDatetimeSub.get()) &&
+                Objects.equals(charOctetLength.get(), that.charOctetLength.get()) &&
+                Objects.equals(ordinalPosition.get(), that.ordinalPosition.get()) &&
+                Objects.equals(sourceDataType.get(), that.sourceDataType.get());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableCat, quoteString, separator, tableSchema, tableName, tableType, remarks, typeCat, typeSchema, typeName, selfReferencingColName, refGeneration, columnName, columnDef, isNullable, scopeCatalog, scopeSchema, scopeTable, isAutoincrement, isGeneratedcolumn, dataType, columnSize, bufferLength, decimalDigits, numPrecRadix, nullable, sqlDataType, sqlDatetimeSub, charOctetLength, ordinalPosition, sourceDataType);
+    }
 }

@@ -1,42 +1,65 @@
 package com.jean.database.sql.view.treeitem;
 
 
-import com.jean.database.api.LoggerWrapper;
+import com.jean.database.api.BaseTask;
+import com.jean.database.api.TaskManger;
 import com.jean.database.sql.SQLConnectionConfiguration;
 import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLObjectTabController;
+import com.jean.database.sql.meta.TableSummaries;
 import com.jean.database.sql.meta.TableTypeMetaData;
-import com.jean.database.sql.view.TreeItemViewContext;
-import com.jean.database.sql.view.handler.ITableTypeItemActionEventHandler;
-import com.jean.database.sql.view.handler.impl.TableTypeItemActionEventHandlerImpl;
+
+import java.sql.Connection;
+import java.util.List;
 
 public class TableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> {
 
-    private final ITableTypeItemActionEventHandler actionEventHandler;
+    private final SQLObjectTabController objectTabController;
 
-    public TableTypeTreeItem(TableTypeMetaData value, TreeItemViewContext viewContext,
-                             SQLConnectionConfiguration connectionConfiguration, SQLMetadataProvider metadataProvider) {
-        super(value, viewContext, connectionConfiguration, metadataProvider);
-        this.actionEventHandler = LoggerWrapper.warp(new TableTypeItemActionEventHandlerImpl());
+    public TableTypeTreeItem(TableTypeMetaData value, SQLConnectionConfiguration connectionConfiguration, SQLMetadataProvider metadataProvider, SQLObjectTabController objectTabController) {
+        super(value, connectionConfiguration, metadataProvider);
+        this.objectTabController = objectTabController;
     }
 
     @Override
     public void click() {
-        this.actionEventHandler.onClick(this);
     }
 
     @Override
     public void doubleClick() {
-        this.actionEventHandler.onDoubleClick(this);
     }
 
     @Override
     public void select() {
-        this.actionEventHandler.onSelected(this);
+        TaskManger.execute(new RefreshTableInfoTask());
     }
 
     @Override
     public void close() {
-        actionEventHandler.onClose(this);
+    }
+
+
+    private class RefreshTableInfoTask extends BaseTask<List<TableSummaries>> {
+
+        SQLMetadataProvider metadataProvider = TableTypeTreeItem.this.getMetadataProvider();
+        SQLConnectionConfiguration connectionConfiguration = TableTypeTreeItem.this.getConnectionConfiguration();
+        TableTypeMetaData tableTypeMetaData = TableTypeTreeItem.this.getValue();
+
+        @Override
+        protected List<TableSummaries> call() throws Exception {
+            try (Connection connection = connectionConfiguration.getConnection()) {
+                return metadataProvider.getTableSummaries(connection, tableTypeMetaData.getTableCat(), tableTypeMetaData.getTableSchema(), null, null);
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            List<TableSummaries> tableSummaries = getValue();
+            if (tableSummaries != null && !tableSummaries.isEmpty()) {
+                objectTabController.setObjectValue(tableSummaries);
+            }
+        }
     }
 
 }

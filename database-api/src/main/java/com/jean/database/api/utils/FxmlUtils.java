@@ -3,6 +3,7 @@ package com.jean.database.api.utils;
 import com.jean.database.api.EncodingResourceBundleControl;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -10,18 +11,59 @@ import java.util.ResourceBundle;
 
 public final class FxmlUtils {
 
-    public static Parent loadFxml(String name, String resource, Locale locale) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        if (resource != null) {
-            loader.setResources(ResourceBundle.getBundle(resource, locale, new EncodingResourceBundleControl()));
-        }
-        loader.setControllerFactory(param -> {
+    public static LoadFxmlResult loadFxml(String name) throws IOException {
+        return loadFxml(name, null, Locale.SIMPLIFIED_CHINESE);
+    }
+
+    public static LoadFxmlResult loadFxml(String name, String resource) throws IOException {
+        return loadFxml(name, resource, Locale.SIMPLIFIED_CHINESE);
+    }
+
+    public static LoadFxmlResult loadFxml(String name, String resource, Locale locale) throws IOException {
+        Callback<Class<?>, Object> factory = param -> {
             try {
                 return param.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        });
-        return loader.load(FxmlUtils.class.getResourceAsStream(name));
+        };
+        return loadFxml(name, resource, locale, factory);
+    }
+
+    public static LoadFxmlResult loadFxml(String name, Callback<Class<?>, Object> factory) throws IOException {
+        return loadFxml(name, null, Locale.SIMPLIFIED_CHINESE, factory);
+    }
+
+    public static LoadFxmlResult loadFxml(String name, String resource, Callback<Class<?>, Object> factory) throws IOException {
+        return loadFxml(name, resource, Locale.SIMPLIFIED_CHINESE, factory);
+    }
+
+    public static LoadFxmlResult loadFxml(String name, String resource, Locale locale, Callback<Class<?>, Object> factory) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        if (resource != null && !resource.isEmpty()) {
+            loader.setResources(ResourceBundle.getBundle(resource, locale, new EncodingResourceBundleControl()));
+        }
+        loader.setControllerFactory(factory);
+        Parent parent = loader.load(FxmlUtils.class.getResourceAsStream(name));
+        Object controller = loader.getController();
+        return new LoadFxmlResult(parent, controller);
+    }
+
+    public static class LoadFxmlResult {
+        private final Parent parent;
+        private final Object controller;
+
+        public LoadFxmlResult(Parent parent, Object controller) {
+            this.parent = parent;
+            this.controller = controller;
+        }
+
+        public Parent getParent() {
+            return parent;
+        }
+
+        public Object getController() {
+            return controller;
+        }
     }
 }

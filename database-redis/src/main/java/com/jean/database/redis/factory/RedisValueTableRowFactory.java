@@ -3,9 +3,8 @@ package com.jean.database.redis.factory;
 import com.jean.database.redis.model.RedisValue;
 import com.jean.database.redis.view.handler.IRedisValueActionEventHandler;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.WeakChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.event.WeakEventHandler;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
@@ -26,30 +25,34 @@ public class RedisValueTableRowFactory implements Callback<TableView<RedisValue>
         return new RedisKeyTableRow(handler);
     }
 
-    private static class RedisKeyTableRow extends TableRow<RedisValue> {
+    private static class RedisKeyTableRow extends TableRow<RedisValue> implements ChangeListener<Boolean>, EventHandler<MouseEvent> {
 
-        private final ChangeListener<Boolean> changeListener;
-        private final EventHandler<MouseEvent> mouseEventEventHandler;
+        private final IRedisValueActionEventHandler handler;
 
         private RedisKeyTableRow(IRedisValueActionEventHandler handler) {
+            this.handler = handler;
 
-            this.changeListener = (observable, oldValue, newValue) -> {
-                if (newValue) {
-                    handler.onSelected(RedisKeyTableRow.this);
-                }
-            };
-            selectedProperty().addListener(new WeakChangeListener<>(this.changeListener));
+            selectedProperty().addListener(this);
 
-            this.mouseEventEventHandler = event -> {
-                if (event.getButton() == MouseButton.PRIMARY) {
-                    if (event.getClickCount() == 1) {
-                        handler.onClick(RedisKeyTableRow.this);
-                    } else if (event.getClickCount() == 2) {
-                        handler.onDoubleClick(RedisKeyTableRow.this);
-                    }
+            setOnMouseClicked(this);
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            if (newValue) {
+                handler.onSelected(this);
+            }
+        }
+
+        @Override
+        public void handle(MouseEvent event) {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                if (event.getClickCount() == 1) {
+                    handler.onClick(this);
+                } else if (event.getClickCount() == 2) {
+                    handler.onDoubleClick(this);
                 }
-            };
-            setOnMouseClicked(new WeakEventHandler<>(this.mouseEventEventHandler));
+            }
         }
     }
 }

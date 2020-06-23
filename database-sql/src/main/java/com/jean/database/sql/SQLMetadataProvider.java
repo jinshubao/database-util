@@ -2,12 +2,10 @@ package com.jean.database.sql;
 
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.AbstractConnectionConfiguration;
 import com.jean.database.sql.meta.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +16,7 @@ import java.util.Map;
  */
 public interface SQLMetadataProvider {
 
-    default Connection getConnection(AbstractConnectionConfiguration configuration) throws SQLException {
-        return DriverManager.getConnection(configuration.getUrl(), configuration.getProperties());
-    }
-
-    default DatabaseMetaData getDatabaseMetaData(Connection connection) throws SQLException {
-        return connection.getMetaData();
-    }
+    DatabaseMetaData getDatabaseMetaData(Connection connection) throws SQLException;
 
     List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException;
 

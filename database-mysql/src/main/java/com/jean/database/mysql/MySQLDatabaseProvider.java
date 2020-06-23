@@ -19,12 +19,14 @@ public class MySQLDatabaseProvider extends SQLDatabaseProvider {
 
     private final static String ID = "MySQL";
 
-    private String identifier;
-    private String name;
-    private String icon;
-    private String catalogIcon;
-    private String schemaIcon;
-    private String tableIcon;
+    private final String identifier;
+    private final String name;
+    private final String icon;
+    private final String catalogIcon;
+    private final String schemaIcon;
+    private final String tableIcon;
+
+    private final MySQLConnectionConfiguration defaultConnectionConfiguration;
 
     private final SQLMetadataProvider metadataProvider;
 
@@ -36,6 +38,8 @@ public class MySQLDatabaseProvider extends SQLDatabaseProvider {
         this.schemaIcon = null;
         this.tableIcon = "/mysql/table.png";
         this.metadataProvider = new MySQLMetadataProvider();
+        this.defaultConnectionConfiguration = new MySQLConnectionConfiguration("mysql[mysql.jean.com]", "mysql.jean.com",
+                3306, "root", "123456");
     }
 
     @Override
@@ -71,8 +75,23 @@ public class MySQLDatabaseProvider extends SQLDatabaseProvider {
 
     @Override
     public SQLConnectionConfiguration getConnectionConfiguration() {
-        return this.getConfiguration(new MySQLConnectionConfiguration("mysql[mysql.jean.com]", "mysql.jean.com",
-                3306, "root", "123456"));
+        try {
+            MySQLConfigurationControllerFactory factory = new MySQLConfigurationControllerFactory(getViewContext());
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", Locale.SIMPLIFIED_CHINESE,factory);
+            Parent parent = loadFxmlResult.getParent();
+            MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.getController();
+            controller.setValue(this.defaultConnectionConfiguration);
+            Callback<ButtonType, SQLConnectionConfiguration> callback = buttonType -> {
+                if (buttonType == ButtonType.OK) {
+                    return controller.getValue();
+                }
+                return null;
+            };
+            return DialogUtil.customizeDialog("New MySQL connection", parent, callback).orElse(null);
+        } catch (IOException e) {
+            DialogUtil.error(e);
+        }
+        return null;
     }
 
     @Override
@@ -88,52 +107,6 @@ public class MySQLDatabaseProvider extends SQLDatabaseProvider {
     @Override
     public boolean supportSchema() {
         return false;
-    }
-
-
-    private SQLConnectionConfiguration getConfiguration(MySQLConnectionConfiguration initValue) {
-        try {
-            Parent root = FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", Locale.SIMPLIFIED_CHINESE);
-
-            TextField nameFiled = (TextField) root.lookup("#name");
-            nameFiled.setText(initValue.getConnectionName());
-
-            TextField hostFiled = (TextField) root.lookup("#host");
-            hostFiled.setText(initValue.getHost());
-
-            TextField portFiled = (TextField) root.lookup("#port");
-            portFiled.setText(String.valueOf(initValue.getPort()));
-
-            TextField userFiled = (TextField) root.lookup("#user");
-            userFiled.setText(initValue.getUser());
-
-            TextField passwordFiled = (TextField) root.lookup("#password");
-            passwordFiled.setText(initValue.getPassword());
-
-            StringConverter<Properties> converter = new MySQLPropertiesConverter();
-
-            String propString = converter.toString(initValue.getProperties());
-            TextField propertiesFiled = (TextField) root.lookup("#properties");
-            propertiesFiled.setText(propString);
-
-            Callback<ButtonType, SQLConnectionConfiguration> callback = buttonType -> {
-                if (buttonType == ButtonType.OK) {
-                    String nameText = nameFiled.getText();
-                    String hostText = hostFiled.getText();
-                    Integer portText = Integer.valueOf(portFiled.getText());
-                    String userText = userFiled.getText();
-                    String passwordText = passwordFiled.getText();
-                    String propertiesText = propertiesFiled.getText();
-                    Properties properties = converter.fromString(propertiesText);
-                    return new MySQLConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
-                }
-                return null;
-            };
-            return DialogUtil.customizeDialog("New MySQL connection", root, callback).orElse(null);
-        } catch (IOException e) {
-            DialogUtil.error(e);
-        }
-        return null;
     }
 
 }

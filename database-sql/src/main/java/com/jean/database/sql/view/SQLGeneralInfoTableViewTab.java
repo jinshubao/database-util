@@ -1,17 +1,15 @@
 package com.jean.database.sql.view;
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.view.TableTab;
+import com.jean.database.api.view.TableViewTab;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class SQLGeneralInfoTab extends TableTab<KeyValuePair<String, Object>> {
+public class SQLGeneralInfoTableViewTab extends TableViewTab<KeyValuePair<String, Object>> {
 
-    public SQLGeneralInfoTab(String text) {
+    public SQLGeneralInfoTableViewTab(String text) {
         super(text);
     }
 

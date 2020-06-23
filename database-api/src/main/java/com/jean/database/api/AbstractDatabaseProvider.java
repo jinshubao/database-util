@@ -1,16 +1,18 @@
 package com.jean.database.api;
 
-import com.jean.database.api.view.ViewContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDatabaseProvider implements IDatabaseProvider {
 
-    public Logger logger = LoggerFactory.getLogger(this.getClass());
+    public static final Logger logger = LoggerFactory.getLogger(AbstractDatabaseProvider.class);
+
+    private ViewContext viewContext;
 
     @Override
     public void init(ViewContext viewContext) {
-        logger.debug("{} init", getName());
+        logger.debug("{} provider init", getName());
+        this.viewContext = viewContext;
     }
 
     @Override
@@ -23,4 +25,7 @@ public abstract class AbstractDatabaseProvider implements IDatabaseProvider {
 
     }
 
+    public ViewContext getViewContext() {
+        return viewContext;
+    }
 }

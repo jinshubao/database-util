@@ -9,7 +9,6 @@ import java.util.UUID;
 public abstract class AbstractConnectionConfiguration implements IConnectionConfiguration {
 
     private final String connectionId;
-
     private String connectionName;
     private String host;
     private Integer port;

@@ -1,40 +1,45 @@
 package com.jean.database.sql.view;
 
 
-import com.jean.database.api.LoggerWrapper;
-import com.jean.database.api.AbstractConnectionConfiguration;
+import com.jean.database.api.BaseTask;
+import com.jean.database.api.TaskManger;
+import com.jean.database.sql.SQLConnectionConfiguration;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.factory.TableCellFactory;
 import com.jean.database.sql.meta.ColumnMetaData;
 import com.jean.database.sql.meta.TableMetaData;
-import com.jean.database.sql.view.handler.IDataTableActionEventHandler;
-import com.jean.database.sql.view.handler.impl.DataTableActionEventHandlerImpl;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author jinshubao
  */
-public class SQLDataTableTab extends Tab {
+public class SQLDataTableTab extends Tab implements ChangeListener<Number> {
 
-    private final AbstractConnectionConfiguration connectionConfiguration;
-    private final SQLMetadataProvider metadataProvider;
+    private static final int PAGE_SIZE = 1000;
 
-    private final TableView<Map<String, ObjectProperty>> tableView;
-    private final Pagination pagination;
-    private final TableMetaData tableMetaData;
-    private final IDataTableActionEventHandler dataTableActionEventHandler;
+    private SQLConnectionConfiguration connectionConfiguration;
+    private SQLMetadataProvider metadataProvider;
+    private TableView<Map<String, ObjectProperty>> tableView;
+    private Pagination pagination;
+    private TableMetaData tableMetaData;
 
-    public SQLDataTableTab(TableMetaData value, AbstractConnectionConfiguration connectionConfiguration,
-                           SQLMetadataProvider metadataProvider,
-                           List<ColumnMetaData> columnMetaDataList) {
-        this.tableMetaData = value;
+    private List<ColumnMetaData> columnDataCache;
 
+    public SQLDataTableTab(TableMetaData tableMetaData, SQLConnectionConfiguration connectionConfiguration, SQLMetadataProvider metadataProvider) {
+        this.tableMetaData = tableMetaData;
         this.connectionConfiguration = connectionConfiguration;
         this.metadataProvider = metadataProvider;
 
@@ -45,62 +50,160 @@ public class SQLDataTableTab extends Tab {
 
         VBox.setVgrow(tableView, Priority.ALWAYS);
 
-        for (ColumnMetaData columnMetaData : columnMetaDataList) {
-            TableColumn<Map<String, ObjectProperty>, ObjectProperty> tableColumn = new DataColumn(columnMetaData);
-            tableColumn.setEditable(true);
-            tableColumn.setCellFactory(TableCellFactory.forTableView());
-            String columnName = columnMetaData.getColumnName();
-            tableColumn.setCellValueFactory(param -> param.getValue().get(columnName));
-            tableView.getColumns().add(tableColumn);
-        }
-
         this.pagination = new Pagination(0, 0);
-        pagination.setVisible(false);
+        pagination.setVisible(true);
+        pagination.currentPageIndexProperty().addListener(this);
 
-        dataTableActionEventHandler = LoggerWrapper.warp(new DataTableActionEventHandlerImpl());
-        pagination.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> dataTableActionEventHandler.refresh(SQLDataTableTab.this, newValue.intValue()));
-
-        setId(value.getFullName());
+        setId(tableMetaData.getFullName());
         setClosable(true);
-        setText(value.getTableName());
-        setTooltip(new Tooltip(value.getFullName()));
+        setText(tableMetaData.getTableName());
+        setTooltip(new Tooltip(tableMetaData.getFullName()));
         setContent(new VBox(tableView, pagination));
-        dataTableActionEventHandler.onRefresh(this);
     }
 
-
-    public TableMetaData getTableMetaData() {
-        return tableMetaData;
+    public void refresh() {
+        TaskManger.execute(new RefreshDataTableTask(pagination.getCurrentPageIndex(), PAGE_SIZE));
     }
 
-    public AbstractConnectionConfiguration getConnectionConfiguration() {
-        return connectionConfiguration;
+    public void close() {
+        this.connectionConfiguration = null;
+        this.metadataProvider = null;
+        this.tableView = null;
+        this.pagination = null;
+        this.tableMetaData = null;
     }
 
-    public SQLMetadataProvider getMetadataProvider() {
-        return metadataProvider;
-    }
-
-    public void updateItems(List<Map<String, ObjectProperty>> items) {
-        tableView.getItems().clear();
-        if (items != null && !items.isEmpty()) {
-            tableView.getItems().addAll(items);
+    @Override
+    public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        if (newValue != null) {
+            TaskManger.execute(new RefreshDataTableTask(newValue.intValue(), PAGE_SIZE));
         }
     }
-
-    public int getCurrentPageIndex() {
-        return pagination.getCurrentPageIndex();
-    }
-
 
     @Override
     public String toString() {
         return "tab [ text: " + getText() + " ]";
     }
 
+
     private static class DataColumn extends TableColumn<Map<String, ObjectProperty>, ObjectProperty> {
         public DataColumn(ColumnMetaData columnMetaData) {
             super(columnMetaData.getColumnName());
         }
     }
+
+
+    private static class RefreshDataTableResult {
+        private final List<ColumnMetaData> columnList;
+        private final List<Map<String, ObjectProperty>> dataList;
+        private final int pageSize;
+        private final int totalRecord;
+
+        public RefreshDataTableResult(List<ColumnMetaData> columnList, List<Map<String, ObjectProperty>> dataList, int pageSize, int totalRecord) {
+            this.columnList = columnList;
+            this.dataList = dataList;
+            this.pageSize = pageSize;
+            this.totalRecord = totalRecord;
+        }
+
+        public List<ColumnMetaData> getColumnList() {
+            return columnList;
+        }
+
+        public List<Map<String, ObjectProperty>> getDataList() {
+            return dataList;
+        }
+
+        public int getTotalRecord() {
+            return totalRecord;
+        }
+
+        public int getPageCount() {
+            int page = totalRecord / pageSize;
+            if (totalRecord % pageSize > 0) {
+                page += 1;
+            }
+            return page;
+        }
+    }
+
+    private class RefreshDataTableTask extends BaseTask<RefreshDataTableResult> {
+
+        private final int page;
+        private final int pageSize;
+
+        public RefreshDataTableTask(int page, int pageSize) {
+            this.page = page;
+            this.pageSize = pageSize;
+        }
+
+        @Override
+        protected RefreshDataTableResult call() throws Exception {
+            try (Connection connection = connectionConfiguration.getConnection()) {
+                List<ColumnMetaData> columnMetaData
+                        = metadataProvider.getColumnMetaData(connection, tableMetaData.getTableCat(), tableMetaData.getTypeSchema(), tableMetaData.getTableName());
+
+                int rowCount = metadataProvider.getTableRowCount(connection, tableMetaData);
+                List<Map<String, ObjectProperty>> list = new ArrayList<>();
+                if (rowCount > 0) {
+                    List<Map<String, Object>> tableRows = metadataProvider.getTableRows(connection, tableMetaData, pageSize, page);
+                    list = tableRows.stream().map(value -> {
+                        Map<String, ObjectProperty> row = new LinkedHashMap<>(value.size());
+                        for (Map.Entry<String, Object> entry : value.entrySet()) {
+                            row.put(entry.getKey(), new SimpleObjectProperty(entry.getValue()));
+                        }
+                        return row;
+                    }).collect(Collectors.toList());
+                }
+                return new RefreshDataTableResult(columnMetaData, list, pageSize, rowCount);
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            RefreshDataTableResult value = getValue();
+            List<ColumnMetaData> columnList = value.getColumnList();
+            if (columnsChange(columnDataCache, columnList)) {
+                tableView.getColumns().clear();
+                for (ColumnMetaData columnMetaData : columnList) {
+                    TableColumn<Map<String, ObjectProperty>, ObjectProperty> tableColumn = new DataColumn(columnMetaData);
+                    tableColumn.setEditable(true);
+                    tableColumn.setCellFactory(TableCellFactory.forTableView());
+                    String columnName = columnMetaData.getColumnName();
+                    tableColumn.setCellValueFactory(param -> param.getValue().get(columnName));
+                    tableView.getColumns().add(tableColumn);
+                }
+                columnDataCache = columnList;
+            }
+            tableView.getItems().clear();
+            tableView.getItems().addAll(value.getDataList());
+            pagination.setPageCount(value.getPageCount());
+        }
+
+        /**
+         * 检查列是否又变化（减少界面刷新抖动）
+         *
+         * @param oldList
+         * @param newList
+         * @return
+         */
+        private boolean columnsChange(List<ColumnMetaData> oldList, List<ColumnMetaData> newList) {
+            if (oldList == null) {
+                return true;
+            }
+            if (oldList.size() != newList.size()) {
+                return true;
+            }
+            for (int i = 0; i < oldList.size(); i++) {
+                ColumnMetaData oldValue = oldList.get(i);
+                ColumnMetaData newValue = newList.get(i);
+                if (!oldValue.equals(newValue)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 }

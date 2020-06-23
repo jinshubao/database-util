@@ -5,28 +5,32 @@ import javafx.beans.property.*;
 
 public class RedisKey {
 
-    private ObjectProperty<RedisConnectionConfiguration> server = new SimpleObjectProperty<>(this, "server");
-
+    private ObjectProperty<RedisConnectionConfiguration> connectionConfiguration = new SimpleObjectProperty<>(this, "connectionConfiguration");
     private IntegerProperty database = new SimpleIntegerProperty(this, "database");
-
     private ObjectProperty<byte[]> key = new SimpleObjectProperty<>(this, "key");
-
     private StringProperty type = new SimpleStringProperty(this, "type");
-
     private LongProperty ttl = new SimpleLongProperty(this, "ttl");
-
     private LongProperty size = new SimpleLongProperty(this, "size");
 
-    public RedisConnectionConfiguration getServer() {
-        return server.get();
+    public RedisKey(RedisConnectionConfiguration connectionConfiguration, int database, byte[] key, String type, Long ttl, Long size) {
+        this.connectionConfiguration.set(connectionConfiguration);
+        this.database.set(database);
+        this.key.set(key);
+        this.type.set(type);
+        this.ttl.set(ttl);
+        this.size.set(size);
     }
 
-    public ObjectProperty<RedisConnectionConfiguration> serverProperty() {
-        return server;
+    public RedisConnectionConfiguration getConnectionConfiguration() {
+        return connectionConfiguration.get();
     }
 
-    public void setServer(RedisConnectionConfiguration server) {
-        this.server.set(server);
+    public ObjectProperty<RedisConnectionConfiguration> connectionConfigurationProperty() {
+        return connectionConfiguration;
+    }
+
+    public void setConnectionConfiguration(RedisConnectionConfiguration connectionConfiguration) {
+        this.connectionConfiguration.set(connectionConfiguration);
     }
 
     public int getDatabase() {

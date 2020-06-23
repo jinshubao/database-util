@@ -1,45 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.*?>
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="800.0" prefWidth="1280.0"
             xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.jean.database.gui.controller.MainController">
     <top>
-        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER" />
+        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER"/>
     </top>
     <center>
         <SplitPane dividerPositions="0.2, 0.75" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
             <TreeView fx:id="databaseTreeView"/>
-            <TabPane fx:id="objectTabPan">
-                <Tab fx:id="objectTab" closable="false" text="对象">
-                    <TableView fx:id="objectTableView">
-                        <columns>
-                            <TableColumn text="表名"/>
-                            <TableColumn text="自动递增值"/>
-                            <TableColumn text="修改日期"/>
-                            <TableColumn text="数据长度"/>
-                            <TableColumn text="表类型"/>
-                            <TableColumn text="行数"/>
-                            <TableColumn text="注释"/>
-                        </columns>
-                    </TableView>
-                </Tab>
-            </TabPane>
-            <TabPane fx:id="infoTabPane">
-                <Tab fx:id="generalInfoTab" closable="false" text="常规">
-                    <TableView fx:id="generalInfoTableView">
-                        <columns>
-                            <TableColumn text="名"/>
-                            <TableColumn text="值"/>
-                        </columns>
-                    </TableView>
-                </Tab>
-                <Tab fx:id="ddlInfoTab" closable="false" text="DDL">
-                    <TextArea fx:id="ddlInfoTextArea" editable="false" wrapText="true"/>
-                </Tab>
-            </TabPane>
+            <TabPane fx:id="objectTabPan"/>
         </SplitPane>
     </center>
     <bottom>

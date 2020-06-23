@@ -1,20 +1,21 @@
 package com.jean.database.redis.model;
 
+import com.jean.database.redis.RedisConnectionConfiguration;
 import javafx.beans.property.*;
 
 import java.util.List;
 
 public class RedisValueWrapper {
 
-    private StringProperty uuid = new SimpleStringProperty(this, "uuid");
+    private ObjectProperty<RedisConnectionConfiguration> connectionConfiguration = new SimpleObjectProperty<>(this, "connectionConfiguration");
     private ObjectProperty<byte[]> key = new SimpleObjectProperty<>(this, "key");
     private StringProperty type = new SimpleStringProperty(this, "type");
     private LongProperty ttl = new SimpleLongProperty(this, "ttl");
     private LongProperty size = new SimpleLongProperty(this, "size");
     private List<RedisValue> values;
 
-    public RedisValueWrapper(String uuid, byte[] key, String type, Long ttl, Long size, List<RedisValue> values) {
-        this.uuid.set(uuid);
+    public RedisValueWrapper(RedisConnectionConfiguration configuration, byte[] key, String type, Long ttl, Long size, List<RedisValue> values) {
+        this.connectionConfiguration.set(configuration);
         this.key.set(key);
         this.type.set(type);
         this.ttl.set(ttl);
@@ -22,13 +23,16 @@ public class RedisValueWrapper {
         this.values = values;
     }
 
-    public String getUuid() {
-        return uuid.get();
+    public RedisConnectionConfiguration getConnectionConfiguration() {
+        return connectionConfiguration.get();
     }
 
+    public ObjectProperty<RedisConnectionConfiguration> connectionConfigurationProperty() {
+        return connectionConfiguration;
+    }
 
-    public void setUuid(String uuid) {
-        this.uuid.set(uuid);
+    public void setConnectionConfiguration(RedisConnectionConfiguration connectionConfiguration) {
+        this.connectionConfiguration.set(connectionConfiguration);
     }
 
     public byte[] getKey() {

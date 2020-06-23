@@ -1,50 +1,39 @@
 package com.jean.database.gui;
 
-import com.jean.database.api.EncodingResourceBundleControl;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
-import com.jean.database.gui.factory.ControllerFactory;
 import javafx.application.Application;
 import javafx.application.Preloader;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Locale;
-import java.util.ResourceBundle;
 
 /**
  * @author jinshubao
  * @date 2017/4/8
  */
-public class MainApplication extends Application implements Callback<Class<?>, Object> {
+public class MainApplication extends Application  {
 
     private Parameters parameters;
-    private ResourceBundle bundle;
 
     @Override
     public void init() throws Exception {
         //启动参数
         this.parameters = getParameters();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this));
-        bundle = ResourceBundle.getBundle("message.scene", Locale.getDefault(), new EncodingResourceBundleControl());
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START, this));
-        URL resource = getClass().getResource("/fxml/Scene.fxml");
-        FXMLLoader loader = new FXMLLoader(resource, bundle, null, new ControllerFactory());
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
+        FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/Scene.fxml", "message.scene");
+        Scene scene = new Scene(loadFxmlResult.getParent());
         scene.getStylesheets().add("/styles/Styles.css");
         String name = parameters.getNamed().get("name");
         String version = parameters.getNamed().get("version");
@@ -78,8 +67,4 @@ public class MainApplication extends Application implements Callback<Class<?>, O
         launch(MainApplication.class, args);
     }
 
-    @Override
-    public Object call(Class<?> param) {
-        return null;
-    }
 }

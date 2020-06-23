@@ -1,6 +1,5 @@
 package com.jean.database.api.view.treeitem;
 
-import com.jean.database.api.view.ViewContext;
 import com.jean.database.api.view.action.ICloseable;
 import com.jean.database.api.view.action.IContextMenu;
 import com.jean.database.api.view.action.IMouseAction;
@@ -14,11 +13,9 @@ import javafx.scene.control.TreeItem;
 public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMenu, IMouseAction, IRefreshable, ICloseable {
 
     private final BooleanProperty open = new SimpleBooleanProperty(this, "onOpen", false);
-    private final ViewContext viewContext;
 
-    public BaseTreeItem(T value, ViewContext viewContext) {
+    public BaseTreeItem(T value) {
         super(value);
-        this.viewContext = viewContext;
     }
 
     public boolean isOpen() {
@@ -59,8 +56,5 @@ public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMen
 
     }
 
-    public ViewContext getViewContext() {
-        return viewContext;
-    }
 }
 

@@ -19,6 +19,11 @@ import java.util.List;
 public abstract class AbstractSQLMetaDataProvider implements SQLMetadataProvider {
 
     @Override
+    public DatabaseMetaData getDatabaseMetaData(Connection connection) throws SQLException {
+        return connection.getMetaData();
+    }
+
+    @Override
     public List<CatalogMetaData> getCatalogs(Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getCatalogs()) {

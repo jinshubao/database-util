@@ -1,5 +1,6 @@
 package com.jean.database.api.utils;
 
+import com.jean.database.api.TaskManger;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -23,16 +24,16 @@ import java.util.concurrent.Executor;
  */
 public final class DialogUtil {
 
-    public static Optional<ButtonType> warning(String title, String headerText, String contentText) {
-        return alert(Alert.AlertType.WARNING, title, headerText, contentText, ButtonType.OK);
+    public static Optional<ButtonType> information(String title, String headerText, String text) {
+        return alert(Alert.AlertType.INFORMATION, title, headerText, text, ButtonType.CLOSE);
     }
 
     public static Optional<ButtonType> confirmation(String title, String headerText, String contentText) {
         return alert(Alert.AlertType.CONFIRMATION, title, headerText, contentText, ButtonType.CANCEL, ButtonType.OK);
     }
 
-    public static Optional<ButtonType> information(String title, String headerText, String text) {
-        return alert(Alert.AlertType.INFORMATION, title, headerText, text, ButtonType.CLOSE);
+    public static Optional<ButtonType> warning(String title, String headerText, String contentText) {
+        return alert(Alert.AlertType.WARNING, title, headerText, contentText, ButtonType.OK);
     }
 
     public static void error(Throwable ex) {
@@ -45,6 +46,33 @@ public final class DialogUtil {
 
     public static void error(String title, String headerText, Throwable ex) {
         error(title, headerText, ex.getMessage(), ex, ButtonType.CLOSE);
+    }
+
+    /**
+     * @param title
+     * @param headerText
+     * @param contentText
+     * @param ex
+     * @param buttonTypes
+     */
+    private static void error(String title, String headerText, String contentText, Throwable ex, ButtonType... buttonTypes) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, contentText, buttonTypes);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(getLogImage());
+        if (ex != null) {
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            String exceptionText = sw.toString();
+            TextArea textArea = new TextArea(exceptionText);
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+            textArea.setMaxWidth(Double.MAX_VALUE);
+            textArea.setMaxHeight(Double.MAX_VALUE);
+            alert.getDialogPane().setExpandableContent(textArea);
+        }
+        alert.showAndWait();
     }
 
 
@@ -105,27 +133,6 @@ public final class DialogUtil {
         return alert.showAndWait();
     }
 
-
-    private static void error(String title, String headerText, String contentText, Throwable ex, ButtonType... buttonTypes) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, contentText, buttonTypes);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(getLogImage());
-        if (ex != null) {
-            StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
-            String exceptionText = sw.toString();
-            TextArea textArea = new TextArea(exceptionText);
-            textArea.setEditable(false);
-            textArea.setWrapText(true);
-            textArea.setMaxWidth(Double.MAX_VALUE);
-            textArea.setMaxHeight(Double.MAX_VALUE);
-            alert.getDialogPane().setExpandableContent(textArea);
-        }
-        alert.showAndWait();
-    }
-
     /**
      * 自定义对话框
      *
@@ -179,6 +186,10 @@ public final class DialogUtil {
             dialog.setResultConverter(resultConverter);
         }
         return dialog;
+    }
+
+    public static <T> Optional<T> progressDialog(String title, String headerText, Task<T> task) {
+        return progressDialog(title, headerText, task, TaskManger.getExecutor());
     }
 
     /**

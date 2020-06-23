@@ -35,7 +35,6 @@ public abstract class BaseTask<V> extends Task<V> {
         logger.debug("task[{}] failed", this);
         Throwable exception = getException();
         if (exception != null) {
-            logger.error(exception.getMessage(), exception);
             DialogUtil.error(exception);
         }
     }
