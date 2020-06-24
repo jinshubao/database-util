@@ -1,7 +1,7 @@
 package com.jean.database.sql;
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.ViewContext;
+import com.jean.database.api.ViewManger;
 import com.jean.database.sql.meta.TableSummaries;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -24,14 +24,12 @@ public class SQLObjectTabController implements Initializable {
     public TableView<TableSummaries> objectTableView;
     public TableView<KeyValuePair<String, Object>> generalInfoTableView;
     public TextArea ddlInfoTextArea;
-    private ViewContext viewContext;
     private Tab tab;
 
     public SQLObjectTabController() {
     }
 
-    public SQLObjectTabController(String title, ViewContext viewContext) {
-        this.viewContext = viewContext;
+    public SQLObjectTabController(String title) {
         this.tab = new Tab(title);
     }
 
@@ -42,7 +40,7 @@ public class SQLObjectTabController implements Initializable {
         this.tab.setContent(root);
         this.tab.setOnCloseRequest(event -> {
         });
-        viewContext.getObjectTabPan().getTabs().add(tab);
+        ViewManger.getViewContext().getObjectTabPan().getTabs().add(tab);
         selected();
 
         TableColumn<TableSummaries, String> tableName = (TableColumn<TableSummaries, String>) objectTableView.getColumns().get(0);
@@ -87,8 +85,8 @@ public class SQLObjectTabController implements Initializable {
         tab.getTabPane().getSelectionModel().select(tab);
     }
 
-    public static Callback<Class<?>, Object> getFactory(String title, ViewContext viewContext) {
-        return param -> new SQLObjectTabController(title, viewContext);
+    public static Callback<Class<?>, Object> getFactory(String title) {
+        return param -> new SQLObjectTabController(title);
     }
 
     public void addObjectTab(Tab tab) {

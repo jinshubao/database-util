@@ -13,7 +13,7 @@ public final class StringUtils {
     }
 
     public static boolean isBlank(String text) {
-        return text == null || text.length() == 0;
+        return text == null || text.isEmpty() || text.trim().isEmpty();
     }
 
     public static String join(List<String> collection, String sp) {

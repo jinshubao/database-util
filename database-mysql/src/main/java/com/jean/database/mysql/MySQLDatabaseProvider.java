@@ -7,13 +7,10 @@ import com.jean.database.sql.SQLDatabaseProvider;
 import com.jean.database.sql.SQLMetadataProvider;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.Properties;
 
 public class MySQLDatabaseProvider extends SQLDatabaseProvider {
 
@@ -76,8 +73,8 @@ public class MySQLDatabaseProvider extends SQLDatabaseProvider {
     @Override
     public SQLConnectionConfiguration getConnectionConfiguration() {
         try {
-            MySQLConfigurationControllerFactory factory = new MySQLConfigurationControllerFactory(getViewContext());
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", Locale.SIMPLIFIED_CHINESE,factory);
+            Callback<Class<?>, Object> factory = MySQLConfigurationController.getFactory();
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", Locale.SIMPLIFIED_CHINESE, factory);
             Parent parent = loadFxmlResult.getParent();
             MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.getController();
             controller.setValue(this.defaultConnectionConfiguration);
@@ -109,4 +106,8 @@ public class MySQLDatabaseProvider extends SQLDatabaseProvider {
         return false;
     }
 
+    @Override
+    public int getOrder() {
+        return 10000;
+    }
 }

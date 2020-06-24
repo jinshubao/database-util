@@ -10,10 +10,10 @@ import java.util.ServiceLoader;
 /**
  * @author jinshubao
  */
-public final class DatabaseManager {
+public final class ProviderManager {
 
 
-    private DatabaseManager() {
+    private ProviderManager() {
     }
 
     private static final class Holder {
@@ -28,6 +28,6 @@ public final class DatabaseManager {
     }
 
     public static List<IDatabaseProvider> getProviders() {
-        return Collections.unmodifiableList(Holder.providers);
+        return new ArrayList<>(Holder.providers);
     }
 }

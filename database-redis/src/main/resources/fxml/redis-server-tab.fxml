@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.BorderPane?>
+<SplitPane fx:id="root" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.jean.database.redis.RedisServerInfoController" dividerPositions="0.6">
+    <LineChart fx:id="memoryLineChart" BorderPane.alignment="CENTER">
+        <xAxis>
+            <CategoryAxis side="BOTTOM" label="时间（s）"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis side="LEFT" label="内存（byte）"/>
+        </yAxis>
+    </LineChart>
+    <ScrollPane>
+        <Label fx:id="serverProperties" text="EMPTY" BorderPane.alignment="CENTER"/>
+    </ScrollPane>
+</SplitPane>

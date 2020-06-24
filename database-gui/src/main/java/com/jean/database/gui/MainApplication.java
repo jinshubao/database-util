@@ -10,7 +10,8 @@ import javafx.application.Preloader;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -18,19 +19,22 @@ import java.util.Arrays;
  * @author jinshubao
  * @date 2017/4/8
  */
-public class MainApplication extends Application  {
+public class MainApplication extends Application {
+    private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
     private Parameters parameters;
 
     @Override
     public void init() throws Exception {
         //启动参数
+        logger.debug("application init");
         this.parameters = getParameters();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this));
     }
 
     @Override
     public void start(Stage stage) throws Exception {
+        logger.debug("application start");
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START, this));
         FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/Scene.fxml", "message.scene");
         Scene scene = new Scene(loadFxmlResult.getParent());
@@ -52,6 +56,7 @@ public class MainApplication extends Application  {
 
     @Override
     public void stop() throws Exception {
+        logger.debug("application stop");
         TaskManger.shutdown();
     }
 
@@ -64,6 +69,7 @@ public class MainApplication extends Application  {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        logger.debug("application launch");
         launch(MainApplication.class, args);
     }
 

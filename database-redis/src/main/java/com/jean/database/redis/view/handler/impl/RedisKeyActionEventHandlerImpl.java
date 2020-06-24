@@ -4,6 +4,7 @@ import com.jean.database.api.BaseTask;
 import com.jean.database.api.TaskManger;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
+import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.model.RedisKey;
 import com.jean.database.redis.model.RedisValue;
@@ -24,9 +25,9 @@ import java.util.stream.Collectors;
 
 public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandler {
 
-    private final RedisObjectTabController objectTabController;
+    private final RedisDatabaseTabController objectTabController;
 
-    public RedisKeyActionEventHandlerImpl(RedisObjectTabController objectTabController) {
+    public RedisKeyActionEventHandlerImpl(RedisDatabaseTabController objectTabController) {
         this.objectTabController = objectTabController;
     }
 
@@ -62,12 +63,12 @@ public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandl
 
     private static class RedisValueTask extends BaseTask<RedisValueWrapper> {
 
-        private final RedisObjectTabController objectTabController;
+        private final RedisDatabaseTabController objectTabController;
         private final RedisConnectionConfiguration configuration;
         private final int database;
         private final byte[] key;
 
-        public RedisValueTask(RedisKey redisKey, RedisObjectTabController objectTabController) {
+        public RedisValueTask(RedisKey redisKey, RedisDatabaseTabController objectTabController) {
             this.configuration = redisKey.getConnectionConfiguration();
             this.database = redisKey.getDatabase();
             this.key = redisKey.getKey();

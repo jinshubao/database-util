@@ -7,12 +7,9 @@ public abstract class AbstractDatabaseProvider implements IDatabaseProvider {
 
     public static final Logger logger = LoggerFactory.getLogger(AbstractDatabaseProvider.class);
 
-    private ViewContext viewContext;
-
     @Override
-    public void init(ViewContext viewContext) {
+    public void init() {
         logger.debug("{} provider init", getName());
-        this.viewContext = viewContext;
     }
 
     @Override
@@ -25,7 +22,4 @@ public abstract class AbstractDatabaseProvider implements IDatabaseProvider {
 
     }
 
-    public ViewContext getViewContext() {
-        return viewContext;
-    }
 }

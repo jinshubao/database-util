@@ -1,110 +1,51 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.TableViewRowIndexColumnCellFactory;
-import com.jean.database.api.ViewContext;
-import com.jean.database.redis.factory.RedisKeyTableRowFactory;
-import com.jean.database.redis.factory.RedisValueTableRowFactory;
-import com.jean.database.redis.factory.TableViewByteColumnCellFactory;
-import com.jean.database.redis.model.RedisKey;
-import com.jean.database.redis.model.RedisValue;
-import com.jean.database.redis.view.handler.IRedisKeyActionEventHandler;
-import com.jean.database.redis.view.handler.IRedisValueActionEventHandler;
-import com.jean.database.redis.view.handler.impl.RedisKeyActionEventHandlerImpl;
-import com.jean.database.redis.view.handler.impl.RedisValueActionEventHandlerImpl;
+import com.jean.database.api.ViewManger;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class RedisObjectTabController implements Initializable {
 
-    public SplitPane root;
-    public TableView<RedisKey> keyTableView;
-    public SplitPane valueSplitPane;
-    public TableView<RedisValue> valueTableView;
-    public TextField keyTextFiled;
-    public TextArea valueTextArea;
-    public Button saveButton;
+    public TabPane root;
 
-    private Tab tab;
-    private ViewContext viewContext;
+    private Tab objectTab;
 
     public RedisObjectTabController() {
     }
 
-    public RedisObjectTabController(String title, ViewContext viewContext) {
-        this.viewContext = viewContext;
-        this.tab = new Tab(title);
+    public RedisObjectTabController(String title) {
+        this.objectTab = new Tab(title);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.tab.setContent(root);
-        this.tab.setOnCloseRequest(event -> {
+        this.objectTab.setContent(root);
+        this.objectTab.setOnCloseRequest(event -> {
 
         });
-        viewContext.getObjectTabPan().getTabs().add(tab);
+        ViewManger.getViewContext().getObjectTabPan().getTabs().add(objectTab);
         selected();
-
-        TableViewRowIndexColumnCellFactory tableViewRowIndexColumnCellFactory = new TableViewRowIndexColumnCellFactory();
-        TableViewByteColumnCellFactory tableViewByteColumnCellFactory = new TableViewByteColumnCellFactory();
-
-        TableColumn<RedisKey, Integer> keyNoColumn = (TableColumn<RedisKey, Integer>) keyTableView.getColumns().get(0);
-        keyNoColumn.setCellFactory(tableViewRowIndexColumnCellFactory);
-        TableColumn<RedisKey, byte[]> keyColumn = (TableColumn<RedisKey, byte[]>) keyTableView.getColumns().get(1);
-        keyColumn.setCellFactory(tableViewByteColumnCellFactory);
-        keyColumn.setCellValueFactory(param -> param.getValue().keyProperty());
-        TableColumn<RedisKey, String> typeColumn = (TableColumn<RedisKey, String>) keyTableView.getColumns().get(2);
-        typeColumn.setCellValueFactory(param -> param.getValue().typeProperty());
-        TableColumn<RedisKey, Number> sizeColumn = (TableColumn<RedisKey, Number>) keyTableView.getColumns().get(3);
-        sizeColumn.setCellValueFactory(param -> param.getValue().sizeProperty());
-        TableColumn<RedisKey, Number> ttlColumn = (TableColumn<RedisKey, Number>) keyTableView.getColumns().get(4);
-        ttlColumn.setCellValueFactory(param -> param.getValue().ttlProperty());
-
-        IRedisKeyActionEventHandler handler = new RedisKeyActionEventHandlerImpl(this);
-        keyTableView.setRowFactory(new RedisKeyTableRowFactory(handler));
-
-        TableColumn<RedisValue, Integer> valueNoColumn = (TableColumn<RedisValue, Integer>) valueTableView.getColumns().get(0);
-        valueNoColumn.setCellFactory(tableViewRowIndexColumnCellFactory);
-        TableColumn<RedisValue, byte[]> valueKeyColumn = (TableColumn<RedisValue, byte[]>) valueTableView.getColumns().get(1);
-        valueKeyColumn.setCellFactory(tableViewByteColumnCellFactory);
-        valueKeyColumn.setCellValueFactory(param -> param.getValue().keyProperty());
-        TableColumn<RedisValue, byte[]> valueColumn = (TableColumn<RedisValue, byte[]>) valueTableView.getColumns().get(2);
-        valueColumn.setCellFactory(tableViewByteColumnCellFactory);
-        valueColumn.setCellValueFactory(param -> param.getValue().valueProperty());
-        TableColumn<RedisValue, Number> valueScoreColumn = (TableColumn<RedisValue, Number>) valueTableView.getColumns().get(3);
-        valueScoreColumn.setCellValueFactory(param -> param.getValue().scoreProperty());
-
-        IRedisValueActionEventHandler valueActionEventHandler = new RedisValueActionEventHandlerImpl(this);
-        valueTableView.setRowFactory(new RedisValueTableRowFactory(valueActionEventHandler));
-
     }
 
-
-    public void updateKeyTableView(List<RedisKey> list) {
-        this.keyTableView.getItems().clear();
-        if (list != null && !list.isEmpty()) {
-            this.keyTableView.getItems().addAll(list);
-        }
-    }
-
-    public void updateValueTableView(List<RedisValue> list) {
-        this.valueTableView.getItems().clear();
-        if (list != null && !list.isEmpty()) {
-            this.valueTableView.getItems().addAll(list);
-        }
-    }
-
-
-    public static Callback<Class<?>, Object> getFactory(String title, ViewContext viewContext) {
-        return param -> new RedisObjectTabController(title, viewContext);
+    public static Callback<Class<?>, Object> getFactory(String title) {
+        return param -> new RedisObjectTabController(title);
     }
 
     public void selected() {
-        viewContext.getObjectTabPan().getSelectionModel().select(tab);
+        ViewManger.getViewContext().getObjectTabPan().getSelectionModel().select(objectTab);
     }
+
+    public void selectDatabaseTab(Tab tab) {
+        root.getSelectionModel().select(tab);
+    }
+
+    public void addDatabaseTab(Tab tab) {
+        root.getTabs().add(tab);
+    }
+
 }

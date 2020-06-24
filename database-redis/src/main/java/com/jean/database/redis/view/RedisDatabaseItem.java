@@ -3,10 +3,14 @@ package com.jean.database.redis.view;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.api.utils.FxmlUtils;
+import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
 import com.jean.database.api.view.treeitem.BaseTreeItem;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
+import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.model.RedisKey;
 import io.lettuce.core.KeyScanCursor;
@@ -16,7 +20,9 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.util.Callback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +38,8 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
     private final ContextMenu contextMenu;
     private final RedisObjectTabController objectTabController;
 
+    private RedisDatabaseTabController databaseTabController;
+
     public RedisDatabaseItem(int database,
                              RedisConnectionConfiguration connectionConfiguration,
                              RedisObjectTabController objectTabController) {
@@ -40,11 +48,11 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
         this.database = database;
         this.objectTabController = objectTabController;
 
-        MenuItem refreshItem = new MenuItem("刷新");
+        MenuItem refreshItem = new MenuItem("刷新", ImageUtils.createImageView("/image/redis/x16/refresh.png"));
         refreshItem.setOnAction(event -> {
         });
 
-        MenuItem flushItem = new MenuItem("清空");
+        MenuItem flushItem = new MenuItem("清空", ImageUtils.createImageView("/image/redis/x16/delete.png"));
         flushItem.setOnAction(event -> {
         });
 
@@ -106,7 +114,19 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
         protected void succeeded() {
             super.succeeded();
             List<RedisKey> value = getValue();
-            objectTabController.updateKeyTableView(value);
+            if (databaseTabController == null) {
+                Callback<Class<?>, Object> factory = RedisDatabaseTabController.getFactory(RedisDatabaseItem.this.getValue(), objectTabController);
+                try {
+                    FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", factory);
+                    databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
+                    databaseTabController.updateKeyTableView(value);
+                } catch (IOException e) {
+                    DialogUtil.error(e);
+                }
+            } else {
+                databaseTabController.updateKeyTableView(value);
+            }
+            databaseTabController.selected();
         }
     }
 }

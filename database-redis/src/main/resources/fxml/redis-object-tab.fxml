@@ -1,48 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<SplitPane fx:id="root" dividerPositions="0.5" xmlns="http://javafx.com/javafx/8.0.211"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.jean.database.redis.RedisObjectTabController">
-    <TableView fx:id="keyTableView">
-        <columns>
-            <TableColumn maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" text="No."/>
-            <TableColumn text="KEY"/>
-            <TableColumn text="TYPE"/>
-            <TableColumn text="SIZE"/>
-            <TableColumn text="TTL"/>
-        </columns>
-        <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-        </columnResizePolicy>
-    </TableView>
-    <SplitPane fx:id="valueSplitPane" dividerPositions="0.8" orientation="VERTICAL">
-        <TableView fx:id="valueTableView">
-            <columns>
-                <TableColumn maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" text="No."/>
-                <TableColumn text="KEY"/>
-                <TableColumn text="VALUE"/>
-                <TableColumn text="SCORE"/>
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-            </columnResizePolicy>
-        </TableView>
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0"/>
-                <ColumnConstraints hgrow="SOMETIMES"/>
-                <ColumnConstraints hgrow="NEVER" maxWidth="10.0" minWidth="10.0" prefWidth="10.0"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
-            </rowConstraints>
-            <TextField fx:id="keyTextFiled" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-            <TextArea fx:id="valueTextArea" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <Button fx:id="saveButton" text="保存" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        </GridPane>
-    </SplitPane>
-</SplitPane>
+<?import javafx.scene.control.TabPane?>
+<TabPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.211"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="com.jean.database.redis.RedisObjectTabController">
+</TabPane>

@@ -2,19 +2,29 @@ package com.jean.database.redis.view;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
+import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.view.treeitem.BaseTreeItem;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisObjectTabController;
+import com.jean.database.redis.RedisServerInfoController;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TreeItem;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
+import sun.misc.IOUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +33,13 @@ import java.util.List;
  */
 public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> {
     private final RedisConnectionConfiguration connectionConfiguration;
-    private final ViewContext viewContext;
     private final ContextMenu contextMenu;
     private RedisObjectTabController objectTabController;
+    private RedisServerInfoController serverInfoController;
 
-    public RedisServerItem(RedisConnectionConfiguration connectionConfiguration, ViewContext viewContext) {
-        super(connectionConfiguration);
+    public RedisServerItem(RedisConnectionConfiguration connectionConfiguration) {
+        super(connectionConfiguration, ImageUtils.createImageView("/image/redis/x16/server.png"));
         this.connectionConfiguration = connectionConfiguration;
-        this.viewContext = viewContext;
         this.contextMenu = createContextMenu();
     }
 
@@ -59,24 +68,33 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
     }
 
     private ContextMenu createContextMenu() {
-        MenuItem openItem = new MenuItem("打开连接");
+        MenuItem openItem = new MenuItem("打开连接", ImageUtils.createImageView("/image/redis/x16/connect.png"));
         openItem.disableProperty().bind(openProperty());
         openItem.setOnAction(event -> open());
 
-        MenuItem closeItem = new MenuItem("关闭连接");
+        MenuItem closeItem = new MenuItem("关闭连接", ImageUtils.createImageView("/image/redis/x16/disconnect.png"));
         closeItem.disableProperty().bind(openProperty().not());
         closeItem.setOnAction(event -> {
+
+        });
+
+        MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/redis/x16/delete.png"));
+        commandLine.setOnAction(event -> {
+            TextArea textArea = new TextArea();
+            textArea.setFont(Font.font(16.0D));
+            textArea.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
+            objectTabController.addDatabaseTab(new Tab("命令行", textArea));
         });
 
         MenuItem propertyItem = new MenuItem("连接属性");
         propertyItem.disableProperty().bind(openProperty().not());
         propertyItem.setOnAction(event -> TaskManger.execute(new RedisServerInfoTask()));
 
-        MenuItem deleteItem = new MenuItem("删除连接");
+        MenuItem deleteItem = new MenuItem("删除连接", ImageUtils.createImageView("/image/redis/x16/delete.png"));
         deleteItem.setOnAction(event -> {
         });
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(openItem, closeItem, propertyItem, deleteItem);
+        contextMenu.getItems().addAll(openItem, closeItem, commandLine, propertyItem, deleteItem);
         return contextMenu;
     }
 
@@ -89,6 +107,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         protected List<Integer> call() throws Exception {
             try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
                 RedisCommands<byte[], byte[]> commands = connection.sync();
+
                 List<Integer> list = new ArrayList<>();
                 try {
                     for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -107,7 +126,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
             super.succeeded();
             try {
                 String title = connectionConfiguration.getConnectionName();
-                Callback<Class<?>, Object> factory = RedisObjectTabController.getFactory(title, viewContext);
+                Callback<Class<?>, Object> factory = RedisObjectTabController.getFactory(title);
                 FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", factory);
                 objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
                 List<Integer> number = getValue();
@@ -139,8 +158,19 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         @Override
         protected void succeeded() {
             super.succeeded();
-            DialogUtil.information("Redis server properties", "", getValue());
+            String value = getValue();
+
+            if (serverInfoController == null) {
+                Callback<Class<?>, Object> factory = RedisServerInfoController.getControllerFactory(connectionConfiguration);
+                try {
+                    FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-server-tab.fxml", factory);
+                    serverInfoController = (RedisServerInfoController) loadFxmlResult.getController();
+                    objectTabController.addDatabaseTab(serverInfoController.getServerInfoTab());
+                } catch (IOException e) {
+                    DialogUtil.error(e);
+                }
+            }
+            serverInfoController.serverProperties.setText(value);
         }
     }
-
 }

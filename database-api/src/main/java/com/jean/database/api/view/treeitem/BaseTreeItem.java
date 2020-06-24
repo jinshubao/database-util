@@ -6,6 +6,7 @@ import com.jean.database.api.view.action.IMouseAction;
 import com.jean.database.api.view.action.IRefreshable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 
@@ -16,6 +17,10 @@ public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMen
 
     public BaseTreeItem(T value) {
         super(value);
+    }
+
+    public BaseTreeItem(T value, Node graphic) {
+        super(value, graphic);
     }
 
     public boolean isOpen() {

@@ -1,20 +1,19 @@
 package com.jean.database.mysql;
 
-import com.jean.database.api.ViewContext;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class MySQLConfigurationController implements Initializable {
 
-
-    private ViewContext viewContext;
     public TextField name;
     public TextField host;
     public TextField port;
@@ -22,13 +21,9 @@ public class MySQLConfigurationController implements Initializable {
     public PasswordField password;
     public TextField properties;
     public TextField location;
-    public ComboBox charset;
+    public ComboBox<Charset> charset;
     private StringConverter<Properties> converter;
 
-
-    public MySQLConfigurationController(ViewContext viewContext) {
-        this.viewContext = viewContext;
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,5 +51,10 @@ public class MySQLConfigurationController implements Initializable {
         String propertiesText = properties.getText();
         Properties properties = converter.fromString(propertiesText);
         return new MySQLConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
+    }
+
+
+    public static Callback<Class<?>, Object> getFactory() {
+        return param -> new MySQLConfigurationController();
     }
 }

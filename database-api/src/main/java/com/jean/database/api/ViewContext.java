@@ -31,4 +31,6 @@ public interface ViewContext {
 
     void addDatabaseItem(TreeItem treeItem);
 
+    void addConnectionMenus(MenuItem... menu);
+
 }

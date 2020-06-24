@@ -1,32 +1,26 @@
 package com.jean.database.sql;
 
 import com.jean.database.api.AbstractDatabaseProvider;
-import com.jean.database.api.ViewContext;
+import com.jean.database.api.ViewManger;
 import com.jean.database.sql.view.treeitem.ServerTreeItem;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 
 public abstract class SQLDatabaseProvider extends AbstractDatabaseProvider {
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void init(ViewContext context) {
-        super.init(context);
-        MenuBar menuBar = context.getMenuBar();
-        Menu fileMenu = menuBar.getMenus().get(0);
-        Menu menu = (Menu) fileMenu.getItems().get(0);
+    public void init() {
+        super.init();
         MenuItem menuItem = new MenuItem(getName());
-        menu.getItems().add(menuItem);
         menuItem.setOnAction(event -> {
-            SQLConnectionConfiguration configuration = this.getConnectionConfiguration();
+            SQLConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                SQLMetadataProvider metadataProvider = this.getMetadataProvider();
-                TreeItem treeItem = new ServerTreeItem(configuration, metadataProvider, context);
-                context.getDatabaseTreeView().getRoot().getChildren().add(treeItem);
+                SQLMetadataProvider metadataProvider = getMetadataProvider();
+                TreeItem treeItem = new ServerTreeItem(configuration, metadataProvider);
+                ViewManger.getViewContext().addDatabaseItem(treeItem);
             }
         });
+        ViewManger.getViewContext().addConnectionMenus(menuItem);
     }
 
     public String getCatalogIcon() {

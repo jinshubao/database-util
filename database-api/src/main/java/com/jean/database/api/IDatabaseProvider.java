@@ -2,7 +2,7 @@ package com.jean.database.api;
 
 public interface IDatabaseProvider {
 
-    void init(ViewContext viewContext);
+    void init();
 
     String getIdentifier();
 
@@ -11,5 +11,14 @@ public interface IDatabaseProvider {
     String getIcon();
 
     void close();
+
+    /**
+     * 排序字段
+     *
+     * @return 排序
+     */
+    default int getOrder() {
+        return 0;
+    }
 
 }

@@ -1,13 +1,12 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.AbstractDatabaseProvider;
-import com.jean.database.api.ViewContext;
+import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
+import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.redis.view.RedisServerItem;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.util.Callback;
 
@@ -23,19 +22,16 @@ public class RedisDatabaseProvider extends AbstractDatabaseProvider {
     }
 
     @Override
-    public void init(ViewContext context) {
-        super.init(context);
-        MenuBar menuBar = context.getMenuBar();
-        Menu fileMenu = menuBar.getMenus().get(0);
-        Menu menu = (Menu) fileMenu.getItems().get(0);
-        MenuItem menuItem = new MenuItem(getName());
-        menu.getItems().add(menuItem);
+    public void init() {
+        super.init();
+        MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/image/redis/redis_logo_24.png"));
         menuItem.setOnAction(event -> {
-            RedisConnectionConfiguration configuration = this.getConnectionConfiguration();
+            RedisConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                context.addDatabaseItem(new RedisServerItem(configuration, context));
+                ViewManger.getViewContext().addDatabaseItem(new RedisServerItem(configuration));
             }
         });
+        ViewManger.getViewContext().addConnectionMenus(menuItem);
     }
 
     @Override
@@ -64,5 +60,10 @@ public class RedisDatabaseProvider extends AbstractDatabaseProvider {
             DialogUtil.error(e);
         }
         return null;
+    }
+
+    @Override
+    public int getOrder() {
+        return 30000;
     }
 }

@@ -130,4 +130,8 @@ public class OracleDatabaseProvider extends SQLDatabaseProvider {
         }
     }
 
+    @Override
+    public int getOrder() {
+        return 20000;
+    }
 }

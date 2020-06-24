@@ -56,6 +56,7 @@ public final class DialogUtil {
      * @param buttonTypes
      */
     private static void error(String title, String headerText, String contentText, Throwable ex, ButtonType... buttonTypes) {
+        System.out.println(ex);
         Alert alert = new Alert(Alert.AlertType.ERROR, contentText, buttonTypes);
         alert.setTitle(title);
         alert.setHeaderText(headerText);

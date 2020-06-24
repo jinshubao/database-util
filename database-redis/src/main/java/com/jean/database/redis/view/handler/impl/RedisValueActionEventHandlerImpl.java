@@ -1,16 +1,16 @@
 package com.jean.database.redis.view.handler.impl;
 
 import com.jean.database.redis.RedisConstant;
-import com.jean.database.redis.RedisObjectTabController;
+import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.model.RedisValue;
 import com.jean.database.redis.view.handler.IRedisValueActionEventHandler;
 import javafx.scene.control.TableRow;
 
 public class RedisValueActionEventHandlerImpl implements IRedisValueActionEventHandler {
 
-    private final RedisObjectTabController objectTabController;
+    private final RedisDatabaseTabController objectTabController;
 
-    public RedisValueActionEventHandlerImpl(RedisObjectTabController objectTabController) {
+    public RedisValueActionEventHandlerImpl(RedisDatabaseTabController objectTabController) {
         this.objectTabController = objectTabController;
     }
 

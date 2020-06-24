@@ -150,7 +150,7 @@ public class SQLDataTableTab extends Tab implements ChangeListener<Number> {
                     list = tableRows.stream().map(value -> {
                         Map<String, ObjectProperty> row = new LinkedHashMap<>(value.size());
                         for (Map.Entry<String, Object> entry : value.entrySet()) {
-                            row.put(entry.getKey(), new SimpleObjectProperty(entry.getValue()));
+                            row.put(entry.getKey(), new SimpleObjectProperty<>(entry.getValue()));
                         }
                         return row;
                     }).collect(Collectors.toList());

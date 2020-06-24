@@ -2,7 +2,6 @@ package com.jean.database.sql.view.treeitem;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.sql.SQLConnectionConfiguration;
@@ -28,15 +27,11 @@ import java.util.List;
 public class ServerTreeItem extends BaseDatabaseItem<String> {
 
     private final ContextMenu contextMenu;
-    private final ViewContext viewContext;
 
     private SQLObjectTabController objectTabController;
 
-    public ServerTreeItem(SQLConnectionConfiguration connectionConfiguration,
-                          SQLMetadataProvider metadataProvider,
-                          ViewContext viewContext) {
+    public ServerTreeItem(SQLConnectionConfiguration connectionConfiguration, SQLMetadataProvider metadataProvider) {
         super(connectionConfiguration.getConnectionName(), connectionConfiguration, metadataProvider);
-        this.viewContext = viewContext;
         this.contextMenu = this.createContextMenu();
     }
 
@@ -135,7 +130,7 @@ public class ServerTreeItem extends BaseDatabaseItem<String> {
             super.succeeded();
             try {
                 String title = getConnectionConfiguration().getConnectionName();
-                Callback<Class<?>, Object> factory = SQLObjectTabController.getFactory(title, viewContext);
+                Callback<Class<?>, Object> factory = SQLObjectTabController.getFactory(title);
                 FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("/fxml/sql-object-tab.fxml", factory);
                 objectTabController = (SQLObjectTabController) fxmlResult.getController();
                 ServerTreeItem serverTreeItem = ServerTreeItem.this;
