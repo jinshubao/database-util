@@ -22,18 +22,16 @@ public class RedisConnectionConfiguration extends AbstractConnectionConfiguratio
 
 
     public StatefulRedisConnection<byte[], byte[]> getConnection() {
-        RedisURI.Builder builder = RedisURI.builder()
-                .withHost(getHost())
-                .withPort(getPort());
-        if (getPassword() != null) {
-            builder.withPassword(getPassword());
-        }
-
         if (client == null) {
             synchronized (this) {
                 if (client == null) {
-                    RedisURI redisURI = builder.build();
-                    client = RedisClient.create(redisURI);
+                    RedisURI.Builder builder = RedisURI.builder()
+                            .withHost(getHost())
+                            .withPort(getPort());
+                    if (getPassword() != null) {
+                        builder.withPassword(getPassword());
+                    }
+                    client = RedisClient.create(builder.build());
                 }
             }
         }

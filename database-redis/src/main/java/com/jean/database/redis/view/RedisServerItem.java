@@ -11,20 +11,22 @@ import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.RedisServerInfoController;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.codec.ByteArrayCodec;
+import io.lettuce.core.output.ByteArrayOutput;
+import io.lettuce.core.protocol.Command;
+import io.lettuce.core.protocol.ProtocolKeyword;
+import io.lettuce.core.protocol.RedisCommand;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
-import sun.misc.IOUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,10 +81,16 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         });
 
         MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/redis/x16/delete.png"));
+        commandLine.disableProperty().bind(openProperty().not());
         commandLine.setOnAction(event -> {
             TextArea textArea = new TextArea();
             textArea.setFont(Font.font(16.0D));
             textArea.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
+            textArea.setOnKeyPressed(event1 -> {
+                if (event1.getCode() == KeyCode.ENTER) {
+                    TaskManger.execute(new RedisCommandTask("PING"));
+                }
+            });
             objectTabController.addDatabaseTab(new Tab("命令行", textArea));
         });
 
@@ -107,7 +115,6 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         protected List<Integer> call() throws Exception {
             try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
                 RedisCommands<byte[], byte[]> commands = connection.sync();
-
                 List<Integer> list = new ArrayList<>();
                 try {
                     for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -171,6 +178,58 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
                 }
             }
             serverInfoController.serverProperties.setText(value);
+        }
+    }
+
+    private class RedisCommandTask extends BaseTask<byte[]> {
+
+        private final String redisCommand;
+
+        public RedisCommandTask(String redisCommand) {
+            this.redisCommand = redisCommand;
+        }
+
+        @Override
+        protected byte[] call() throws Exception {
+            try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
+                Command<byte[], byte[], byte[]> command = new Command<>(new StringCommandType(redisCommand), new ByteArrayOutput<>(ByteArrayCodec.INSTANCE));
+                RedisCommand<byte[], byte[], byte[]> dispatch = connection.dispatch(command);
+                return dispatch.getOutput().get();
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            byte[] value = getValue();
+            logger.debug("command result: {}", value);
+        }
+    }
+
+
+    static class StringCommandType implements ProtocolKeyword {
+
+        private final byte[] commandTypeBytes;
+        private final String commandType;
+
+        StringCommandType(String commandType) {
+            this.commandType = commandType;
+            this.commandTypeBytes = commandType.getBytes();
+        }
+
+        @Override
+        public byte[] getBytes() {
+            return commandTypeBytes;
+        }
+
+        @Override
+        public String name() {
+            return commandType;
+        }
+
+        @Override
+        public String toString() {
+            return name();
         }
     }
 }
