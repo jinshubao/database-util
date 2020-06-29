@@ -14,13 +14,19 @@ public class OracleConnectionConfiguration extends SQLConnectionConfiguration {
 
     private static final String URL_TEMPLATE = "jdbc:mysql://%s:%d";
 
-    public OracleConnectionConfiguration(String connectionName, String host, Integer port, String user, String password, Properties properties) {
-        super(connectionName, host, port, user, password, properties);
-        if (!this.getProperties().contains("user") && user != null) {
-            this.getProperties().put("user", user);
-        }
-        if (!this.getProperties().contains("password") && password != null) {
-            this.getProperties().put("password", password);
+    public OracleConnectionConfiguration(String connectionName, String host, Integer port, String user, String password) {
+        this(connectionName, host, port, user, password, new Properties());
+    }
+
+    public OracleConnectionConfiguration(String connectionName, String host, Integer port, String username, String password, Properties properties) {
+        super(connectionName, host, port, username, password, properties);
+        if (this.getProperties() != null) {
+            if (!this.getProperties().contains("user") && username != null) {
+                this.getProperties().put("user", username);
+            }
+            if (!this.getProperties().contains("password") && password != null) {
+                this.getProperties().put("password", password);
+            }
         }
     }
 

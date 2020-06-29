@@ -1,6 +1,6 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.AbstractDatabaseProvider;
+import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
@@ -12,7 +12,9 @@ import javafx.util.Callback;
 
 import java.util.Locale;
 
-public class RedisDatabaseProvider extends AbstractDatabaseProvider {
+public class RedisDatabaseProvider implements IDatabaseProvider {
+
+    private static final String NAME = "Redis";
 
     private final RedisConnectionConfiguration defaultCollectConfiguration;
 
@@ -23,8 +25,7 @@ public class RedisDatabaseProvider extends AbstractDatabaseProvider {
 
     @Override
     public void init() {
-        super.init();
-        MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/image/redis/redis_logo_24.png"));
+        MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/redis/redis.png"));
         menuItem.setOnAction(event -> {
             RedisConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
@@ -36,12 +37,16 @@ public class RedisDatabaseProvider extends AbstractDatabaseProvider {
 
     @Override
     public String getIdentifier() {
-        return "Redis";
+        return NAME;
     }
 
     @Override
     public String getName() {
-        return "Redis";
+        return NAME;
+    }
+
+    public void close() {
+
     }
 
     private RedisConnectionConfiguration getConnectionConfiguration() {

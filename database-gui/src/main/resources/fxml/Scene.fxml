@@ -2,30 +2,33 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.gui.controller.MainController">
+
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.gui.controller.MainController">
     <top>
         <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <Menu fx:id="file" mnemonicParsing="false" text="文件">
-                <MenuItem fx:id="setting" mnemonicParsing="false" text="设置"/>
-                <Menu fx:id="connections" mnemonicParsing="false" text="新建链接"/>
-                <MenuItem fx:id="exist" mnemonicParsing="false" text="退出"/>
+                <MenuItem fx:id="setting" mnemonicParsing="false" text="设置" />
+                <Menu fx:id="connections" mnemonicParsing="false" text="新建链接" />
+                <MenuItem fx:id="exist" mnemonicParsing="false" text="退出" />
             </Menu>
-            <Menu fx:id="view" mnemonicParsing="false" text="查看"/>
-            <Menu fx:id="collections" mnemonicParsing="false" text="收藏"/>
-            <Menu fx:id="tools" mnemonicParsing="false" text="工具"/>
-            <Menu fx:id="window" mnemonicParsing="false" text="窗口"/>
-            <Menu fx:id="help" mnemonicParsing="false" text="帮助"/>
+            <Menu fx:id="view" mnemonicParsing="false" text="查看" />
+            <Menu fx:id="collections" mnemonicParsing="false" text="收藏" />
+            <Menu fx:id="tools" mnemonicParsing="false" text="工具" />
+            <Menu fx:id="window" mnemonicParsing="false" text="窗口" />
+            <Menu fx:id="help" mnemonicParsing="false" text="帮助" />
         </MenuBar>
     </top>
     <center>
         <SplitPane dividerPositions="0.2" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
-            <TreeView fx:id="databaseTreeView"/>
-            <TabPane fx:id="objectTabPan"/>
+            <TreeView fx:id="databaseTreeView" />
+            <TabPane fx:id="objectTabPan" />
         </SplitPane>
     </center>
     <bottom>
-        <HBox fx:id="messageBox" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" BorderPane.alignment="CENTER_LEFT"/>
+        <HBox fx:id="messageBox" alignment="CENTER_LEFT" maxHeight="30.0" prefHeight="30.0" BorderPane.alignment="CENTER_LEFT">
+         <children>
+            <ProgressBar fx:id="progressBar" progress="0.0" />
+         </children>
+        </HBox>
     </bottom>
 </BorderPane>

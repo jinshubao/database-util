@@ -8,10 +8,6 @@ public interface IDatabaseProvider {
 
     String getName();
 
-    String getIcon();
-
-    void close();
-
     /**
      * 排序字段
      *

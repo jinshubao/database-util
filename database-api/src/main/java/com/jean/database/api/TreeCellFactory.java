@@ -1,7 +1,7 @@
 package com.jean.database.api;
 
-import com.jean.database.api.view.action.IContextMenu;
-import com.jean.database.api.view.action.IMouseAction;
+import com.jean.database.api.action.IContextMenu;
+import com.jean.database.api.action.IMouseAction;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;

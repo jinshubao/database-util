@@ -1,6 +1,6 @@
 package com.jean.database.redis.view.handler;
 
-import com.jean.database.api.view.handler.IMouseEventHandler;
+import com.jean.database.api.IMouseEventHandler;
 import com.jean.database.redis.model.RedisValue;
 import javafx.scene.control.TableRow;
 

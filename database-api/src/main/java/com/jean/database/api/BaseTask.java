@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public abstract class BaseTask<V> extends Task<V> {
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final String taskId;
 

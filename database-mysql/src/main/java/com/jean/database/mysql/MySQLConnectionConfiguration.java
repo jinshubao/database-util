@@ -19,14 +19,10 @@ public class MySQLConnectionConfiguration extends SQLConnectionConfiguration {
         this.getProperties().put("useSSL", "false");
         this.getProperties().put("remarks", "true");
         this.getProperties().put("useInformationSchema", "true");
-        this.getProperties().put("user", user);
-        this.getProperties().put("password", password);
     }
 
     public MySQLConnectionConfiguration(String connectionName, String host, Integer port, String user, String password, Properties properties) {
         super(connectionName, host, port, user, password, properties);
-        this.getProperties().put("user", user);
-        this.getProperties().put("password", password);
     }
 
     @Override
@@ -36,7 +32,7 @@ public class MySQLConnectionConfiguration extends SQLConnectionConfiguration {
         if (this.getProperties() != null && !this.getProperties().isEmpty()) {
             builder.append("?");
             this.getProperties().forEach((key, value) -> builder.append(key).append("=").append(value).append(PROPERTY_SEPARATOR));
-            builder.replace(builder.length() - 2, builder.length() - 1, "");
+            builder.replace(builder.length() - 1, builder.length(), "");
         }
         return builder.toString();
     }

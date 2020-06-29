@@ -1,40 +1,53 @@
 package com.jean.database.oracle;
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.sql.AbstractSQLMetaDataProvider;
+import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableSummaries;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class OracleMetadataProvider extends AbstractSQLMetaDataProvider {
+public class OracleMetadataProvider extends SQLMetadataProvider {
 
-    @Override
-    public List<Map<String, Object>> getTableRows(Connection connection, TableMetaData tableMetaData, int pageSize, int pageIndex) throws SQLException {
-        //TODO
-        return Collections.emptyList();
+    public OracleMetadataProvider(DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override
-    public int getTableRowCount(Connection connection, TableMetaData tableMetaData) throws SQLException {
-        //TODO
-        return 0;
+    public List<Map<String, Object>> getTableRows(TableMetaData tableMetaData, int pageSize, int pageIndex) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            //TODO
+            return Collections.emptyList();
+        }
     }
 
     @Override
-    public List<TableSummaries> getTableSummaries(Connection connection, String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException {
-        //TODO
-        return Collections.emptyList();
+    public int getTableRowCount(TableMetaData tableMetaData) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            //TODO
+            return 0;
+        }
     }
 
     @Override
-    public List<KeyValuePair<String, Object>> getTableDetails(Connection connection, String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
-        //TODO
-        return Collections.emptyList();
+    public List<TableSummaries> getTableSummaries(String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            //TODO
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<KeyValuePair<String, Object>> getTableDetails(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            //TODO
+            return Collections.emptyList();
+        }
     }
 
 }

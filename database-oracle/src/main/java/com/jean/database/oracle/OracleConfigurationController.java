@@ -1,4 +1,4 @@
-package com.jean.database.mysql;
+package com.jean.database.oracle;
 
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class MySQLConfigurationController implements Initializable {
+public class OracleConfigurationController implements Initializable {
 
     public TextField name;
     public TextField host;
@@ -27,11 +27,11 @@ public class MySQLConfigurationController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        converter = new MySQLPropertiesConverter();
+        converter = new OraclePropertiesStringConverter();
 
     }
 
-    public void setValue(MySQLConnectionConfiguration connectionConfiguration) {
+    public void setValue(OracleConnectionConfiguration connectionConfiguration) {
         if (connectionConfiguration != null) {
             name.setText(connectionConfiguration.getConnectionName());
             host.setText(connectionConfiguration.getHost());
@@ -42,7 +42,7 @@ public class MySQLConfigurationController implements Initializable {
         }
     }
 
-    public MySQLConnectionConfiguration getValue() {
+    public OracleConnectionConfiguration getValue() {
         String nameText = name.getText();
         String hostText = host.getText();
         Integer portText = Integer.valueOf(port.getText());
@@ -50,11 +50,11 @@ public class MySQLConfigurationController implements Initializable {
         String passwordText = password.getText();
         String propertiesText = properties.getText();
         Properties properties = converter.fromString(propertiesText);
-        return new MySQLConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
+        return new OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
     }
 
 
     public static Callback<Class<?>, Object> getFactory() {
-        return param -> new MySQLConfigurationController();
+        return param -> new OracleConfigurationController();
     }
 }

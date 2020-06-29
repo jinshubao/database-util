@@ -7,7 +7,7 @@ import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
-import com.jean.database.api.view.treeitem.BaseTreeItem;
+import com.jean.database.api.BaseTreeItem;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
@@ -48,11 +48,11 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
         this.database = database;
         this.objectTabController = objectTabController;
 
-        MenuItem refreshItem = new MenuItem("刷新", ImageUtils.createImageView("/image/redis/x16/refresh.png"));
+        MenuItem refreshItem = new MenuItem("刷新", ImageUtils.createImageView("/image/refresh.png"));
         refreshItem.setOnAction(event -> {
         });
 
-        MenuItem flushItem = new MenuItem("清空", ImageUtils.createImageView("/image/redis/x16/delete.png"));
+        MenuItem flushItem = new MenuItem("清空", ImageUtils.createImageView("/image/delete.png"));
         flushItem.setOnAction(event -> {
         });
 

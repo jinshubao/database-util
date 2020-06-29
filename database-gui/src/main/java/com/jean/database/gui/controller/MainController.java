@@ -4,12 +4,11 @@ import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.TreeCellFactory;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.ViewManger;
-import com.jean.database.api.view.action.IMouseAction;
+import com.jean.database.api.action.IMouseAction;
 import com.jean.database.gui.ProviderManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -54,6 +53,9 @@ public class MainController implements ViewContext, Initializable {
     private TabPane objectTabPan;
     @FXML
     private HBox messageBox;
+    @FXML
+    private ProgressBar progressBar;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -85,26 +87,6 @@ public class MainController implements ViewContext, Initializable {
     }
 
     @Override
-    public Node getRoot() {
-        return root;
-    }
-
-    @Override
-    public MenuBar getMenuBar() {
-        return menuBar;
-    }
-
-    @Override
-    public TreeView getDatabaseTreeView() {
-        return databaseTreeView;
-    }
-
-    @Override
-    public TabPane getObjectTabPan() {
-        return objectTabPan;
-    }
-
-    @Override
     public void addObjectTab(Tab tab) {
         objectTabPan.getTabs().add(tab);
     }
@@ -115,17 +97,6 @@ public class MainController implements ViewContext, Initializable {
     }
 
     @Override
-    public void addInfoTab(Tab tab) {
-        objectTabPan.getTabs().add(tab);
-    }
-
-    @Override
-    public void removeInfoTab(Tab tab) {
-        objectTabPan.getTabs().remove(tab);
-    }
-
-    @Override
-
     public void addDatabaseItem(TreeItem treeItem) {
         databaseTreeView.getRoot().getChildren().add(treeItem);
     }
@@ -135,4 +106,13 @@ public class MainController implements ViewContext, Initializable {
         connections.getItems().addAll(menu);
     }
 
+    @Override
+    public void addViewMenus(MenuItem... menu) {
+        view.getItems().addAll(menu);
+    }
+
+    @Override
+    public void updateProgress(double progress) {
+        progressBar.setProgress(progress);
+    }
 }

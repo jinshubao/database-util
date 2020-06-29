@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+
+<SplitPane fx:id="root" dividerPositions="0.5" xmlns="http://javafx.com/javafx/8.0.211"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.jean.database.mysql.MySQLObjectTabController">
+    <TabPane fx:id="sqlObjectTabPan">
+        <Tab text="对象" closable="false">
+            <TableView fx:id="sqlObjectTableView">
+                <columns>
+                    <TableColumn text="表名"/>
+                    <TableColumn text="自动递增值"/>
+                    <TableColumn text="修改日期"/>
+                    <TableColumn text="数据长度"/>
+                    <TableColumn text="表类型"/>
+                    <TableColumn text="行数"/>
+                    <TableColumn text="注释"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+        </Tab>
+    </TabPane>
+    <TabPane>
+        <Tab text="通用" closable="false">
+            <TableView fx:id="generalInfoTableView">
+                <columns>
+                    <TableColumn text="名"/>
+                    <TableColumn text="值"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+            </TableView>
+        </Tab>
+        <Tab text="DDL" closable="false">
+            <TextArea fx:id="ddlInfoTextArea" editable="false" wrapText="true"/>
+        </Tab>
+    </TabPane>
+</SplitPane>

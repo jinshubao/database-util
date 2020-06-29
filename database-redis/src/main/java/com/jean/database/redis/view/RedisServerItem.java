@@ -5,7 +5,7 @@ import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.api.view.treeitem.BaseTreeItem;
+import com.jean.database.api.BaseTreeItem;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.RedisServerInfoController;
@@ -40,7 +40,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
     private RedisServerInfoController serverInfoController;
 
     public RedisServerItem(RedisConnectionConfiguration connectionConfiguration) {
-        super(connectionConfiguration, ImageUtils.createImageView("/image/redis/x16/server.png"));
+        super(connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
         this.connectionConfiguration = connectionConfiguration;
         this.contextMenu = createContextMenu();
     }
@@ -70,17 +70,17 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
     }
 
     private ContextMenu createContextMenu() {
-        MenuItem openItem = new MenuItem("打开连接", ImageUtils.createImageView("/image/redis/x16/connect.png"));
+        MenuItem openItem = new MenuItem("打开连接", ImageUtils.createImageView("/image/connect.png"));
         openItem.disableProperty().bind(openProperty());
         openItem.setOnAction(event -> open());
 
-        MenuItem closeItem = new MenuItem("关闭连接", ImageUtils.createImageView("/image/redis/x16/disconnect.png"));
+        MenuItem closeItem = new MenuItem("关闭连接", ImageUtils.createImageView("/image/disconnect.png"));
         closeItem.disableProperty().bind(openProperty().not());
         closeItem.setOnAction(event -> {
 
         });
 
-        MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/redis/x16/delete.png"));
+        MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/delete.png"));
         commandLine.disableProperty().bind(openProperty().not());
         commandLine.setOnAction(event -> {
             TextArea textArea = new TextArea();
@@ -98,7 +98,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         propertyItem.disableProperty().bind(openProperty().not());
         propertyItem.setOnAction(event -> TaskManger.execute(new RedisServerInfoTask()));
 
-        MenuItem deleteItem = new MenuItem("删除连接", ImageUtils.createImageView("/image/redis/x16/delete.png"));
+        MenuItem deleteItem = new MenuItem("删除连接", ImageUtils.createImageView("/image/delete.png"));
         deleteItem.setOnAction(event -> {
         });
         ContextMenu contextMenu = new ContextMenu();

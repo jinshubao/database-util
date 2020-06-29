@@ -28,7 +28,7 @@ public class RedisObjectTabController implements Initializable {
         this.objectTab.setOnCloseRequest(event -> {
 
         });
-        ViewManger.getViewContext().getObjectTabPan().getTabs().add(objectTab);
+        ViewManger.getViewContext().addObjectTab(objectTab);
         selected();
     }
 
@@ -37,7 +37,10 @@ public class RedisObjectTabController implements Initializable {
     }
 
     public void selected() {
-        ViewManger.getViewContext().getObjectTabPan().getSelectionModel().select(objectTab);
+        TabPane tabPane = objectTab.getTabPane();
+        if (tabPane != null) {
+            tabPane.getSelectionModel().select(objectTab);
+        }
     }
 
     public void selectDatabaseTab(Tab tab) {

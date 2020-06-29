@@ -13,24 +13,15 @@ public interface ViewContext {
     public static final String MENU_ID__WINDOW_MENU = "database_window_menu";
     public static final String MENU_ID__HELP_MENU = "database_help_menu";
 
-    Node getRoot();
-
-    MenuBar getMenuBar();
-
-    TreeView getDatabaseTreeView();
-
-    TabPane getObjectTabPan();
-
     void addObjectTab(Tab tab);
 
     void removeObjectTab(Tab tab);
-
-    void addInfoTab(Tab tab);
-
-    void removeInfoTab(Tab tab);
 
     void addDatabaseItem(TreeItem treeItem);
 
     void addConnectionMenus(MenuItem... menu);
 
+    void addViewMenus(MenuItem... menu);
+
+    void updateProgress(double progress);
 }

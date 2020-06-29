@@ -17,6 +17,17 @@ public class TableTypeMetaData {
     private StringProperty tableSchema = new SimpleStringProperty(this, "tableSchema");
     private StringProperty tableType = new SimpleStringProperty(this, "tableType");
 
+    public TableTypeMetaData() {
+    }
+
+    public TableTypeMetaData(String tableCat, String quoteString, String separator, String tableSchema, String tableType) {
+        this.tableCat.set(tableCat);
+        this.quoteString.set(quoteString);
+        this.separator.set(separator);
+        this.tableSchema.set(tableSchema);
+        this.tableType.set(tableType);
+    }
+
     public String getTableCat() {
         return tableCat.get();
     }
