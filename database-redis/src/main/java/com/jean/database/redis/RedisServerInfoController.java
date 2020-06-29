@@ -48,12 +48,6 @@ public class RedisServerInfoController implements Initializable {
         usedMemoryLua.setName("used memory lua");
         memoryLineChart.getData().add(usedMemoryLua);
         serverInfoTab.setContent(root);
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                TaskManger.execute(new RedisServerInfoTask());
-            }
-        }, 0, 5000);
     }
 
     public static Callback<Class<?>, Object> getControllerFactory(RedisConnectionConfiguration connectionConfiguration) {
@@ -68,6 +62,21 @@ public class RedisServerInfoController implements Initializable {
         serverInfoTab.getTabPane().getSelectionModel().select(serverInfoTab);
     }
 
+    private Timer timer = null;
+
+    public void startTimerTask() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                TaskManger.execute(new RedisServerInfoTask());
+            }
+        }, 0, 5000);
+    }
+
 
     private class RedisServerInfoTask extends BaseTask<ServerInfo> {
 
@@ -80,7 +89,11 @@ public class RedisServerInfoController implements Initializable {
                 for (String string : strings) {
                     if (!StringUtils.isBlank(string) && !string.startsWith("#")) {
                         String[] split = string.split(":");
-                        list.add(new KeyValuePair<>(split[0], split[1]));
+                        if (split.length == 1) {
+                            list.add(new KeyValuePair<>(split[0], null));
+                        } else if (split.length == 2) {
+                            list.add(new KeyValuePair<>(split[0], split[1]));
+                        }
                     }
                 }
                 return new ServerInfo(value, list);

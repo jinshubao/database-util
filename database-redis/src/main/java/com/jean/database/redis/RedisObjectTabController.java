@@ -28,8 +28,6 @@ public class RedisObjectTabController implements Initializable {
         this.objectTab.setOnCloseRequest(event -> {
 
         });
-        ViewManger.getViewContext().addObjectTab(objectTab);
-        selected();
     }
 
     public static Callback<Class<?>, Object> getFactory(String title) {
@@ -48,7 +46,12 @@ public class RedisObjectTabController implements Initializable {
     }
 
     public void addDatabaseTab(Tab tab) {
-        root.getTabs().add(tab);
+        if (!root.getTabs().contains(tab)) {
+            root.getTabs().add(tab);
+        }
     }
 
+    public Tab getObjectTab() {
+        return objectTab;
+    }
 }

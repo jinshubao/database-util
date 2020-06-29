@@ -1,11 +1,12 @@
 package com.jean.database.redis.view;
 
 import com.jean.database.api.BaseTask;
+import com.jean.database.api.BaseTreeItem;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.api.BaseTreeItem;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.RedisServerInfoController;
@@ -43,6 +44,23 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         super(connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
         this.connectionConfiguration = connectionConfiguration;
         this.contextMenu = createContextMenu();
+
+        try {
+            String title = connectionConfiguration.getConnectionName();
+            Callback<Class<?>, Object> factory = RedisObjectTabController.getFactory(title);
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", factory);
+            objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
+        } catch (IOException e) {
+            DialogUtil.error(e);
+        }
+
+        try {
+            Callback<Class<?>, Object> factory = RedisServerInfoController.getControllerFactory(connectionConfiguration);
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-server-tab.fxml", factory);
+            serverInfoController = (RedisServerInfoController) loadFxmlResult.getController();
+        } catch (IOException e) {
+            DialogUtil.error(e);
+        }
     }
 
     @Override
@@ -52,9 +70,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
 
     @Override
     public void select() {
-        if (objectTabController != null) {
-            objectTabController.selected();
-        }
+        objectTabController.selected();
     }
 
     @Override
@@ -65,6 +81,10 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
 
     private void open() {
         if (!isOpen()) {
+            setExpanded(true);
+            setOpen(true);
+            ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
+            objectTabController.selected();
             TaskManger.execute(new OpenServerTask());
         }
     }
@@ -96,7 +116,11 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
 
         MenuItem propertyItem = new MenuItem("连接属性");
         propertyItem.disableProperty().bind(openProperty().not());
-        propertyItem.setOnAction(event -> TaskManger.execute(new RedisServerInfoTask()));
+        propertyItem.setOnAction(event -> {
+            objectTabController.addDatabaseTab(serverInfoController.getServerInfoTab());
+            TaskManger.execute(new RedisServerInfoTask());
+            serverInfoController.startTimerTask();
+        });
 
         MenuItem deleteItem = new MenuItem("删除连接", ImageUtils.createImageView("/image/delete.png"));
         deleteItem.setOnAction(event -> {
@@ -131,20 +155,10 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         @SuppressWarnings({"rawtypes", "unchecked"})
         protected void succeeded() {
             super.succeeded();
-            try {
-                String title = connectionConfiguration.getConnectionName();
-                Callback<Class<?>, Object> factory = RedisObjectTabController.getFactory(title);
-                FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", factory);
-                objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
-                List<Integer> number = getValue();
-                for (Integer index : number) {
-                    TreeItem databaseItem = new RedisDatabaseItem(index, connectionConfiguration, objectTabController);
-                    redisServerItem.getChildren().add(databaseItem);
-                }
-                redisServerItem.setExpanded(true);
-                redisServerItem.setOpen(true);
-            } catch (Exception e) {
-                DialogUtil.error(e);
+            List<Integer> number = getValue();
+            for (Integer index : number) {
+                TreeItem databaseItem = new RedisDatabaseItem(index, connectionConfiguration, objectTabController);
+                redisServerItem.getChildren().add(databaseItem);
             }
         }
     }
@@ -165,19 +179,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         @Override
         protected void succeeded() {
             super.succeeded();
-            String value = getValue();
-
-            if (serverInfoController == null) {
-                Callback<Class<?>, Object> factory = RedisServerInfoController.getControllerFactory(connectionConfiguration);
-                try {
-                    FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-server-tab.fxml", factory);
-                    serverInfoController = (RedisServerInfoController) loadFxmlResult.getController();
-                    objectTabController.addDatabaseTab(serverInfoController.getServerInfoTab());
-                } catch (IOException e) {
-                    DialogUtil.error(e);
-                }
-            }
-            serverInfoController.serverProperties.setText(value);
+            serverInfoController.serverProperties.setText(getValue());
         }
     }
 

@@ -37,5 +37,5 @@ jfx {
                "-verbose:class"]
     jvmProperties = [:]
     userJvmArgs = [:]
-    launcherArguments = ["--name=DB-GUI", "--version=0.1-snapshot"]
+    launcherArguments = ["--name=database-GUI", "--version=0.1-snapshot"]
 }

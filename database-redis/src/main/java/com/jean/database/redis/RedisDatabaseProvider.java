@@ -19,8 +19,9 @@ public class RedisDatabaseProvider implements IDatabaseProvider {
     private final RedisConnectionConfiguration defaultCollectConfiguration;
 
     public RedisDatabaseProvider() {
-        String host = "101.132.156.127";
-        this.defaultCollectConfiguration = new RedisConnectionConfiguration("Redis[" + host + "]", host, 6379, "123!=-09][po");
+        String host = "127.0.0.1";
+        this.defaultCollectConfiguration
+                = new RedisConnectionConfiguration("Redis[" + host + "]", host, 6379, null);
     }
 
     @Override

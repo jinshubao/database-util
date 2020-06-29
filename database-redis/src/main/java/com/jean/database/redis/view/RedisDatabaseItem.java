@@ -2,12 +2,12 @@ package com.jean.database.redis.view;
 
 
 import com.jean.database.api.BaseTask;
+import com.jean.database.api.BaseTreeItem;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
-import com.jean.database.api.BaseTreeItem;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
@@ -59,11 +59,27 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
         contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(refreshItem, flushItem);
 
+        setGraphic(ImageUtils.createImageView("/redis/db.png"));
     }
 
 
     @Override
     public void select() {
+    }
+
+    @Override
+    public void doubleClick() {
+        if (!isOpen()) {
+            try {
+                Callback<Class<?>, Object> factory = RedisDatabaseTabController.getFactory(RedisDatabaseItem.this.getValue(), objectTabController);
+                FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", factory);
+                databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
+                setOpen(true);
+            } catch (IOException e) {
+                DialogUtil.error(e);
+            }
+        }
+        databaseTabController.selected();
         TaskManger.execute(new RedisKeysTask());
     }
 
@@ -113,20 +129,7 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
         @Override
         protected void succeeded() {
             super.succeeded();
-            List<RedisKey> value = getValue();
-            if (databaseTabController == null) {
-                Callback<Class<?>, Object> factory = RedisDatabaseTabController.getFactory(RedisDatabaseItem.this.getValue(), objectTabController);
-                try {
-                    FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", factory);
-                    databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
-                    databaseTabController.updateKeyTableView(value);
-                } catch (IOException e) {
-                    DialogUtil.error(e);
-                }
-            } else {
-                databaseTabController.updateKeyTableView(value);
-            }
-            databaseTabController.selected();
+            databaseTabController.updateKeyTableView(getValue());
         }
     }
 }
