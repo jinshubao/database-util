@@ -2,7 +2,10 @@ package com.jean.database.mogo;
 
 import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.ViewManger;
+import com.jean.database.api.utils.ImageUtils;
 import javafx.scene.control.MenuItem;
+
+import java.awt.*;
 
 public class MongoDatabaseProvider implements IDatabaseProvider {
 
@@ -32,7 +35,7 @@ public class MongoDatabaseProvider implements IDatabaseProvider {
 
     @Override
     public void init() {
-        MenuItem menuItem = new MenuItem(getName());
+        MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/mongo/mongodb.png"));
         menuItem.setOnAction(event -> {
 
         });

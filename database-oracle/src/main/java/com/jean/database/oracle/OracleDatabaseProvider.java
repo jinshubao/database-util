@@ -4,6 +4,7 @@ import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
+import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.sql.SQLConnectionConfiguration;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -38,7 +39,7 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
 
     @Override
     public void init() {
-        MenuItem menuItem = new MenuItem(getName());
+        MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/oracle/oracle.png"));
         menuItem.setOnAction(event -> {
             SQLConnectionConfiguration configuration = getConfiguration();
             if (configuration != null) {

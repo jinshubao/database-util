@@ -5,16 +5,21 @@ import com.jean.database.api.TreeCellFactory;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.ViewManger;
 import com.jean.database.api.action.IMouseAction;
+import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.gui.ProviderManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
@@ -83,6 +88,8 @@ public class MainController implements ViewContext, Initializable {
     }
 
     private void initMenuBar() {
+        setting.setGraphic(ImageUtils.createImageView("/image/settings.png"));
+        exist.setGraphic(ImageUtils.createImageView("/image/exit.png"));
         exist.setOnAction(event -> Platform.exit());
     }
 

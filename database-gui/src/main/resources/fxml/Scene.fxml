@@ -7,8 +7,8 @@
     <top>
         <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <Menu fx:id="file" mnemonicParsing="false" text="文件">
-                <MenuItem fx:id="setting" mnemonicParsing="false" text="设置" />
                 <Menu fx:id="connections" mnemonicParsing="false" text="新建链接" />
+                <MenuItem fx:id="setting" mnemonicParsing="false" text="设置"/>
                 <MenuItem fx:id="exist" mnemonicParsing="false" text="退出" />
             </Menu>
             <Menu fx:id="view" mnemonicParsing="false" text="查看" />

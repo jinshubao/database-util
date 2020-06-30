@@ -78,7 +78,7 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         close.disableProperty().bind(openProperty().not());
         close.setOnAction(event -> close());
 
-        MenuItem copy = new MenuItem("复制连接...");
+        MenuItem copy = new MenuItem("复制连接...", ImageUtils.createImageView("/image/copy.png"));
         copy.setOnAction(event -> {
         });
 
@@ -86,7 +86,7 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         delete.setOnAction(event -> {
         });
 
-        MenuItem properties = new MenuItem("连接属性...");
+        MenuItem properties = new MenuItem("连接属性...", ImageUtils.createImageView("/image/info.png"));
         properties.setOnAction(event -> {
         });
 
@@ -94,15 +94,15 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         create.setOnAction(event -> {
         });
 
-        MenuItem commandLine = new MenuItem("命令行界面...");
+        MenuItem commandLine = new MenuItem("命令行界面...", ImageUtils.createImageView("/image/command.png"));
         commandLine.setOnAction(event -> {
         });
 
-        MenuItem executeSqlFile = new MenuItem("运行SQL文件...");
+        MenuItem executeSqlFile = new MenuItem("运行SQL文件...", ImageUtils.createImageView("/image/run.png"));
         executeSqlFile.setOnAction(event -> {
         });
 
-        MenuItem dataTransform = new MenuItem("数据传输...");
+        MenuItem dataTransform = new MenuItem("数据传输...", ImageUtils.createImageView("/image/trans.png"));
         dataTransform.setOnAction(event -> {
         });
 

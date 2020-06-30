@@ -82,7 +82,7 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
         open.disableProperty().bind(openProperty());
         open.setOnAction(event -> open());
 
-        MenuItem copy = new MenuItem("复制表");
+        MenuItem copy = new MenuItem("复制表", ImageUtils.createImageView("/image/copy.png"));
         copy.setOnAction(event -> {
         });
 

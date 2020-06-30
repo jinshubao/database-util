@@ -82,17 +82,17 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
             //TODO
         });
 
-        MenuItem properties = new MenuItem("数据库属性...");
+        MenuItem properties = new MenuItem("数据库属性...", ImageUtils.createImageView("/image/info.png"));
         properties.setOnAction(event -> {
 
         });
 
-        MenuItem commandLine = new MenuItem("命令行界面...");
+        MenuItem commandLine = new MenuItem("命令行界面...", ImageUtils.createImageView("/image/command.png"));
         commandLine.setOnAction(event -> {
 
         });
 
-        MenuItem executeSqlFile = new MenuItem("运行SQL文件...");
+        MenuItem executeSqlFile = new MenuItem("运行SQL文件...", ImageUtils.createImageView("/image/run.png"));
         executeSqlFile.setOnAction(event -> {
         });
 
@@ -104,10 +104,10 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         exportStruct.setOnAction(event -> {
         });
 
-        Menu exportSqlFile = new Menu("转储SQL文件...");
+        Menu exportSqlFile = new Menu("转储SQL文件...", ImageUtils.createImageView("/image/export.png"));
         exportSqlFile.getItems().addAll(exportStructAndData, exportStruct);
 
-        MenuItem printDatabase = new MenuItem("打印数据库...");
+        MenuItem printDatabase = new MenuItem("打印数据库...", ImageUtils.createImageView("/image/print.png"));
         printDatabase.setOnAction(event -> {
         });
 
@@ -119,7 +119,7 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         convertDatabaseToMode.setOnAction(event -> {
         });
 
-        MenuItem findInDatabase = new MenuItem("在数据库中查找...");
+        MenuItem findInDatabase = new MenuItem("在数据库中查找...", ImageUtils.createImageView("/image/search.png"));
         findInDatabase.setOnAction(event -> {
         });
 
