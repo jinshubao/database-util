@@ -10,8 +10,6 @@ import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableTypeMetaData;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -59,16 +57,15 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
     public void close() {
         super.close();
         objectTabController.clear();
-        setOpen(false);
     }
 
     private ContextMenu createContextMenu() {
 
-        MenuItem open = new MenuItem("打开数据库",ImageUtils.createImageView("/image/connect.png"));
+        MenuItem open = new MenuItem("打开数据库", ImageUtils.createImageView("/image/connect.png"));
         open.disableProperty().bind(this.openProperty());
         open.setOnAction(event -> doubleClick());
 
-        MenuItem close = new MenuItem("关闭数据库",ImageUtils.createImageView("/image/disconnect.png"));
+        MenuItem close = new MenuItem("关闭数据库", ImageUtils.createImageView("/image/disconnect.png"));
         close.disableProperty().bind(this.openProperty().not());
         close.setOnAction(event -> close());
 
@@ -123,7 +120,7 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         findInDatabase.setOnAction(event -> {
         });
 
-        MenuItem refresh = new MenuItem("刷新",ImageUtils.createImageView("/image/refresh.png"));
+        MenuItem refresh = new MenuItem("刷新", ImageUtils.createImageView("/image/refresh.png"));
         refresh.setOnAction(event -> {
             TaskManger.execute(new TableTypeTask());
         });

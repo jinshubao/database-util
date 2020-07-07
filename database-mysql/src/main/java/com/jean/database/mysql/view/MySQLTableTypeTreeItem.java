@@ -36,11 +36,6 @@ public class MySQLTableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> 
         }
     }
 
-    @Override
-    public void close() {
-        super.close();
-    }
-
     private class RefreshTableInfoTask extends BaseTask<List<TableSummaries>> {
 
         SQLMetadataProvider metadataProvider = MySQLTableTypeTreeItem.this.getMetadataProvider();

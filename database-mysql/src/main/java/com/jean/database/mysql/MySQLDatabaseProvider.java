@@ -11,7 +11,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -47,7 +46,7 @@ public class MySQLDatabaseProvider implements IDatabaseProvider {
                 dataSource.setMaximumPoolSize(2);
                 dataSource.setMaximumPoolSize(1);
                 MySQLMetadataProvider metadataProvider = new MySQLMetadataProvider(dataSource);
-                TreeItem treeItem = new MySQLServerTreeItem(configuration.getConnectionName(), metadataProvider);
+                MySQLServerTreeItem treeItem = new MySQLServerTreeItem(configuration.getConnectionName(), metadataProvider);
                 ViewManger.getViewContext().addDatabaseItem(treeItem);
             }
         });

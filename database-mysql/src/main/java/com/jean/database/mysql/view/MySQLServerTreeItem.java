@@ -55,17 +55,10 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         }
     }
 
-    @Override
-    public void close() {
-        super.close();
-        setOpen(false);
-    }
-
     private void open() {
         if (isOpen()) {
             return;
         }
-
         TaskManger.execute(new OpenServerTask());
     }
 

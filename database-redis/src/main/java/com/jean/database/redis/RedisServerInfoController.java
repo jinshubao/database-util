@@ -22,7 +22,8 @@ public class RedisServerInfoController implements Initializable {
     public SplitPane root;
     public LineChart<String, Long> memoryLineChart;
     public Label serverProperties;
-    private Tab serverInfoTab = new Tab("Server Info");
+
+    private Tab serverInfoTab;
     private RedisConnectionConfiguration connectionConfiguration;
 
     private XYChart.Series<String, Long> usedMemory = new XYChart.Series<>();
@@ -39,6 +40,7 @@ public class RedisServerInfoController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        serverInfoTab = new Tab("Server Info");
         usedMemory.setName("used memory");
         memoryLineChart.getData().add(usedMemory);
         usedMemoryRss.setName("used memory rss");

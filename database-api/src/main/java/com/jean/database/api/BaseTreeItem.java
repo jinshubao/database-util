@@ -58,7 +58,7 @@ public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMen
 
     @Override
     public void close() {
-
+        setOpen(false);
     }
 
 }
