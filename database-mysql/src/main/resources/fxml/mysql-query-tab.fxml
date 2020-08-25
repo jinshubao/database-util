@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.251" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.jean.database.mysql.MySQLQueryTabController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10.0" BorderPane.alignment="CENTER">
+            <ComboBox fx:id="catalogComboBox"/>
+            <Button fx:id="executeButton" mnemonicParsing="false" text="执行"/>
+            <Button fx:id="formatButton" mnemonicParsing="false" text="格式化"/>
+            <Button fx:id="explainButton" mnemonicParsing="false" text="解释"/>
+            <Button fx:id="saveButton" mnemonicParsing="false" text="保存"/>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane fx:id="splitPane" dividerPositions="0.5" orientation="VERTICAL">
+            <TextArea fx:id="sqlTextArea"/>
+            <TabPane fx:id="resultTabPane" visible="false">
+                <Tab fx:id="executeInfoTab" text="信息" closable="false">
+                    <TextArea fx:id="executeInfoTextArea"/>
+                </Tab>
+                <Tab fx:id="analyseTab" text="解析" closable="false">
+                    <TableView fx:id="analyseTableView">
+                        <columns>
+                            <TableColumn fx:id="analyseStatusColumn" prefWidth="75.0" text="Status"/>
+                            <TableColumn fx:id="analyseDurationColumn" prefWidth="75.0" text="Duration"/>
+                            <TableColumn fx:id="analysePercentageColumn" prefWidth="75.0"
+                                         text="Percentage"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
+                </Tab>
+                <Tab fx:id="statusTab" text="状态" closable="false">
+                    <TableView fx:id="statusTableView">
+                        <columns>
+                            <TableColumn fx:id="statusVariableNameColumn" prefWidth="75.0"
+                                         text="VariableName"/>
+                            <TableColumn fx:id="statusValueColumn" prefWidth="75.0" text="Value"/>
+                            <TableColumn fx:id="statusDescriptionColumn" prefWidth="75.0"
+                                         text="Description"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
+                </Tab>
+            </TabPane>
+        </SplitPane>
+    </center>
+</BorderPane>

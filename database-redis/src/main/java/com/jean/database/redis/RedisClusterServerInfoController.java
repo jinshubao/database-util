@@ -4,7 +4,8 @@ import com.jean.database.api.BaseTask;
 import com.jean.database.api.KeyValuePair;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.StringUtils;
-import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -16,25 +17,24 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class RedisServerInfoController implements Initializable {
+public class RedisClusterServerInfoController implements Initializable {
 
     public SplitPane root;
     public LineChart<String, Long> memoryLineChart;
     public Label serverProperties;
-
     private Tab serverInfoTab;
-    private RedisConnectionConfiguration connectionConfiguration;
+    private RedisClusterClient redisClusterClient;
 
     private XYChart.Series<String, Long> usedMemory = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryRss = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryPeek = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryLua = new XYChart.Series<>();
 
-    public RedisServerInfoController() {
+    public RedisClusterServerInfoController() {
     }
 
-    public RedisServerInfoController(RedisConnectionConfiguration connectionConfiguration) {
-        this.connectionConfiguration = connectionConfiguration;
+    public RedisClusterServerInfoController(RedisClusterClient redisClusterClient) {
+        this.redisClusterClient = redisClusterClient;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RedisServerInfoController implements Initializable {
 
         @Override
         protected ServerInfo call() throws Exception {
-            try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
+            try (StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
                 String value = connection.sync().info();
                 String[] strings = value.split("\r\n");
                 List<KeyValuePair<String, String>> list = new ArrayList<>(strings.length);

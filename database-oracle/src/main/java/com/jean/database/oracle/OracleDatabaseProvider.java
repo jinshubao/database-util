@@ -1,5 +1,6 @@
 package com.jean.database.oracle;
 
+import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
@@ -64,7 +65,7 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
 
     private SQLConnectionConfiguration getConfiguration() {
         try {
-            Callback<Class<?>, Object> factory = OracleConfigurationController.getFactory();
+            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(OracleConfigurationController.class);
             FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml", "message.oracle", Locale.SIMPLIFIED_CHINESE, factory);
             OracleConfigurationController controller = (OracleConfigurationController) loadFxmlResult.getController();
             controller.setValue(this.defaultCollectConfiguration);

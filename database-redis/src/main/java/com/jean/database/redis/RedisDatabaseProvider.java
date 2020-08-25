@@ -5,11 +5,18 @@ import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.redis.view.RedisServerItem;
+import com.jean.database.redis.view.cluster.RedisClusterServerItem;
+import com.jean.database.redis.view.single.RedisServerItem;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.cluster.ClusterClientOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
+import io.lettuce.core.cluster.RedisClusterClient;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.util.Callback;
 
+import java.time.Duration;
+import java.util.Collections;
 import java.util.Locale;
 
 public class RedisDatabaseProvider implements IDatabaseProvider {
@@ -30,7 +37,31 @@ public class RedisDatabaseProvider implements IDatabaseProvider {
         menuItem.setOnAction(event -> {
             RedisConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                ViewManger.getViewContext().addDatabaseItem(new RedisServerItem(configuration));
+                if (configuration.isClusterMode()) {
+                    //区分是否为集群模式
+                    ClusterTopologyRefreshOptions topologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
+                            //开启自适应刷新
+                            .enableAdaptiveRefreshTrigger(ClusterTopologyRefreshOptions.RefreshTrigger.MOVED_REDIRECT, ClusterTopologyRefreshOptions.RefreshTrigger.PERSISTENT_RECONNECTS)
+                            .adaptiveRefreshTriggersTimeout(Duration.ofSeconds(10))
+                            .enablePeriodicRefresh(Duration.ofSeconds(10L))
+                            .build();
+                    ClusterClientOptions options = ClusterClientOptions.builder()
+                            .autoReconnect(true)
+                            .maxRedirects(1)
+                            .topologyRefreshOptions(topologyRefreshOptions)
+                            .build();
+                    RedisURI.Builder builder = RedisURI.builder()
+                            .withHost(configuration.getHost())
+                            .withPort(configuration.getPort());
+                    if (configuration.getPassword() != null) {
+                        builder.withPassword(configuration.getPassword());
+                    }
+                    RedisClusterClient redisClusterClient = RedisClusterClient.create(Collections.singletonList(builder.build()));
+                    redisClusterClient.setOptions(options);
+                    ViewManger.getViewContext().addDatabaseItem(new RedisClusterServerItem(configuration.getConnectionName(), redisClusterClient));
+                } else {
+                    ViewManger.getViewContext().addDatabaseItem(new RedisServerItem(configuration));
+                }
             }
         });
         ViewManger.getViewContext().addConnectionMenus(menuItem);

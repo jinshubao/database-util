@@ -1,12 +1,14 @@
 package com.jean.database.mysql;
 
+import com.jean.database.api.IObjectTabController;
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.sql.meta.TableSummaries;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,33 +17,39 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MySQLObjectTabController implements Initializable {
+public class MySQLObjectTabController implements Initializable, IObjectTabController {
 
     private static final Logger logger = LoggerFactory.getLogger(MySQLObjectTabController.class);
 
-    public SplitPane root;
+    public Pane root;
+    public SplitPane splitPane;
     public TabPane sqlObjectTabPan;
     public TableView<TableSummaries> sqlObjectTableView;
     public TableView<KeyValuePair<String, Object>> generalInfoTableView;
     public TextArea ddlInfoTextArea;
     private Tab objectTab;
 
+    private String title;
+
     public MySQLObjectTabController() {
     }
 
     public MySQLObjectTabController(String title) {
-        this.objectTab = new Tab(title);
+        this.title = title;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
         logger.debug("initialize sql object pan");
+        this.objectTab = new Tab(title);
+        this.objectTab.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
         this.objectTab.setContent(root);
         this.objectTab.setOnCloseRequest(event -> {
         });
-        ViewManger.getViewContext().addObjectTab(objectTab);
-        selected();
+        this.objectTab.setOnClosed(event -> {
+
+        });
 
         TableColumn<TableSummaries, String> tableName = (TableColumn<TableSummaries, String>) sqlObjectTableView.getColumns().get(0);
         tableName.setCellValueFactory(param -> param.getValue().tableNameProperty());
@@ -88,22 +96,24 @@ public class MySQLObjectTabController implements Initializable {
         ddlInfoTextArea.setText(null);
     }
 
-    public void selected() {
-        TabPane tabPane = objectTab.getTabPane();
-        if (tabPane != null) {
-            tabPane.getSelectionModel().select(objectTab);
-        }
-    }
-
-    public static Callback<Class<?>, Object> getFactory(String title) {
-        return param -> new MySQLObjectTabController(title);
-    }
-
     public void addObjectTab(Tab tab) {
         sqlObjectTabPan.getTabs().add(tab);
     }
 
     public void selectObjectTab(Tab tab) {
         sqlObjectTabPan.getSelectionModel().select(tab);
+    }
+
+    @Override
+    public Tab getObjectTab() {
+        return this.objectTab;
+    }
+
+    @Override
+    public void select() {
+        TabPane tabPane = objectTab.getTabPane();
+        if (tabPane != null) {
+            tabPane.getSelectionModel().select(objectTab);
+        }
     }
 }

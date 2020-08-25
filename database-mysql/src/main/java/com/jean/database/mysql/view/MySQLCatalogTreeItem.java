@@ -1,16 +1,22 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.api.BaseTask;
+import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mysql.MySQLObjectTabController;
+import com.jean.database.mysql.MySQLQueryTabController;
 import com.jean.database.sql.BaseDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableTypeMetaData;
 import javafx.scene.control.*;
+import javafx.util.Callback;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,6 +70,21 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         MenuItem open = new MenuItem("打开数据库", ImageUtils.createImageView("/image/connect.png"));
         open.disableProperty().bind(this.openProperty());
         open.setOnAction(event -> doubleClick());
+
+        MenuItem query = new MenuItem("新建查询", ImageUtils.createImageView("/image/add.png"));
+        query.disableProperty().bind(this.openProperty().not());
+        query.setOnAction(event -> {
+            List<String> list = getParent().getChildren().stream().map(item -> item.getValue().getTableCat()).collect(Collectors.toList());
+            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(MySQLQueryTabController.class, list, getValue().getTableCat());
+            try {
+                FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/mysql-query-tab.fxml", factory);
+                Tab tab = new Tab("查询", loadFxmlResult.getParent());
+                objectTabController.addObjectTab(tab);
+                objectTabController.selectObjectTab(tab);
+            } catch (IOException e) {
+                DialogUtil.error(e);
+            }
+        });
 
         MenuItem close = new MenuItem("关闭数据库", ImageUtils.createImageView("/image/disconnect.png"));
         close.disableProperty().bind(this.openProperty().not());
@@ -126,9 +147,14 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         });
 
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(open, close, new SeparatorMenuItem(),
-                create, delete, properties, new SeparatorMenuItem(),
-                commandLine, executeSqlFile, exportSqlFile, printDatabase, dataTransform, convertDatabaseToMode, findInDatabase, new SeparatorMenuItem(),
+        contextMenu.getItems().addAll(open, close,
+                new SeparatorMenuItem(),
+                query,
+                new SeparatorMenuItem(),
+                create, delete, properties,
+                new SeparatorMenuItem(),
+                commandLine, executeSqlFile, exportSqlFile, printDatabase, dataTransform, convertDatabaseToMode, findInDatabase,
+                new SeparatorMenuItem(),
                 refresh);
         return contextMenu;
     }

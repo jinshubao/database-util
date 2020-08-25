@@ -12,7 +12,6 @@ import com.jean.database.redis.view.handler.impl.RedisKeyActionEventHandlerImpl;
 import com.jean.database.redis.view.handler.impl.RedisValueActionEventHandlerImpl;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.List;
@@ -96,11 +95,6 @@ public class RedisDatabaseTabController implements Initializable {
         if (list != null && !list.isEmpty()) {
             this.valueTableView.getItems().addAll(list);
         }
-    }
-
-
-    public static Callback<Class<?>, Object> getFactory(String title, RedisObjectTabController objectTabController) {
-        return param -> new RedisDatabaseTabController(title, objectTabController);
     }
 
     public void selected() {

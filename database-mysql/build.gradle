@@ -1,6 +1,8 @@
 dependencies {
     compile 'mysql:mysql-connector-java:5.1.41'
-    compile 'com.zaxxer:HikariCP:3.4.5'
+//    compile 'com.zaxxer:HikariCP:3.4.5'
+//    compile 'org.apache.calcite:calcite-core:1.23.0'
+    compile 'com.alibaba:druid:1.1.23'
 
     compile project(":database-sql")
     compileOnly project(":database-api")

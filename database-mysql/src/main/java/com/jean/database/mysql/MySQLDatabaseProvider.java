@@ -1,5 +1,7 @@
 package com.jean.database.mysql;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
@@ -7,7 +9,6 @@ import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mysql.view.MySQLServerTreeItem;
 import com.jean.database.sql.SQLConnectionConfiguration;
-import com.zaxxer.hikari.HikariDataSource;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -29,7 +30,7 @@ public class MySQLDatabaseProvider implements IDatabaseProvider {
         this.identifier = NAME;
         this.name = NAME;
         this.defaultConnectionConfiguration = new MySQLConnectionConfiguration("mysql[127.0.0.1]", "127.0.0.1",
-                3306, "root", "123456");
+                3307, "root", "123456");
     }
 
     @Override
@@ -38,13 +39,15 @@ public class MySQLDatabaseProvider implements IDatabaseProvider {
         menuItem.setOnAction(event -> {
             SQLConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                HikariDataSource dataSource = new HikariDataSource();
+                DruidDataSource dataSource = new DruidDataSource();
                 String url = configuration.getUrl();
-                dataSource.setJdbcUrl(url);
+                dataSource.setUrl(url);
                 dataSource.setUsername(configuration.getUsername());
                 dataSource.setPassword(configuration.getPassword());
-                dataSource.setMaximumPoolSize(2);
-                dataSource.setMaximumPoolSize(1);
+                dataSource.setMaxActive(2);
+                dataSource.setMinIdle(1);
+                dataSource.setLoginTimeout(30);
+                dataSource.setQueryTimeout(60);
                 MySQLMetadataProvider metadataProvider = new MySQLMetadataProvider(dataSource);
                 MySQLServerTreeItem treeItem = new MySQLServerTreeItem(configuration.getConnectionName(), metadataProvider);
                 ViewManger.getViewContext().addDatabaseItem(treeItem);
@@ -66,7 +69,7 @@ public class MySQLDatabaseProvider implements IDatabaseProvider {
 
     public SQLConnectionConfiguration getConnectionConfiguration() {
         try {
-            Callback<Class<?>, Object> factory = MySQLConfigurationController.getFactory();
+            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(MySQLConfigurationController.class);
             FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", Locale.SIMPLIFIED_CHINESE, factory);
             Parent parent = loadFxmlResult.getParent();
             MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.getController();

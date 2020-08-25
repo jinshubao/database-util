@@ -53,8 +53,4 @@ public class MySQLConfigurationController implements Initializable {
         return new MySQLConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
     }
 
-
-    public static Callback<Class<?>, Object> getFactory() {
-        return param -> new MySQLConfigurationController();
-    }
 }

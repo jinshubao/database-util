@@ -1,14 +1,14 @@
-package com.jean.database.redis.view;
+package com.jean.database.redis.view.cluster;
 
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
-import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.RedisObjectTabController;
@@ -16,8 +16,9 @@ import com.jean.database.redis.model.RedisKey;
 import io.lettuce.core.KeyScanCursor;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanCursor;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.util.Callback;
@@ -31,20 +32,20 @@ import java.util.stream.Collectors;
 /**
  * @author jinshubao
  */
-public class RedisDatabaseItem extends BaseTreeItem<String> {
+public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
 
     private final int database;
-    private final RedisConnectionConfiguration connectionConfiguration;
+    private final RedisClusterClient redisClusterClient;
     private final ContextMenu contextMenu;
     private final RedisObjectTabController objectTabController;
 
     private RedisDatabaseTabController databaseTabController;
 
-    public RedisDatabaseItem(int database,
-                             RedisConnectionConfiguration connectionConfiguration,
-                             RedisObjectTabController objectTabController) {
+    public RedisClusterDatabaseItem(int database,
+                                    RedisClusterClient redisClusterClient,
+                                    RedisObjectTabController objectTabController) {
         super("db" + database);
-        this.connectionConfiguration = connectionConfiguration;
+        this.redisClusterClient = redisClusterClient;
         this.database = database;
         this.objectTabController = objectTabController;
 
@@ -71,7 +72,8 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
     public void doubleClick() {
         if (!isOpen()) {
             try {
-                Callback<Class<?>, Object> factory = RedisDatabaseTabController.getFactory(RedisDatabaseItem.this.getValue(), objectTabController);
+                Callback<Class<?>, Object> factory = ControllerFactory.getFactory(RedisDatabaseTabController.class,
+                        RedisClusterDatabaseItem.this.getValue(), objectTabController);
                 FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", factory);
                 databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
                 setOpen(true);
@@ -98,22 +100,21 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
 
         @Override
         protected List<RedisKey> call() throws Exception {
-            try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
-                RedisCommands<byte[], byte[]> commands = connection.sync();
-                commands.select(database);
+            try (StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
+                RedisAdvancedClusterCommands<String, String> commands = connection.sync();
                 Long size = commands.dbsize();
                 ScanCursor scanCursor = ScanCursor.INITIAL;
                 List<RedisKey> value = new ArrayList<>();
                 ScanArgs limit = ScanArgs.Builder.limit(RedisConstant.KEY_SCAN_SIZE);
                 do {
-                    KeyScanCursor<byte[]> cursor = commands.scan(scanCursor, limit);
+                    KeyScanCursor<String> cursor = commands.scan(scanCursor, limit);
                     scanCursor = ScanCursor.of(cursor.getCursor());
                     scanCursor.setFinished(cursor.isFinished());
-                    List<byte[]> keys = cursor.getKeys();
+                    List<String> keys = cursor.getKeys();
                     List<RedisKey> collect = keys.stream().map(key -> {
                         String type = commands.type(key);
                         Long ttl = commands.ttl(key);
-                        return new RedisKey(connectionConfiguration, database, key, type, ttl, size);
+                        return new RedisKey(null, database, null, type, ttl, size);
                     }).collect(Collectors.toList());
                     value.addAll(collect);
                     updateProgress(value.size(), size);

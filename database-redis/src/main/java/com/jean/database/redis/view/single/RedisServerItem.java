@@ -1,9 +1,6 @@
-package com.jean.database.redis.view;
+package com.jean.database.redis.view.single;
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.BaseTreeItem;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.*;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -44,18 +41,20 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         super(connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
         this.connectionConfiguration = connectionConfiguration;
         this.contextMenu = createContextMenu();
-
         try {
             String title = connectionConfiguration.getConnectionName();
-            Callback<Class<?>, Object> factory = RedisObjectTabController.getFactory(title);
+            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(RedisObjectTabController.class, title);
             FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", factory);
             objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
+            ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
+            objectTabController.select();
         } catch (IOException e) {
             DialogUtil.error(e);
+            return;
         }
 
         try {
-            Callback<Class<?>, Object> factory = RedisServerInfoController.getControllerFactory(connectionConfiguration);
+            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(RedisServerInfoController.class, connectionConfiguration);
             FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-server-tab.fxml", factory);
             serverInfoController = (RedisServerInfoController) loadFxmlResult.getController();
         } catch (IOException e) {
@@ -70,7 +69,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
 
     @Override
     public void select() {
-        objectTabController.selected();
+        objectTabController.select();
     }
 
     @Override
@@ -84,7 +83,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
             setExpanded(true);
             setOpen(true);
             ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
-            objectTabController.selected();
+            objectTabController.select();
             TaskManger.execute(new OpenServerTask());
         }
     }

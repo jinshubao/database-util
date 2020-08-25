@@ -4,7 +4,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.net.URL;
@@ -51,10 +50,5 @@ public class OracleConfigurationController implements Initializable {
         String propertiesText = properties.getText();
         Properties properties = converter.fromString(propertiesText);
         return new OracleConnectionConfiguration(nameText, hostText, portText, userText, passwordText, properties);
-    }
-
-
-    public static Callback<Class<?>, Object> getFactory() {
-        return param -> new OracleConfigurationController();
     }
 }

@@ -1,7 +1,9 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.api.BaseTask;
+import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.ViewManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -26,15 +28,17 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
 
     public MySQLServerTreeItem(String value, MySQLMetadataProvider metadataProvider) {
         super(value, metadataProvider);
+        this.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
         this.contextMenu = this.createContextMenu();
-        Callback<Class<?>, Object> factory = MySQLObjectTabController.getFactory(getValue());
+        Callback<Class<?>, Object> factory = ControllerFactory.getFactory(MySQLObjectTabController.class, value);
         try {
             FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("/fxml/mysql-object-tab.fxml", factory);
             objectTabController = (MySQLObjectTabController) fxmlResult.getController();
+            ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
+            objectTabController.select();
         } catch (IOException e) {
             DialogUtil.error(e);
         }
-        this.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
     }
 
 
@@ -51,7 +55,7 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
     @Override
     public void select() {
         if (objectTabController != null) {
-            objectTabController.selected();
+            objectTabController.select();
         }
     }
 
@@ -67,7 +71,7 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         open.disableProperty().bind(openProperty());
         open.setOnAction(event -> open());
 
-        MenuItem close = new MenuItem("关闭连接",ImageUtils.createImageView("/image/disconnect.png"));
+        MenuItem close = new MenuItem("关闭连接", ImageUtils.createImageView("/image/disconnect.png"));
         close.disableProperty().bind(openProperty().not());
         close.setOnAction(event -> close());
 
@@ -83,7 +87,7 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         properties.setOnAction(event -> {
         });
 
-        MenuItem create = new MenuItem("新建数据库...",ImageUtils.createImageView("/image/add.png"));
+        MenuItem create = new MenuItem("新建数据库...", ImageUtils.createImageView("/image/add.png"));
         create.setOnAction(event -> {
         });
 

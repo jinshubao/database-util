@@ -19,6 +19,9 @@ public class RedisConnectionConfiguration implements IConnectionConfiguration, I
     private String password;
     private Properties properties;
 
+
+    private boolean clusterMode;
+
     private RedisClient client;
 
 
@@ -105,6 +108,14 @@ public class RedisConnectionConfiguration implements IConnectionConfiguration, I
         return client.connect(ByteArrayCodec.INSTANCE);
     }
 
+
+    public boolean isClusterMode() {
+        return clusterMode;
+    }
+
+    public void setClusterMode(boolean clusterMode) {
+        this.clusterMode = clusterMode;
+    }
 
     @Override
     public void close() {
