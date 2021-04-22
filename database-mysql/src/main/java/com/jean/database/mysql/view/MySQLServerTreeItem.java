@@ -15,7 +15,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeItem;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.List;

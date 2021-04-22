@@ -22,18 +22,22 @@ public class TaskThreadPoolExecutor extends ThreadPoolExecutor implements Reject
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
+        logger.debug("任务[{}]开始执行", r);
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
+        logger.debug("任务[{}]执行完成", r);
         if (t != null) {
             logger.error("execute task {} has an exception {}", r, t);
+            throw new RuntimeException(t);
         }
     }
 
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-        logger.error("reject execution task {}, executor {}", r, executor);
+        logger.error("任务[{}]被拒绝", r);
+        throw new RejectedExecutionException("线程池已满");
     }
 }
