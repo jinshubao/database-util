@@ -1,5 +1,7 @@
 package com.jean.database.oracle;
 
+import com.jean.database.api.DefaultController;
+import com.jean.database.api.ViewContext;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
@@ -11,7 +13,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class OracleConfigurationController implements Initializable {
+public class OracleConfigurationController extends DefaultController implements Initializable {
 
     public TextField name;
     public TextField host;
@@ -23,14 +25,21 @@ public class OracleConfigurationController implements Initializable {
     public ComboBox<Charset> charset;
     private StringConverter<Properties> converter;
 
+    private OracleConnectionConfiguration defaultConfiguration;
+
+    public OracleConfigurationController(ViewContext viewContext,OracleConnectionConfiguration defaultConfiguration) {
+        super(viewContext);
+        this.defaultConfiguration = defaultConfiguration;
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         converter = new OraclePropertiesStringConverter();
-
+        setValue(defaultConfiguration);
     }
 
-    public void setValue(OracleConnectionConfiguration connectionConfiguration) {
+    private void setValue(OracleConnectionConfiguration connectionConfiguration) {
         if (connectionConfiguration != null) {
             name.setText(connectionConfiguration.getConnectionName());
             host.setText(connectionConfiguration.getHost());

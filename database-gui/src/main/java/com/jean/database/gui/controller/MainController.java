@@ -3,7 +3,6 @@ package com.jean.database.gui.controller;
 import com.jean.database.api.IDatabaseProvider;
 import com.jean.database.api.TreeCellFactory;
 import com.jean.database.api.ViewContext;
-import com.jean.database.api.ViewManger;
 import com.jean.database.api.action.IMouseAction;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.gui.ProviderManager;
@@ -11,15 +10,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
@@ -39,13 +33,13 @@ public class MainController implements ViewContext, Initializable {
     @FXML
     private Menu file;
     @FXML
-    private Menu connections;
+    private Menu connection;
     @FXML
     private MenuItem exist;
     @FXML
     private Menu view;
     @FXML
-    private Menu collections;
+    private Menu collection;
     @FXML
     private Menu tools;
     @FXML
@@ -53,11 +47,9 @@ public class MainController implements ViewContext, Initializable {
     @FXML
     private Menu help;
     @FXML
-    private TreeView<?> databaseTreeView;
+    private TreeView<?> treeView;
     @FXML
     private TabPane objectTabPan;
-    @FXML
-    private HBox messageBox;
     @FXML
     private ProgressBar progressBar;
 
@@ -66,23 +58,22 @@ public class MainController implements ViewContext, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         logger.debug("main controller initialize");
         this.initMenuBar();
-        databaseTreeView.setCellFactory(TreeCellFactory.forTreeView());
-        databaseTreeView.setRoot(new TreeItem<>());
-        databaseTreeView.setShowRoot(false);
-        databaseTreeView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+        treeView.setCellFactory(TreeCellFactory.forTreeView());
+        treeView.setRoot(new TreeItem<>());
+        treeView.setShowRoot(false);
+        treeView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                TreeItem<?> treeItem = databaseTreeView.getTreeItem(newValue.intValue());
+                TreeItem<?> treeItem = treeView.getTreeItem(newValue.intValue());
                 if (treeItem instanceof IMouseAction) {
                     ((IMouseAction) treeItem).select();
                 }
             }
         });
 
-        ViewManger.init(this);
-
         List<IDatabaseProvider> providers = ProviderManager.getProviders();
         providers.sort(Comparator.comparingInt(IDatabaseProvider::getOrder));
         for (IDatabaseProvider provider : providers) {
+            provider.setViewContext(this);
             provider.init();
         }
     }
@@ -105,12 +96,17 @@ public class MainController implements ViewContext, Initializable {
 
     @Override
     public void addDatabaseItem(TreeItem treeItem) {
-        databaseTreeView.getRoot().getChildren().add(treeItem);
+        treeView.getRoot().getChildren().add(treeItem);
+    }
+
+    @Override
+    public void addFileMenus(MenuItem... menu) {
+        file.getItems().addAll(menu);
     }
 
     @Override
     public void addConnectionMenus(MenuItem... menu) {
-        connections.getItems().addAll(menu);
+        connection.getItems().addAll(menu);
     }
 
     @Override
@@ -119,7 +115,49 @@ public class MainController implements ViewContext, Initializable {
     }
 
     @Override
+    public void addCollectionMenus(MenuItem... menu) {
+        collection.getItems().addAll(menu);
+    }
+
+    @Override
+    public void addToolsMenus(MenuItem... menu) {
+        tools.getItems().addAll(menu);
+    }
+
+    @Override
+    public void addWindowMenus(MenuItem... menu) {
+        window.getItems().addAll(menu);
+    }
+
+
+    @Override
+    public void addHelpMenus(MenuItem... menu) {
+        help.getItems().addAll(menu);
+    }
+
+    @Override
     public void updateProgress(double progress) {
-        progressBar.setProgress(progress);
+        if (Platform.isFxApplicationThread()) {
+            progressBar.setProgress(progress);
+        } else {
+            Platform.runLater(() -> progressBar.setProgress(progress));
+        }
+    }
+
+
+    public BorderPane getRoot() {
+        return root;
+    }
+
+    public MenuBar getMenuBar() {
+        return menuBar;
+    }
+
+    public TreeView<?> getTreeView() {
+        return treeView;
+    }
+
+    public TabPane getObjectTabPan() {
+        return objectTabPan;
     }
 }

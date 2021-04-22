@@ -1,15 +1,11 @@
 package com.jean.database.mogo;
 
-import com.jean.database.api.IDatabaseProvider;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.DefaultDatabaseProvider;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mogo.view.MongoServerItem;
-import com.mongodb.ConnectionString;
 import javafx.scene.control.MenuItem;
 
-import java.awt.*;
-
-public class MongoDatabaseProvider implements IDatabaseProvider {
+public class MongoDatabaseProvider extends DefaultDatabaseProvider {
 
     public static final String NAME = "MongoDB";
 
@@ -31,18 +27,14 @@ public class MongoDatabaseProvider implements IDatabaseProvider {
         return name;
     }
 
-    public void close() {
-
-    }
 
     @Override
     public void init() {
         MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/mongo/mongodb.png"));
         menuItem.setOnAction(event -> {
-            MongoServerItem mongoServerItem = new MongoServerItem("mongo[127.0.0.1:21017]");
-            ViewManger.getViewContext().addDatabaseItem(mongoServerItem);
+            getViewContext().addDatabaseItem(new MongoServerItem(getViewContext(), "mongo[127.0.0.1:21017]"));
         });
-        ViewManger.getViewContext().addConnectionMenus(menuItem);
+        getViewContext().addConnectionMenus(menuItem);
     }
 
 

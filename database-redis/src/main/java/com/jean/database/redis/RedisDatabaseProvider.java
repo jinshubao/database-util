@@ -1,7 +1,6 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.IDatabaseProvider;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.DefaultDatabaseProvider;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -17,9 +16,8 @@ import javafx.util.Callback;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Locale;
 
-public class RedisDatabaseProvider implements IDatabaseProvider {
+public class RedisDatabaseProvider extends DefaultDatabaseProvider {
 
     private static final String NAME = "Redis";
 
@@ -58,13 +56,13 @@ public class RedisDatabaseProvider implements IDatabaseProvider {
                     }
                     RedisClusterClient redisClusterClient = RedisClusterClient.create(Collections.singletonList(builder.build()));
                     redisClusterClient.setOptions(options);
-                    ViewManger.getViewContext().addDatabaseItem(new RedisClusterServerItem(configuration.getConnectionName(), redisClusterClient));
+                    getViewContext().addDatabaseItem(new RedisClusterServerItem(getViewContext(), configuration.getConnectionName(), redisClusterClient));
                 } else {
-                    ViewManger.getViewContext().addDatabaseItem(new RedisServerItem(configuration));
+                    getViewContext().addDatabaseItem(new RedisServerItem(getViewContext(), configuration));
                 }
             }
         });
-        ViewManger.getViewContext().addConnectionMenus(menuItem);
+        getViewContext().addConnectionMenus(menuItem);
     }
 
     @Override
@@ -83,16 +81,16 @@ public class RedisDatabaseProvider implements IDatabaseProvider {
 
     private RedisConnectionConfiguration getConnectionConfiguration() {
         try {
-            FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("/fxml/redis-conn-cfg.fxml", null, Locale.SIMPLIFIED_CHINESE);
-            RedisConnectionConfigurationController cfgController = (RedisConnectionConfigurationController) fxmlResult.getController();
-            cfgController.setValue(defaultCollectConfiguration);
+            FxmlUtils.LoadFxmlResult loadFxmlResult =
+                    FxmlUtils.loadFxml("/fxml/redis-conn-cfg.fxml", null, new RedisConnectionConfigurationController(getViewContext(), defaultCollectConfiguration));
+            RedisConnectionConfigurationController cfgController = (RedisConnectionConfigurationController) loadFxmlResult.getController();
             Callback<ButtonType, RedisConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return cfgController.getValue();
                 }
                 return null;
             };
-            return DialogUtil.customizeDialog("New Redis connection", fxmlResult.getParent(), callback).orElse(null);
+            return DialogUtil.customizeDialog("New Redis connection", loadFxmlResult.getParent(), callback).orElse(null);
         } catch (Exception e) {
             DialogUtil.error(e);
         }

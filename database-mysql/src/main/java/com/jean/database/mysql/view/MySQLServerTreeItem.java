@@ -1,9 +1,8 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.api.BaseTask;
-import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -26,15 +25,14 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
     private final ContextMenu contextMenu;
     private MySQLObjectTabController objectTabController;
 
-    public MySQLServerTreeItem(String value, MySQLMetadataProvider metadataProvider) {
-        super(value, metadataProvider);
+    public MySQLServerTreeItem(ViewContext viewContext, String value, MySQLMetadataProvider metadataProvider) {
+        super(viewContext, value, metadataProvider);
         this.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
         this.contextMenu = this.createContextMenu();
-        Callback<Class<?>, Object> factory = ControllerFactory.getFactory(MySQLObjectTabController.class, value);
         try {
-            FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("/fxml/mysql-object-tab.fxml", factory);
+            FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("/fxml/mysql-object-tab.fxml", null, new MySQLObjectTabController(viewContext, value));
             objectTabController = (MySQLObjectTabController) fxmlResult.getController();
-            ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
+            getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -132,7 +130,7 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
             children.clear();
             List<CatalogMetaData> value = getValue();
             for (CatalogMetaData metaData : value) {
-                TreeItem item = new MySQLCatalogTreeItem(metaData, getMetadataProvider(), objectTabController);
+                TreeItem item = new MySQLCatalogTreeItem(getViewContext(), metaData, getMetadataProvider(), objectTabController);
                 serverTreeItem.getChildren().add(item);
             }
             serverTreeItem.setExpanded(true);

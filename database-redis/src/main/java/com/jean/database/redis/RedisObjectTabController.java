@@ -1,27 +1,23 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.IObjectTabController;
+import com.jean.database.api.DefaultController;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.ImageUtils;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class RedisObjectTabController implements IObjectTabController, Initializable {
+public class RedisObjectTabController extends DefaultController implements Initializable {
 
     public TabPane root;
     private Tab objectTab;
     private String title;
 
-    public RedisObjectTabController() {
-    }
-
-    public RedisObjectTabController(String title) {
+    public RedisObjectTabController(ViewContext viewContext, String title) {
+        super(viewContext);
         this.title = title;
     }
 
@@ -48,12 +44,10 @@ public class RedisObjectTabController implements IObjectTabController, Initializ
         }
     }
 
-    @Override
     public Tab getObjectTab() {
         return objectTab;
     }
 
-    @Override
     public void select() {
         TabPane tabPane = objectTab.getTabPane();
         if (tabPane != null) {

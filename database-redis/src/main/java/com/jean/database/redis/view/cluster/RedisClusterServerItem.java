@@ -1,6 +1,9 @@
 package com.jean.database.redis.view.cluster;
 
-import com.jean.database.api.*;
+import com.jean.database.api.BaseTask;
+import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.TaskManger;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -12,7 +15,6 @@ import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,15 +29,16 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
     private RedisClusterServerInfoController serverInfoController;
 
 
-    public RedisClusterServerItem(String value, RedisClusterClient redisClusterClient) {
-        super(value, ImageUtils.createImageView("/redis/redis.png"));
+    public RedisClusterServerItem(ViewContext viewContext, String value, RedisClusterClient redisClusterClient) {
+        super(viewContext, value, ImageUtils.createImageView("/redis/redis.png"));
         this.redisClusterClient = redisClusterClient;
         this.contextMenu = this.createContextMenu();
         try {
-            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(RedisObjectTabController.class, value);
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", factory);
+            FxmlUtils.LoadFxmlResult loadFxmlResult =
+                    FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", null,
+                            new RedisObjectTabController(viewContext, value));
             objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
-            ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
+            getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -43,8 +46,9 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         }
 
         try {
-            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(RedisClusterServerInfoController.class, redisClusterClient);
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-cluster-server-tab.fxml", factory);
+            FxmlUtils.LoadFxmlResult loadFxmlResult =
+                    FxmlUtils.loadFxml("/fxml/redis-cluster-server-tab.fxml", null,
+                            new RedisClusterServerInfoController(viewContext, redisClusterClient));
             serverInfoController = (RedisClusterServerInfoController) loadFxmlResult.getController();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -72,7 +76,7 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         if (!isOpen()) {
             setExpanded(true);
             setOpen(true);
-            ViewManger.getViewContext().addObjectTab(objectTabController.getObjectTab());
+            getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
             TaskManger.execute(new OpenServerTask());
         }
@@ -137,7 +141,7 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
             super.succeeded();
             List<Integer> number = getValue();
             for (Integer index : number) {
-                TreeItem databaseItem = new RedisClusterDatabaseItem(index, redisClusterClient, objectTabController);
+                TreeItem databaseItem = new RedisClusterDatabaseItem(getViewContext(), index, redisClusterClient, objectTabController);
                 redisServerItem.getChildren().add(databaseItem);
             }
         }

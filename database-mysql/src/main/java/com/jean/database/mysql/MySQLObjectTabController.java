@@ -1,7 +1,8 @@
 package com.jean.database.mysql;
 
-import com.jean.database.api.IObjectTabController;
+import com.jean.database.api.DefaultController;
 import com.jean.database.api.KeyValuePair;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.sql.meta.TableSummaries;
 import javafx.beans.property.SimpleObjectProperty;
@@ -9,7 +10,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MySQLObjectTabController implements Initializable, IObjectTabController {
+public class MySQLObjectTabController extends DefaultController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MySQLObjectTabController.class);
 
@@ -31,10 +31,8 @@ public class MySQLObjectTabController implements Initializable, IObjectTabContro
 
     private String title;
 
-    public MySQLObjectTabController() {
-    }
-
-    public MySQLObjectTabController(String title) {
+    public MySQLObjectTabController(ViewContext viewContext, String title) {
+        super(viewContext);
         this.title = title;
     }
 
@@ -104,12 +102,10 @@ public class MySQLObjectTabController implements Initializable, IObjectTabContro
         sqlObjectTabPan.getSelectionModel().select(tab);
     }
 
-    @Override
     public Tab getObjectTab() {
         return this.objectTab;
     }
 
-    @Override
     public void select() {
         TabPane tabPane = objectTab.getTabPane();
         if (tabPane != null) {

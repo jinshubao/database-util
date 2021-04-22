@@ -1,9 +1,7 @@
 package com.jean.database.mysql;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.jean.database.api.ControllerFactory;
-import com.jean.database.api.IDatabaseProvider;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.DefaultDatabaseProvider;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -17,7 +15,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.util.Locale;
 
-public class MySQLDatabaseProvider implements IDatabaseProvider {
+public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
 
     private final static String NAME = "MySQL";
 
@@ -48,12 +46,10 @@ public class MySQLDatabaseProvider implements IDatabaseProvider {
                 dataSource.setMinIdle(1);
                 dataSource.setLoginTimeout(30);
                 dataSource.setQueryTimeout(60);
-                MySQLMetadataProvider metadataProvider = new MySQLMetadataProvider(dataSource);
-                MySQLServerTreeItem treeItem = new MySQLServerTreeItem(configuration.getConnectionName(), metadataProvider);
-                ViewManger.getViewContext().addDatabaseItem(treeItem);
+                getViewContext().addDatabaseItem(new MySQLServerTreeItem(getViewContext(), configuration.getConnectionName(), new MySQLMetadataProvider(dataSource)));
             }
         });
-        ViewManger.getViewContext().addConnectionMenus(menuItem);
+        getViewContext().addConnectionMenus(menuItem);
     }
 
 
@@ -69,8 +65,8 @@ public class MySQLDatabaseProvider implements IDatabaseProvider {
 
     public SQLConnectionConfiguration getConnectionConfiguration() {
         try {
-            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(MySQLConfigurationController.class);
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", Locale.SIMPLIFIED_CHINESE, factory);
+            FxmlUtils.LoadFxmlResult loadFxmlResult =
+                    FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", new MySQLConfigurationController(getViewContext()));
             Parent parent = loadFxmlResult.getParent();
             MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.getController();
             controller.setValue(this.defaultConnectionConfiguration);

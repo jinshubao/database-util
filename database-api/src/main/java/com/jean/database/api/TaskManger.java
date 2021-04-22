@@ -3,7 +3,9 @@ package com.jean.database.api;
 
 import javafx.concurrent.Task;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public final class TaskManger {
 
@@ -11,10 +13,11 @@ public final class TaskManger {
     }
 
     private static class Holder {
-        private static final int N_THREADS = Runtime.getRuntime().availableProcessors();
-        private static final TaskThreadPoolExecutor THREAD_POOL_EXECUTOR = new TaskThreadPoolExecutor(N_THREADS, N_THREADS,
+        private static final int MIN_THREADS = Runtime.getRuntime().availableProcessors();
+        private static final int MAX_THREADS = MIN_THREADS * 2;
+        private static final TaskThreadPoolExecutor THREAD_POOL_EXECUTOR = new TaskThreadPoolExecutor(MIN_THREADS, MAX_THREADS,
                 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(),
+                new LinkedBlockingQueue<>(MAX_THREADS + 1),
                 new TaskThreadFactory());
     }
 

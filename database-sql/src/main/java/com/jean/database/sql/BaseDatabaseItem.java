@@ -1,6 +1,7 @@
 package com.jean.database.sql;
 
 import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.action.ICloseable;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -10,8 +11,8 @@ public abstract class BaseDatabaseItem<T> extends BaseTreeItem<T> {
 
     private final SQLMetadataProvider metadataProvider;
 
-    public BaseDatabaseItem(T value, SQLMetadataProvider metadataProvider) {
-        super(value);
+    public BaseDatabaseItem(ViewContext viewContext, T value, SQLMetadataProvider metadataProvider) {
+        super(viewContext, value);
         this.metadataProvider = metadataProvider;
     }
 

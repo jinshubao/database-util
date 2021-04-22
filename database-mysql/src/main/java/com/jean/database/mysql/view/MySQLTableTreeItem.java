@@ -3,6 +3,7 @@ package com.jean.database.mysql.view;
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.KeyValuePair;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mysql.MySQLObjectTabController;
 import com.jean.database.sql.BaseDatabaseItem;
@@ -22,10 +23,10 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
     private final MySQLObjectTabController objectTabController;
     private MySQLDataTableTab sqlDataTableTab;
 
-    public MySQLTableTreeItem(TableMetaData tableMetaData,
+    public MySQLTableTreeItem(ViewContext viewContext, TableMetaData tableMetaData,
                               SQLMetadataProvider metadataProvider,
                               MySQLObjectTabController objectTabController) {
-        super(tableMetaData, metadataProvider);
+        super(viewContext, tableMetaData, metadataProvider);
         this.objectTabController = objectTabController;
         this.contextMenu = this.createContextMenu();
         this.setGraphic(ImageUtils.createImageView("/mysql/table.png"));

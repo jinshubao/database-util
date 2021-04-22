@@ -1,6 +1,8 @@
 package com.jean.database.redis;
 
+import com.jean.database.api.DefaultController;
 import com.jean.database.api.TableViewRowIndexColumnCellFactory;
+import com.jean.database.api.ViewContext;
 import com.jean.database.redis.factory.RedisKeyTableRowFactory;
 import com.jean.database.redis.factory.RedisValueTableRowFactory;
 import com.jean.database.redis.factory.TableViewByteColumnCellFactory;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class RedisDatabaseTabController implements Initializable {
+public class RedisDatabaseTabController extends DefaultController implements Initializable {
 
     public SplitPane root;
     public TableView<RedisKey> keyTableView;
@@ -31,10 +33,10 @@ public class RedisDatabaseTabController implements Initializable {
 
     RedisObjectTabController objectTabController;
 
-    public RedisDatabaseTabController() {
-    }
 
-    public RedisDatabaseTabController(String title, RedisObjectTabController objectTabController) {
+
+    public RedisDatabaseTabController(ViewContext viewContext, String title, RedisObjectTabController objectTabController) {
+        super(viewContext);
         this.databaseTab = new Tab(title);
         this.objectTabController = objectTabController;
     }

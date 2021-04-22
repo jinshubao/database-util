@@ -1,5 +1,7 @@
 package com.jean.database.redis;
 
+import com.jean.database.api.DefaultController;
+import com.jean.database.api.ViewContext;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -7,25 +9,27 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class RedisConnectionConfigurationController implements Initializable {
+public class RedisConnectionConfigurationController extends DefaultController implements Initializable {
 
     public TextField name;
     public TextField host;
     public TextField port;
     public PasswordField password;
     public TextField properties;
+    private RedisConnectionConfiguration defaultConfiguration;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public RedisConnectionConfigurationController(ViewContext viewContext, RedisConnectionConfiguration defaultConfiguration) {
+        super(viewContext);
+        this.defaultConfiguration = defaultConfiguration;
 
     }
 
-
-    public void setValue(RedisConnectionConfiguration connectionConfiguration) {
-        name.setText(connectionConfiguration.getConnectionName());
-        host.setText(connectionConfiguration.getHost());
-        port.setText(String.valueOf(connectionConfiguration.getPort()));
-        password.setText(connectionConfiguration.getPassword());
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        name.setText(defaultConfiguration.getConnectionName());
+        host.setText(defaultConfiguration.getHost());
+        port.setText(String.valueOf(defaultConfiguration.getPort()));
+        password.setText(defaultConfiguration.getPassword());
         properties.setText(null);
     }
 

@@ -3,8 +3,8 @@ package com.jean.database.redis.view.cluster;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.BaseTreeItem;
-import com.jean.database.api.ControllerFactory;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -21,7 +21,6 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,10 +40,10 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
 
     private RedisDatabaseTabController databaseTabController;
 
-    public RedisClusterDatabaseItem(int database,
+    public RedisClusterDatabaseItem(ViewContext viewContext, int database,
                                     RedisClusterClient redisClusterClient,
                                     RedisObjectTabController objectTabController) {
-        super("db" + database);
+        super(viewContext, "db" + database);
         this.redisClusterClient = redisClusterClient;
         this.database = database;
         this.objectTabController = objectTabController;
@@ -72,9 +71,9 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
     public void doubleClick() {
         if (!isOpen()) {
             try {
-                Callback<Class<?>, Object> factory = ControllerFactory.getFactory(RedisDatabaseTabController.class,
-                        RedisClusterDatabaseItem.this.getValue(), objectTabController);
-                FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", factory);
+                FxmlUtils.LoadFxmlResult loadFxmlResult =
+                        FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", null,
+                                new RedisDatabaseTabController(getViewContext(), RedisClusterDatabaseItem.this.getValue(), objectTabController));
                 databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
                 setOpen(true);
             } catch (IOException e) {

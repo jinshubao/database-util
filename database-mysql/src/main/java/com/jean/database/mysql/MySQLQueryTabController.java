@@ -2,6 +2,8 @@ package com.jean.database.mysql;
 
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.util.JdbcConstants;
+import com.jean.database.api.DefaultController;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
@@ -15,7 +17,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MySQLQueryTabController implements Initializable {
+public class MySQLQueryTabController extends DefaultController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MySQLQueryTabController.class);
 
@@ -41,15 +43,12 @@ public class MySQLQueryTabController implements Initializable {
     public TableColumn<ExecuteStatus, String> statusValueColumn;
     public TableColumn<ExecuteStatus, String> statusDescriptionColumn;
 
-
     List<String> catalogs;
     String catalog;
 
 
-    public MySQLQueryTabController() {
-    }
-
-    public MySQLQueryTabController(List<String> catalogs, String catalog) {
+    public MySQLQueryTabController(ViewContext viewContext, List<String> catalogs, String catalog) {
+        super(viewContext);
         this.catalogs = catalogs;
         this.catalog = catalog;
     }

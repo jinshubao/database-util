@@ -1,8 +1,6 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.TaskManger;
+import com.jean.database.api.*;
 import com.jean.database.api.utils.StringUtils;
 import io.lettuce.core.api.StatefulRedisConnection;
 import javafx.fxml.Initializable;
@@ -16,7 +14,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class RedisServerInfoController implements Initializable {
+public class RedisServerInfoController extends DefaultController implements Initializable {
 
     public SplitPane root;
     public LineChart<String, Long> memoryLineChart;
@@ -30,10 +28,8 @@ public class RedisServerInfoController implements Initializable {
     private XYChart.Series<String, Long> usedMemoryPeek = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryLua = new XYChart.Series<>();
 
-    public RedisServerInfoController() {
-    }
-
-    public RedisServerInfoController(RedisConnectionConfiguration connectionConfiguration) {
+    public RedisServerInfoController(ViewContext viewContext, RedisConnectionConfiguration connectionConfiguration) {
+        super(viewContext);
         this.connectionConfiguration = connectionConfiguration;
     }
 

@@ -12,14 +12,6 @@ import java.util.ResourceBundle;
 public final class FxmlUtils {
 
     public static LoadFxmlResult loadFxml(String name) throws IOException {
-        return loadFxml(name, null, Locale.SIMPLIFIED_CHINESE);
-    }
-
-    public static LoadFxmlResult loadFxml(String name, String resource) throws IOException {
-        return loadFxml(name, resource, Locale.SIMPLIFIED_CHINESE);
-    }
-
-    public static LoadFxmlResult loadFxml(String name, String resource, Locale locale) throws IOException {
         Callback<Class<?>, Object> factory = param -> {
             try {
                 return param.newInstance();
@@ -27,15 +19,22 @@ public final class FxmlUtils {
                 throw new RuntimeException(e);
             }
         };
-        return loadFxml(name, resource, locale, factory);
+        return loadFxml(name, null, Locale.SIMPLIFIED_CHINESE,factory);
     }
 
-    public static LoadFxmlResult loadFxml(String name, Callback<Class<?>, Object> factory) throws IOException {
-        return loadFxml(name, null, Locale.SIMPLIFIED_CHINESE, factory);
-    }
-
-    public static LoadFxmlResult loadFxml(String name, String resource, Callback<Class<?>, Object> factory) throws IOException {
+    public static LoadFxmlResult loadFxml(String name, String resource) throws IOException {
+        Callback<Class<?>, Object> factory = param -> {
+            try {
+                return param.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
         return loadFxml(name, resource, Locale.SIMPLIFIED_CHINESE, factory);
+    }
+
+    public static LoadFxmlResult loadFxml(String name, String resource, Object controller) throws IOException {
+        return loadFxml(name, resource, Locale.SIMPLIFIED_CHINESE, param -> controller);
     }
 
     public static LoadFxmlResult loadFxml(String name, String resource, Locale locale, Callback<Class<?>, Object> factory) throws IOException {

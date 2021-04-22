@@ -13,14 +13,18 @@ import javafx.scene.control.TreeItem;
 
 public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMenu, IMouseAction, IRefreshable, ICloseable {
 
+    private final ViewContext viewContext;
+
     private final BooleanProperty open = new SimpleBooleanProperty(this, "onOpen", false);
 
-    public BaseTreeItem(T value) {
+    public BaseTreeItem(ViewContext viewContext, T value) {
         super(value);
+        this.viewContext = viewContext;
     }
 
-    public BaseTreeItem(T value, Node graphic) {
+    public BaseTreeItem(ViewContext viewContext, T value, Node graphic) {
         super(value, graphic);
+        this.viewContext = viewContext;
     }
 
     public boolean isOpen() {
@@ -61,5 +65,8 @@ public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMen
         setOpen(false);
     }
 
+    public ViewContext getViewContext() {
+        return viewContext;
+    }
 }
 

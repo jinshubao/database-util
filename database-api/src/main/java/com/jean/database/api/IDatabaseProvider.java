@@ -17,4 +17,8 @@ public interface IDatabaseProvider {
         return 0;
     }
 
+    void setViewContext(ViewContext context);
+
+    ViewContext getViewContext();
+
 }

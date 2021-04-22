@@ -3,6 +3,7 @@ package com.jean.database.mysql.view;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.ViewContext;
 import com.jean.database.mysql.MySQLObjectTabController;
 import com.jean.database.sql.BaseDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
@@ -16,8 +17,8 @@ public class MySQLTableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> 
 
     private final MySQLObjectTabController objectTabController;
 
-    public MySQLTableTypeTreeItem(TableTypeMetaData value, SQLMetadataProvider metadataProvider, MySQLObjectTabController objectTabController) {
-        super(value, metadataProvider);
+    public MySQLTableTypeTreeItem(ViewContext viewContext, TableTypeMetaData value, SQLMetadataProvider metadataProvider, MySQLObjectTabController objectTabController) {
+        super(viewContext, value, metadataProvider);
         this.objectTabController = objectTabController;
     }
 

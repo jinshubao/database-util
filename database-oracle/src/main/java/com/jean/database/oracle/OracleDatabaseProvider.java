@@ -1,8 +1,7 @@
 package com.jean.database.oracle;
 
-import com.jean.database.api.ControllerFactory;
-import com.jean.database.api.IDatabaseProvider;
-import com.jean.database.api.ViewManger;
+import com.jean.database.api.DefaultDatabaseProvider;
+import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
@@ -13,10 +12,9 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Properties;
 
-public class OracleDatabaseProvider implements IDatabaseProvider {
+public class OracleDatabaseProvider extends DefaultDatabaseProvider {
 
     private static final String NAME = "Oracle";
     private String identifier;
@@ -46,10 +44,10 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
             if (configuration != null) {
 //                SQLMetadataProvider metadataProvider = new OracleMetadataProvider(null);
 //                TreeItem treeItem = new ServerTreeItem(configuration.getConnectionName(), metadataProvider);
-//                ViewManger.getViewContext().addDatabaseItem(treeItem);
+//                getViewContext().addDatabaseItem(treeItem);
             }
         });
-        ViewManger.getViewContext().addConnectionMenus(menuItem);
+        getViewContext().addConnectionMenus(menuItem);
 
     }
 
@@ -65,10 +63,11 @@ public class OracleDatabaseProvider implements IDatabaseProvider {
 
     private SQLConnectionConfiguration getConfiguration() {
         try {
-            Callback<Class<?>, Object> factory = ControllerFactory.getFactory(OracleConfigurationController.class);
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml", "message.oracle", Locale.SIMPLIFIED_CHINESE, factory);
+            ViewContext viewContext = getViewContext();
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml",
+                    "message.oracle",
+                    new OracleConfigurationController(viewContext, defaultCollectConfiguration));
             OracleConfigurationController controller = (OracleConfigurationController) loadFxmlResult.getController();
-            controller.setValue(this.defaultCollectConfiguration);
             Callback<ButtonType, OracleConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return controller.getValue();

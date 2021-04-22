@@ -1,5 +1,7 @@
 package com.jean.database.mysql;
 
+import com.jean.database.api.DefaultController;
+import com.jean.database.api.ViewContext;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
@@ -12,7 +14,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class MySQLConfigurationController implements Initializable {
+public class MySQLConfigurationController extends DefaultController implements Initializable {
 
     public TextField name;
     public TextField host;
@@ -24,6 +26,9 @@ public class MySQLConfigurationController implements Initializable {
     public ComboBox<Charset> charset;
     private StringConverter<Properties> converter;
 
+    public MySQLConfigurationController(ViewContext viewContext) {
+        super(viewContext);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

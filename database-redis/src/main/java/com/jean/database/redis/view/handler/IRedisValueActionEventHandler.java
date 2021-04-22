@@ -1,6 +1,5 @@
 package com.jean.database.redis.view.handler;
 
-import com.jean.database.api.IMouseEventHandler;
 import com.jean.database.redis.model.RedisValue;
 import javafx.scene.control.TableRow;
 
@@ -9,7 +8,13 @@ import javafx.scene.control.TableRow;
  *
  * @author jinshubao
  */
-public interface IRedisValueActionEventHandler extends IMouseEventHandler<TableRow<RedisValue>> {
+public interface IRedisValueActionEventHandler {
+
+    void onClick(TableRow<RedisValue> t);
+
+    void onDoubleClick(TableRow<RedisValue> t);
+
+    void onSelected(TableRow<RedisValue> t);
 
     /**
      * 复制
