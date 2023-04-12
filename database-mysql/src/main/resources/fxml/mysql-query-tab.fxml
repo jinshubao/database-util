@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.251" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.jean.database.mysql.MySQLQueryTabController">
+            fx:controller="com.jean.database.mysql.controller.MySQLQueryTabController">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="10.0" BorderPane.alignment="CENTER">
             <ComboBox fx:id="catalogComboBox"/>

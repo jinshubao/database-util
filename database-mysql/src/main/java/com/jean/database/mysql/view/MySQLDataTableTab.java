@@ -1,8 +1,9 @@
 package com.jean.database.mysql.view;
 
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.TaskManger;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.task.TaskManger;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.factory.TableCellFactory;
 import com.jean.database.sql.meta.ColumnMetaData;

@@ -1,14 +1,15 @@
 package com.jean.database.redis.view.single;
 
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.BaseTreeItem;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
-import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.api.utils.StringUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.item.BaseTreeItem;
+import com.jean.database.task.TaskManger;
+import com.jean.database.context.ViewContext;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
+import com.jean.database.utils.StringUtils;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
@@ -40,10 +41,10 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
 
     private RedisDatabaseTabController databaseTabController;
 
-    public RedisDatabaseItem(ViewContext viewContext, int database,
+    public RedisDatabaseItem(ApplicationContext context, int database,
                              RedisConnectionConfiguration connectionConfiguration,
                              RedisObjectTabController objectTabController) {
-        super(viewContext, "db" + database);
+        super(context, "db" + database);
         this.connectionConfiguration = connectionConfiguration;
         this.database = database;
         this.objectTabController = objectTabController;
@@ -68,8 +69,8 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
 
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", null,
-                            new RedisDatabaseTabController(getViewContext(), RedisDatabaseItem.this.getValue(), objectTabController));
+                    FxmlUtils.loadFxml("fxml/redis-db-tab.fxml", null,
+                            new RedisDatabaseTabController(getContext(), RedisDatabaseItem.this.getValue(), objectTabController));
             databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
         } catch (IOException e) {
             DialogUtil.error(e);

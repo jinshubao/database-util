@@ -1,7 +1,7 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.IConnectionConfiguration;
-import com.jean.database.api.action.ICloseable;
+import com.jean.database.ability.ICloseable;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;

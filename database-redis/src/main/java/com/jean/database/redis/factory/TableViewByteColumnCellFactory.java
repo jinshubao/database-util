@@ -1,7 +1,7 @@
 package com.jean.database.redis.factory;
 
 
-import com.jean.database.api.utils.StringUtils;
+import com.jean.database.utils.StringUtils;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;

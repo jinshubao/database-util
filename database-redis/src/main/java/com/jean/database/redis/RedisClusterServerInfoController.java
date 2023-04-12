@@ -1,7 +1,11 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.*;
-import com.jean.database.api.utils.StringUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.utils.StringUtils;
+import com.jean.database.context.ViewContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.task.TaskManger;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import javafx.fxml.Initializable;
@@ -28,8 +32,8 @@ public class RedisClusterServerInfoController extends DefaultController implemen
     private XYChart.Series<String, Long> usedMemoryPeek = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryLua = new XYChart.Series<>();
 
-    public RedisClusterServerInfoController(ViewContext viewContext, RedisClusterClient redisClusterClient) {
-        super(viewContext);
+    public RedisClusterServerInfoController(ApplicationContext context, RedisClusterClient redisClusterClient) {
+        super(context);
         this.redisClusterClient = redisClusterClient;
     }
 
@@ -80,7 +84,7 @@ public class RedisClusterServerInfoController extends DefaultController implemen
                 String[] strings = value.split("\r\n");
                 List<KeyValuePair<String, String>> list = new ArrayList<>(strings.length);
                 for (String string : strings) {
-                    if (!StringUtils.isBlank(string) && !string.startsWith("#")) {
+                    if (StringUtils.isNotBlank(string) && !string.startsWith("#")) {
                         String[] split = string.split(":");
                         if (split.length == 1) {
                             list.add(new KeyValuePair<>(split[0], null));

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 
 
-<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.251" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.mysql.MySQLObjectTabController">
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.251" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.mysql.controller.MySQLObjectTabController">
    <center>
           <SplitPane fx:id="splitPane" dividerPositions="0.5" BorderPane.alignment="CENTER">
            <TabPane fx:id="sqlObjectTabPan">

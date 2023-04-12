@@ -1,7 +1,8 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.DefaultController;
-import com.jean.database.api.ViewContext;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.context.ViewContext;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -18,8 +19,8 @@ public class RedisConnectionConfigurationController extends DefaultController im
     public TextField properties;
     private RedisConnectionConfiguration defaultConfiguration;
 
-    public RedisConnectionConfigurationController(ViewContext viewContext, RedisConnectionConfiguration defaultConfiguration) {
-        super(viewContext);
+    public RedisConnectionConfigurationController(ApplicationContext context, RedisConnectionConfiguration defaultConfiguration) {
+        super(context);
         this.defaultConfiguration = defaultConfiguration;
 
     }

@@ -1,11 +1,13 @@
 package com.jean.database.gui.controller;
 
-import com.jean.database.api.IDatabaseProvider;
-import com.jean.database.api.TreeCellFactory;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.action.IMouseAction;
-import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.gui.ProviderManager;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.controller.AbstractController;
+import com.jean.database.provider.IDatabaseProvider;
+import com.jean.database.factory.TreeCellFactory;
+import com.jean.database.context.ViewContext;
+import com.jean.database.action.IMouseAction;
+import com.jean.database.utils.ImageUtils;
+import com.jean.database.provider.ProviderManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class MainController implements ViewContext, Initializable {
+public class MainController  extends AbstractController implements ViewContext {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -53,6 +55,10 @@ public class MainController implements ViewContext, Initializable {
     @FXML
     private ProgressBar progressBar;
 
+    public MainController(ApplicationContext applicationContext) {
+        super(applicationContext);
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,25 +75,21 @@ public class MainController implements ViewContext, Initializable {
                 }
             }
         });
-
-        List<IDatabaseProvider> providers = ProviderManager.getProviders();
-        providers.sort(Comparator.comparingInt(IDatabaseProvider::getOrder));
-        for (IDatabaseProvider provider : providers) {
-            provider.setViewContext(this);
-            provider.init();
-        }
     }
 
     private void initMenuBar() {
-        setting.setGraphic(ImageUtils.createImageView("/image/settings.png"));
-        exist.setGraphic(ImageUtils.createImageView("/image/exit.png"));
+        menuBar.setUseSystemMenuBar(true);
+        setting.setGraphic(ImageUtils.createImageView("image/settings.png"));
+        exist.setGraphic(ImageUtils.createImageView("image/exit.png"));
         exist.setOnAction(event -> Platform.exit());
     }
 
     @Override
     public void addObjectTab(Tab tab) {
         objectTabPan.getTabs().add(tab);
+        objectTabPan.getSelectionModel().select(tab);
     }
+
 
     @Override
     public void removeObjectTab(Tab tab) {

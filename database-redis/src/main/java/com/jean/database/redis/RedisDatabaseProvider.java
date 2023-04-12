@@ -1,9 +1,11 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.DefaultDatabaseProvider;
-import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
-import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.provider.DefaultDatabaseProvider;
+import com.jean.database.context.ViewContext;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
 import com.jean.database.redis.view.cluster.RedisClusterServerItem;
 import com.jean.database.redis.view.single.RedisServerItem;
 import io.lettuce.core.RedisURI;
@@ -30,7 +32,8 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
     }
 
     @Override
-    public void init() {
+    public void init(ApplicationContext context) {
+        super.init(context);
         MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/redis/redis.png"));
         menuItem.setOnAction(event -> {
             RedisConnectionConfiguration configuration = getConnectionConfiguration();
@@ -56,13 +59,13 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
                     }
                     RedisClusterClient redisClusterClient = RedisClusterClient.create(Collections.singletonList(builder.build()));
                     redisClusterClient.setOptions(options);
-                    getViewContext().addDatabaseItem(new RedisClusterServerItem(getViewContext(), configuration.getConnectionName(), redisClusterClient));
+                    getContext().getRootContext().addDatabaseItem(new RedisClusterServerItem(getContext(), configuration.getConnectionName(), redisClusterClient));
                 } else {
-                    getViewContext().addDatabaseItem(new RedisServerItem(getViewContext(), configuration));
+                    getContext().getRootContext().addDatabaseItem(new RedisServerItem(getContext(), configuration));
                 }
             }
         });
-        getViewContext().addConnectionMenus(menuItem);
+        getContext().getRootContext().addConnectionMenus(menuItem);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
     private RedisConnectionConfiguration getConnectionConfiguration() {
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-conn-cfg.fxml", null, new RedisConnectionConfigurationController(getViewContext(), defaultCollectConfiguration));
+                    FxmlUtils.loadFxml("fxml/redis-conn-cfg.fxml", null, new RedisConnectionConfigurationController(getContext(), defaultCollectConfiguration));
             RedisConnectionConfigurationController cfgController = (RedisConnectionConfigurationController) loadFxmlResult.getController();
             Callback<ButtonType, RedisConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {

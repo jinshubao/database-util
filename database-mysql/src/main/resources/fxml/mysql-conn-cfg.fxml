@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <TabPane xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="com.jean.database.mysql.MySQLConfigurationController">
+         fx:controller="com.jean.database.mysql.controller.MySQLConfigurationController">
     <Tab text="常规" closable="false">
         <GridPane prefWidth="400.0">
             <columnConstraints>

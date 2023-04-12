@@ -1,20 +1,22 @@
 package com.jean.database.mysql.view;
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
-import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.mysql.MySQLObjectTabController;
-import com.jean.database.mysql.MySQLQueryTabController;
-import com.jean.database.sql.BaseDatabaseItem;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.handler.ActionHandler;
+import com.jean.database.item.BaseTreeItem;
+import com.jean.database.task.BaseTask;
+import com.jean.database.task.TaskManger;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
+import com.jean.database.mysql.controller.MySQLObjectTabController;
+import com.jean.database.mysql.controller.MySQLQueryTabController;
+import com.jean.database.sql.item.BaseDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableTypeMetaData;
+import com.jean.database.view.CommonTreeItem;
 import javafx.scene.control.*;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -24,14 +26,15 @@ import java.util.stream.Collectors;
 /**
  * @author jinshubao
  */
-public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
+public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
 
     private final ContextMenu contextMenu;
-    private final MySQLObjectTabController objectTabController;
 
-    public MySQLCatalogTreeItem(ViewContext viewContext, CatalogMetaData value, SQLMetadataProvider metadataProvider, MySQLObjectTabController objectTabController) {
-        super(viewContext, value, metadataProvider);
-        this.objectTabController = objectTabController;
+    private final SQLMetadataProvider metadataProvider;
+
+    public MySQLCatalogTreeItem(ApplicationContext context, CatalogMetaData value, SQLMetadataProvider metadataProvider) {
+        super(context, value);
+        this.metadataProvider = metadataProvider;
         this.contextMenu = this.createContextMenu();
         this.setGraphic(ImageUtils.createImageView("/mysql/catalog.png"));
     }
@@ -53,17 +56,6 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         }
     }
 
-    @Override
-    public void select() {
-        objectTabController.setDdlInfo(getValue().getTableCat());
-    }
-
-
-    @Override
-    public void close() {
-        super.close();
-        objectTabController.clear();
-    }
 
     private ContextMenu createContextMenu() {
 
@@ -77,10 +69,9 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
             List<String> list = getParent().getChildren().stream().map(item -> item.getValue().getTableCat()).collect(Collectors.toList());
             try {
                 FxmlUtils.LoadFxmlResult loadFxmlResult =
-                        FxmlUtils.loadFxml("/fxml/mysql-query-tab.fxml", null, new MySQLQueryTabController(getViewContext(), list, getValue().getTableCat()));
+                        FxmlUtils.loadFxml("fxml/mysql-query-tab.fxml", null, new MySQLQueryTabController(getContext(), list, getValue().getTableCat()));
                 Tab tab = new Tab("查询", loadFxmlResult.getParent());
-                objectTabController.addObjectTab(tab);
-                objectTabController.selectObjectTab(tab);
+                getContext().getRootContext().addObjectTab(tab);
             } catch (IOException e) {
                 DialogUtil.error(e);
             }
@@ -164,7 +155,7 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
 
         private final WeakReference<MySQLCatalogTreeItem> catalogTreeItem = new WeakReference<>(MySQLCatalogTreeItem.this);
         private final CatalogMetaData catalogMetaData = MySQLCatalogTreeItem.this.getValue();
-        private final SQLMetadataProvider metadataProvider = MySQLCatalogTreeItem.this.getMetadataProvider();
+        private final SQLMetadataProvider metadataProvider = MySQLCatalogTreeItem.this.metadataProvider;
 
         private List<String> tableTypes = null;
 
@@ -193,10 +184,10 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
                 tableTypeMetaData.setQuoteString(catalogMetaData.getQuoteString());
                 tableTypeMetaData.setSeparator(catalogMetaData.getSeparator());
                 tableTypeMetaData.setTableType(tableType);
-                TreeItem typeItem = new MySQLTableTypeTreeItem(getViewContext(), tableTypeMetaData, metadataProvider, objectTabController);
+                TreeItem typeItem = new MySQLTableTypeTreeItem(getContext(), tableTypeMetaData, metadataProvider);
                 List<MySQLTableTreeItem> items = tableMataData.stream()
                         .filter(metaData -> metaData.getTableType().equals(tableType))
-                        .map(metaData -> new MySQLTableTreeItem(getViewContext(), metaData, metadataProvider, objectTabController))
+                        .map(metaData -> new MySQLTableTreeItem(getContext(), metaData, metadataProvider))
                         .collect(Collectors.toList());
                 //noinspection unchecked
                 catalogTreeItem.getChildren().add(typeItem);

@@ -1,8 +1,10 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.DefaultController;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.context.ViewContext;
+import com.jean.database.controller.AbstractController;
+import com.jean.database.utils.ImageUtils;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -10,14 +12,14 @@ import javafx.scene.control.TabPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class RedisObjectTabController extends DefaultController implements Initializable {
+public class RedisObjectTabController extends AbstractController implements Initializable {
 
     public TabPane root;
     private Tab objectTab;
     private String title;
 
-    public RedisObjectTabController(ViewContext viewContext, String title) {
-        super(viewContext);
+    public RedisObjectTabController(ApplicationContext context, String title) {
+        super(context);
         this.title = title;
     }
 

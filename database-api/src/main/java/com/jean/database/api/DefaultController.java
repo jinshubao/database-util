@@ -1,14 +1,14 @@
 package com.jean.database.api;
 
-public abstract class DefaultController implements IController {
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.context.ViewContext;
+import com.jean.database.controller.AbstractController;
+import com.jean.database.controller.IController;
 
-    private ViewContext viewContext;
+public abstract class DefaultController extends AbstractController {
 
-    public DefaultController(ViewContext viewContext) {
-        this.viewContext = viewContext;
-    }
 
-    public ViewContext getViewContext() {
-        return viewContext;
+    public DefaultController(ApplicationContext applicationContext) {
+        super(applicationContext);
     }
 }

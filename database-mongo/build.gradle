@@ -1,4 +1,6 @@
 dependencies {
-    compile 'org.mongodb:mongodb-driver-sync:4.0.4'
-    compileOnly project(":database-api")
+    implementation project(":database-api")
+//    implementation 'org.mongodb:mongodb-driver-sync:4.0.4'
+    implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: '4.9.0'
+
 }

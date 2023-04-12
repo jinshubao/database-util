@@ -1,8 +1,9 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.DefaultController;
-import com.jean.database.api.TableViewRowIndexColumnCellFactory;
-import com.jean.database.api.ViewContext;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.factory.TableViewRowIndexColumnCellFactory;
+import com.jean.database.context.ViewContext;
 import com.jean.database.redis.factory.RedisKeyTableRowFactory;
 import com.jean.database.redis.factory.RedisValueTableRowFactory;
 import com.jean.database.redis.factory.TableViewByteColumnCellFactory;
@@ -35,8 +36,8 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
 
 
 
-    public RedisDatabaseTabController(ViewContext viewContext, String title, RedisObjectTabController objectTabController) {
-        super(viewContext);
+    public RedisDatabaseTabController(ApplicationContext context, String title, RedisObjectTabController objectTabController) {
+        super(context);
         this.databaseTab = new Tab(title);
         this.objectTabController = objectTabController;
     }

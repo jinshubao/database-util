@@ -1,11 +1,10 @@
 package com.jean.database.redis.view.handler.impl;
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.TaskManger;
+import com.jean.database.task.BaseTask;
+import com.jean.database.task.TaskManger;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
-import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.model.RedisKey;
 import com.jean.database.redis.model.RedisValue;
 import com.jean.database.redis.model.RedisValueWrapper;

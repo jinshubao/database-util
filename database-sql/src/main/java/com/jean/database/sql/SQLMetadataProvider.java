@@ -2,7 +2,7 @@ package com.jean.database.sql;
 
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.utils.DialogUtil;
 import com.jean.database.sql.constant.MetaDataColumnName;
 import com.jean.database.sql.meta.*;
 import org.slf4j.Logger;

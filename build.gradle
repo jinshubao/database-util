@@ -1,15 +1,15 @@
+plugins {
+    id 'java'
+}
+
+//javafx {
+//    version = "15.0.1"
+//    modules = [ 'javafx.controls' ]
+//}
+
 group 'com.jean'
 version '1.0-SNAPSHOT'
 
-buildscript {
-    repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'de.dynamicfiles.projects.gradle.plugins:javafx-gradle-plugin:8.8.2'
-    }
-}
 
 subprojects {
 
@@ -20,8 +20,17 @@ subprojects {
 
     [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 
+    dependencies {
+        implementation "org.slf4j:jcl-over-slf4j:1.7.25"
+        implementation fileTree(dir: '../libs', include: '*.jar')
+    }
+
+
     repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        maven {
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+        mavenLocal()
         mavenCentral()
     }
 }

@@ -1,12 +1,12 @@
 package com.jean.database.mysql.view;
 
-import com.jean.database.api.BaseTask;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BaseTask;
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.ImageUtils;
-import com.jean.database.mysql.MySQLObjectTabController;
-import com.jean.database.sql.BaseDatabaseItem;
+import com.jean.database.task.TaskManger;
+import com.jean.database.utils.ImageUtils;
+import com.jean.database.mysql.controller.MySQLObjectTabController;
+import com.jean.database.sql.item.BaseDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.meta.TableMetaData;
 import javafx.scene.control.ContextMenu;
@@ -20,14 +20,14 @@ import java.util.List;
 public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
 
     private final ContextMenu contextMenu;
-    private final MySQLObjectTabController objectTabController;
     private MySQLDataTableTab sqlDataTableTab;
 
-    public MySQLTableTreeItem(ViewContext viewContext, TableMetaData tableMetaData,
-                              SQLMetadataProvider metadataProvider,
-                              MySQLObjectTabController objectTabController) {
-        super(viewContext, tableMetaData, metadataProvider);
-        this.objectTabController = objectTabController;
+    private final SQLMetadataProvider metadataProvider;
+
+    public MySQLTableTreeItem(ApplicationContext context,TableMetaData tableMetaData,
+                              SQLMetadataProvider metadataProvider) {
+        super(context, tableMetaData);
+        this.metadataProvider =  metadataProvider;
         this.contextMenu = this.createContextMenu();
         this.setGraphic(ImageUtils.createImageView("/mysql/table.png"));
     }
@@ -56,10 +56,9 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
             return;
         }
         setOpen(true);
-        sqlDataTableTab = new MySQLDataTableTab(getValue(), getMetadataProvider());
+        sqlDataTableTab = new MySQLDataTableTab( getValue(), metadataProvider);
         sqlDataTableTab.setOnClosed(event -> sqlDataTableTab.close());
-        objectTabController.addObjectTab(sqlDataTableTab);
-        objectTabController.selectObjectTab(sqlDataTableTab);
+        getContext().getRootContext().addObjectTab(sqlDataTableTab);
         refresh();
     }
 
@@ -105,7 +104,7 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
         @Override
         protected List<KeyValuePair<String, Object>> call() throws Exception {
             TableMetaData tableMetaData = MySQLTableTreeItem.this.getValue();
-            SQLMetadataProvider metadataProvider = getMetadataProvider();
+            SQLMetadataProvider metadataProvider = MySQLTableTreeItem.this.metadataProvider;
             return metadataProvider.getTableDetails(tableMetaData.getTableCat(), tableMetaData.getTableSchema(), tableMetaData.getTableName(),
                     new String[]{tableMetaData.getTableType()});
         }
@@ -113,9 +112,10 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
         @Override
         protected void succeeded() {
             super.succeeded();
-            objectTabController.setGeneralInfoValue(getValue());
-            TableMetaData tableMetaData = MySQLTableTreeItem.this.getValue();
-            objectTabController.setDdlInfo(tableMetaData.getTableName());
+            // TODO 刷新数据
+//            objectTabController.setGeneralInfoValue(getValue());
+//            TableMetaData tableMetaData = MySQLTableTreeItem.this.getValue();
+//            objectTabController.setDdlInfo(tableMetaData.getTableName());
         }
     }
 

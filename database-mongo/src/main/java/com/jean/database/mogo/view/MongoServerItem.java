@@ -1,13 +1,14 @@
 package com.jean.database.mogo.view;
 
-import com.jean.database.api.BaseTreeItem;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.item.BaseTreeItem;
+import com.jean.database.context.ViewContext;
+import com.jean.database.utils.ImageUtils;
 
 public class MongoServerItem extends BaseTreeItem<String> {
 
-    public MongoServerItem(ViewContext viewContext, String value) {
-        super(viewContext, value, ImageUtils.createImageView("/mongo/mongodb.png"));
+    public MongoServerItem(ApplicationContext context, String value) {
+        super(context, value, ImageUtils.createImageView("/mongo/mongodb.png"));
     }
 
 

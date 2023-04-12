@@ -1,12 +1,13 @@
 package com.jean.database.redis.view.cluster;
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.BaseTreeItem;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
-import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.item.BaseTreeItem;
+import com.jean.database.task.TaskManger;
+import com.jean.database.context.ViewContext;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
 import com.jean.database.redis.RedisClusterServerInfoController;
 import com.jean.database.redis.RedisObjectTabController;
 import io.lettuce.core.cluster.RedisClusterClient;
@@ -29,16 +30,16 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
     private RedisClusterServerInfoController serverInfoController;
 
 
-    public RedisClusterServerItem(ViewContext viewContext, String value, RedisClusterClient redisClusterClient) {
-        super(viewContext, value, ImageUtils.createImageView("/redis/redis.png"));
+    public RedisClusterServerItem(ApplicationContext context, String value, RedisClusterClient redisClusterClient) {
+        super(context, value, ImageUtils.createImageView("/redis/redis.png"));
         this.redisClusterClient = redisClusterClient;
         this.contextMenu = this.createContextMenu();
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", null,
-                            new RedisObjectTabController(viewContext, value));
+                    FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
+                            new RedisObjectTabController(context, value));
             objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
-            getViewContext().addObjectTab(objectTabController.getObjectTab());
+            context.getRootContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -47,8 +48,8 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
 
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-cluster-server-tab.fxml", null,
-                            new RedisClusterServerInfoController(viewContext, redisClusterClient));
+                    FxmlUtils.loadFxml("fxml/redis-cluster-server-tab.fxml", null,
+                            new RedisClusterServerInfoController(context, redisClusterClient));
             serverInfoController = (RedisClusterServerInfoController) loadFxmlResult.getController();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -76,7 +77,7 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         if (!isOpen()) {
             setExpanded(true);
             setOpen(true);
-            getViewContext().addObjectTab(objectTabController.getObjectTab());
+            getContext().getRootContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
             TaskManger.execute(new OpenServerTask());
         }
@@ -141,7 +142,7 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
             super.succeeded();
             List<Integer> number = getValue();
             for (Integer index : number) {
-                TreeItem databaseItem = new RedisClusterDatabaseItem(getViewContext(), index, redisClusterClient, objectTabController);
+                TreeItem databaseItem = new RedisClusterDatabaseItem(getContext(), index, redisClusterClient, objectTabController);
                 redisServerItem.getChildren().add(databaseItem);
             }
         }

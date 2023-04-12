@@ -1,12 +1,13 @@
 package com.jean.database.redis.view.single;
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.BaseTreeItem;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
-import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
-import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.item.BaseTreeItem;
+import com.jean.database.task.TaskManger;
+import com.jean.database.context.ViewContext;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.RedisServerInfoController;
@@ -39,25 +40,24 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
     private RedisObjectTabController objectTabController;
     private RedisServerInfoController serverInfoController;
 
-    public RedisServerItem(ViewContext viewContext, RedisConnectionConfiguration connectionConfiguration) {
-        super(viewContext, connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
+    public RedisServerItem(ApplicationContext context, RedisConnectionConfiguration connectionConfiguration) {
+        super(context, connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
         this.connectionConfiguration = connectionConfiguration;
         this.contextMenu = createContextMenu();
         try {
             String title = connectionConfiguration.getConnectionName();
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", null,
-                    new RedisObjectTabController(getViewContext(), title));
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
+                    new RedisObjectTabController(getContext(), title));
             objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
-            getViewContext().addObjectTab(objectTabController.getObjectTab());
-            objectTabController.select();
+            context.getRootContext().addObjectTab(objectTabController.getObjectTab());
         } catch (IOException e) {
             DialogUtil.error(e);
             return;
         }
 
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-server-tab.fxml", null,
-                    new RedisServerInfoController(getViewContext(), connectionConfiguration));
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-server-tab.fxml", null,
+                    new RedisServerInfoController(context, connectionConfiguration));
             serverInfoController = (RedisServerInfoController) loadFxmlResult.getController();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -84,7 +84,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         if (!isOpen()) {
             setExpanded(true);
             setOpen(true);
-            getViewContext().addObjectTab(objectTabController.getObjectTab());
+            getContext().getRootContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
             TaskManger.execute(new OpenServerTask());
         }
@@ -158,7 +158,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
             super.succeeded();
             List<Integer> number = getValue();
             for (Integer index : number) {
-                TreeItem databaseItem = new RedisDatabaseItem(getViewContext(), index, connectionConfiguration, objectTabController);
+                TreeItem databaseItem = new RedisDatabaseItem(getContext(), index, connectionConfiguration, objectTabController);
                 redisServerItem.getChildren().add(databaseItem);
             }
         }

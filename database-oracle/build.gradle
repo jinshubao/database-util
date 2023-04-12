@@ -1,6 +1,6 @@
 dependencies {
-    compile 'mysql:mysql-connector-java:5.1.41'
-    compile project(":database-sql")
-    compileOnly project(":database-api")
+    implementation 'mysql:mysql-connector-java:5.1.41'
+    implementation project(":database-sql")
+    implementation project(":database-api")
 
 }

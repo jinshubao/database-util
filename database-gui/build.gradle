@@ -1,41 +1,41 @@
-apply plugin: 'application'
-apply plugin: 'javafx-gradle-plugin'
+plugins {
+    id 'application'
+}
 
 mainClassName = 'com.jean.database.gui.MainApplication'
 
 dependencies {
-    compile project(":database-api")
-    compile "org.slf4j:jcl-over-slf4j:1.7.25"
-    compile "ch.qos.logback:logback-classic:1.2.3"
+    implementation project(":database-api")
+    implementation "ch.qos.logback:logback-classic:1.2.3"
 
     runtimeOnly project(":database-mysql")
     runtimeOnly project(":database-oracle")
     runtimeOnly project(":database-redis")
     runtimeOnly project(":database-mongo")
 }
-
-jfx {
-    // gradle common
-    jfxMainAppJarName = "database-gui.jar"
-    jfxAppOutputDir = "build/jfx/app"
-    mainClass = mainClassName
-    // gradle native
-    appName = "database-gui"
-    vendor = "黄老邪"
-    jvmArgs = ["-Xmx512M",                      //堆最大
-               "-Xms256M",                      //堆初始
-               "-Xmn200M",                      //新生代
-               "-Xss1M",                        //线程栈
-               "-XX:MaxMetaspaceSize=128M",
-               "-XX:MetaspaceSize=128M",
-               "-XX:+UseParallelGC",
-               "-XX:+UseAdaptiveSizePolicy",
-               "-XX:MaxGCPauseMillis=100",
-               "-XX:+PrintGCDetails",
-               "-XX:+PrintGCDateStamps",
-               "-XX:+PrintCommandLineFlags",
-               "-verbose:class"]
-    jvmProperties = [:]
-    userJvmArgs = [:]
-    launcherArguments = ["--name=database-GUI", "--version=0.1-snapshot"]
-}
+//
+//jfx {
+//    // gradle common
+//    jfxMainAppJarName = "database-gui.jar"
+//    jfxAppOutputDir = "build/jfx/app"
+//    mainClass = mainClassName
+//    // gradle native
+//    appName = "database-gui"
+//    vendor = "黄老邪"
+//    jvmArgs = ["-Xmx512M",                      //堆最大
+//               "-Xms256M",                      //堆初始
+//               "-Xmn200M",                      //新生代
+//               "-Xss1M",                        //线程栈
+//               "-XX:MaxMetaspaceSize=128M",
+//               "-XX:MetaspaceSize=128M",
+//               "-XX:+UseParallelGC",
+//               "-XX:+UseAdaptiveSizePolicy",
+//               "-XX:MaxGCPauseMillis=100",
+//               "-XX:+PrintGCDetails",
+//               "-XX:+PrintGCDateStamps",
+//               "-XX:+PrintCommandLineFlags",
+//               "-verbose:class"]
+//    jvmProperties = [:]
+//    userJvmArgs = [:]
+//    launcherArguments = ["--name=database-GUI", "--version=0.1-snapshot"]
+//}

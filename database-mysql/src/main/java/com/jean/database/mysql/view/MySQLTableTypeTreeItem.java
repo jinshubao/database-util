@@ -1,11 +1,11 @@
 package com.jean.database.mysql.view;
 
 
-import com.jean.database.api.BaseTask;
-import com.jean.database.api.TaskManger;
-import com.jean.database.api.ViewContext;
-import com.jean.database.mysql.MySQLObjectTabController;
-import com.jean.database.sql.BaseDatabaseItem;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.task.TaskManger;
+import com.jean.database.mysql.controller.MySQLObjectTabController;
+import com.jean.database.sql.item.BaseDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.constant.TableType;
 import com.jean.database.sql.meta.TableSummaries;
@@ -15,11 +15,12 @@ import java.util.List;
 
 public class MySQLTableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> {
 
-    private final MySQLObjectTabController objectTabController;
 
-    public MySQLTableTypeTreeItem(ViewContext viewContext, TableTypeMetaData value, SQLMetadataProvider metadataProvider, MySQLObjectTabController objectTabController) {
-        super(viewContext, value, metadataProvider);
-        this.objectTabController = objectTabController;
+
+    private final SQLMetadataProvider metadataProvider;
+    public MySQLTableTypeTreeItem(ApplicationContext context,  TableTypeMetaData value, SQLMetadataProvider metadataProvider) {
+        super( context,value);
+        this.metadataProvider = metadataProvider;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class MySQLTableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> 
 
     private class RefreshTableInfoTask extends BaseTask<List<TableSummaries>> {
 
-        SQLMetadataProvider metadataProvider = MySQLTableTypeTreeItem.this.getMetadataProvider();
+        SQLMetadataProvider metadataProvider = MySQLTableTypeTreeItem.this.metadataProvider;
         TableTypeMetaData tableTypeMetaData = MySQLTableTypeTreeItem.this.getValue();
 
         @Override
@@ -52,7 +53,7 @@ public class MySQLTableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> 
             super.succeeded();
             List<TableSummaries> tableSummaries = getValue();
             if (tableSummaries != null && !tableSummaries.isEmpty()) {
-                objectTabController.setObjectValue(tableSummaries);
+                //TODO refresh table info
             }
         }
     }

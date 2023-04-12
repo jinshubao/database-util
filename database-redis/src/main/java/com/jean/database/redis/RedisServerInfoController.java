@@ -1,7 +1,11 @@
 package com.jean.database.redis;
 
 import com.jean.database.api.*;
-import com.jean.database.api.utils.StringUtils;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.utils.StringUtils;
+import com.jean.database.context.ViewContext;
+import com.jean.database.task.BaseTask;
+import com.jean.database.task.TaskManger;
 import io.lettuce.core.api.StatefulRedisConnection;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -28,8 +32,8 @@ public class RedisServerInfoController extends DefaultController implements Init
     private XYChart.Series<String, Long> usedMemoryPeek = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryLua = new XYChart.Series<>();
 
-    public RedisServerInfoController(ViewContext viewContext, RedisConnectionConfiguration connectionConfiguration) {
-        super(viewContext);
+    public RedisServerInfoController(ApplicationContext context, RedisConnectionConfiguration connectionConfiguration) {
+        super(context);
         this.connectionConfiguration = connectionConfiguration;
     }
 
@@ -80,7 +84,7 @@ public class RedisServerInfoController extends DefaultController implements Init
                 String[] strings = value.split("\r\n");
                 List<KeyValuePair<String, String>> list = new ArrayList<>(strings.length);
                 for (String string : strings) {
-                    if (!StringUtils.isBlank(string) && !string.startsWith("#")) {
+                    if (StringUtils.isNotBlank(string) && !string.startsWith("#")) {
                         String[] split = string.split(":");
                         if (split.length == 1) {
                             list.add(new KeyValuePair<>(split[0], null));
