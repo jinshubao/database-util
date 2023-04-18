@@ -1,5 +1,5 @@
 dependencies {
-    implementation 'mysql:mysql-connector-java:5.1.41'
+//    implementation 'mysql:mysql-connector-java:5.1.41'
     implementation project(":database-sql")
     implementation project(":database-api")
 

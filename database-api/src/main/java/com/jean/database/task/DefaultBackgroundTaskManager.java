@@ -1,17 +1,18 @@
 package com.jean.database.task;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultBackgroundTaskManager implements BackgroundTaskManager {
 
-    private final TaskThreadPoolExecutor executor;
+    private final ExecutorService executor;
 
     public DefaultBackgroundTaskManager(int minThreads, int maxThreads) {
         this.executor = new TaskThreadPoolExecutor(minThreads, maxThreads,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>(maxThreads + 5),
-                new TaskThreadFactory());
+                new DefaultTaskThreadFactory());
     }
 
     @Override
@@ -23,4 +24,5 @@ public class DefaultBackgroundTaskManager implements BackgroundTaskManager {
     public void shutdown() {
         executor.shutdown();
     }
+
 }

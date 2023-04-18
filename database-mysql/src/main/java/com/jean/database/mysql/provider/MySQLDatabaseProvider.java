@@ -1,15 +1,13 @@
 package com.jean.database.mysql.provider;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.mysql.config.MySQLConnectionConfiguration;
 import com.jean.database.mysql.controller.MySQLConfigurationController;
+import com.jean.database.mysql.view.MySQLServerTreeItem;
 import com.jean.database.provider.DefaultDatabaseProvider;
 import com.jean.database.utils.DialogUtil;
 import com.jean.database.utils.FxmlUtils;
 import com.jean.database.utils.ImageUtils;
-import com.jean.database.mysql.view.MySQLServerTreeItem;
-import com.jean.database.sql.SQLConnectionConfiguration;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -30,30 +28,25 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
         this.identifier = NAME;
         this.name = NAME;
         this.defaultConnectionConfiguration = new MySQLConnectionConfiguration("mysql[127.0.0.1]", "127.0.0.1",
-                3307, "root", "123456");
+                3306, "root", "12345678");
     }
 
     @Override
     public void init(ApplicationContext context) {
         super.init(context);
+        initMenus();
+    }
+
+    private void initMenus() {
         MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/mysql/mysql.png"));
         menuItem.setOnAction(event -> {
-            SQLConnectionConfiguration configuration = getConnectionConfiguration();
+            MySQLConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                DruidDataSource dataSource = new DruidDataSource();
-                String url = configuration.getUrl();
-                dataSource.setUrl(url);
-                dataSource.setUsername(configuration.getUsername());
-                dataSource.setPassword(configuration.getPassword());
-                dataSource.setMaxActive(2);
-                dataSource.setMinIdle(1);
-                dataSource.setLoginTimeout(30);
-                dataSource.setQueryTimeout(60);
-                MySQLMetadataProvider metadataProvider = new MySQLMetadataProvider(dataSource);
-                context.getRootContext().addDatabaseItem(new MySQLServerTreeItem(context, metadataProvider,configuration.getConnectionName()));
+                MySQLServerTreeItem treeItem = new MySQLServerTreeItem(getContext(), configuration);
+                getContext().addDatabaseItem(treeItem);
             }
         });
-        context.getRootContext().addConnectionMenus(menuItem);
+        getContext().addConnectionMenus(menuItem);
     }
 
 
@@ -67,14 +60,14 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
         return this.name;
     }
 
-    public SQLConnectionConfiguration getConnectionConfiguration() {
+    public MySQLConnectionConfiguration getConnectionConfiguration() {
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
                     FxmlUtils.loadFxml("fxml/mysql-conn-cfg.fxml", "message.mysql", new MySQLConfigurationController(getContext()));
             Parent parent = loadFxmlResult.getParent();
             MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.getController();
             controller.setValue(this.defaultConnectionConfiguration);
-            Callback<ButtonType, SQLConnectionConfiguration> callback = buttonType -> {
+            Callback<ButtonType, MySQLConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return controller.getValue();
                 }
@@ -91,4 +84,6 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
     public int getOrder() {
         return 10000;
     }
+
+
 }

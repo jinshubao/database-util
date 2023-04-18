@@ -2,15 +2,12 @@ package com.jean.database.sql;
 
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.utils.DialogUtil;
 import com.jean.database.sql.constant.MetaDataColumnName;
 import com.jean.database.sql.meta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -25,11 +22,9 @@ import java.util.Map;
  */
 public abstract class SQLMetadataProvider {
 
-    protected static final Logger logger = LoggerFactory.getLogger(SQLMetadataProvider.class);
+    protected final Logger logger = LoggerFactory.getLogger(SQLMetadataProvider.class);
 
-    protected DataSource dataSource;
-
-    private String destroyMethod = "close";
+    protected final DataSource dataSource;
 
     public SQLMetadataProvider(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -39,22 +34,16 @@ public abstract class SQLMetadataProvider {
         return dataSource;
     }
 
-    public String getDestroyMethod() {
-        return destroyMethod;
-    }
-
-    public void setDestroyMethod(String destroyMethod) {
-        this.destroyMethod = destroyMethod;
-    }
-
     public DatabaseMetaData getDatabaseMetaData() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        logger.debug("getDatabaseMetaData");
+        try (Connection connection = getDataSource().getConnection()) {
             return connection.getMetaData();
         }
     }
 
     public List<CatalogMetaData> getCatalogs() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        logger.debug("getCatalogs");
+        try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet resultSet = metaData.getCatalogs()) {
                 return covertCatalogMetaDataResultSet(resultSet);
@@ -63,7 +52,8 @@ public abstract class SQLMetadataProvider {
     }
 
     public List<SchemaMetaData> getSchemas(String catalog, String schemaPattern) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        logger.debug("getSchemas");
+        try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet resultSet = metaData.getSchemas(catalog, schemaPattern)) {
                 return convertSchemaMetaDataResultSet(resultSet);
@@ -73,7 +63,8 @@ public abstract class SQLMetadataProvider {
 
 
     public List<TableMetaData> getTableMataData(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        logger.debug("getTableMataData");
+        try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet resultSet = metaData.getTables(catalog, schemaPattern, tableNamePattern, types)) {
                 return convertTableMetaDataResultSet(resultSet);
@@ -83,7 +74,8 @@ public abstract class SQLMetadataProvider {
 
 
     public List<ColumnMetaData> getColumnMetaData(String catalog, String schema, String tableNamePattern) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        logger.debug("getColumnMetaData");
+        try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet resultSet = metaData.getColumns(catalog, schema, tableNamePattern, null)) {
                 return convertColumnMetaDataResultSet(resultSet);
@@ -92,7 +84,8 @@ public abstract class SQLMetadataProvider {
     }
 
     public List<String> getTableTypes() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
+        logger.debug("getTableTypes");
+        try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             try (ResultSet resultSet = metaData.getTableTypes()) {
                 List<String> list = new ArrayList<>();
@@ -113,6 +106,7 @@ public abstract class SQLMetadataProvider {
     public abstract List<KeyValuePair<String, Object>> getTableDetails(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
 
     protected List<CatalogMetaData> covertCatalogMetaDataResultSet(ResultSet resultSet) throws SQLException {
+        logger.debug("convertCatalogMetaDataResultSet");
         List<CatalogMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             CatalogMetaData data = new CatalogMetaData();
@@ -124,6 +118,7 @@ public abstract class SQLMetadataProvider {
     }
 
     protected List<SchemaMetaData> convertSchemaMetaDataResultSet(ResultSet resultSet) throws SQLException {
+        logger.debug("convertSchemaMetaDataResultSet");
         List<SchemaMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             SchemaMetaData data = new SchemaMetaData();
@@ -137,6 +132,7 @@ public abstract class SQLMetadataProvider {
     }
 
     protected List<TableMetaData> convertTableMetaDataResultSet(ResultSet resultSet) throws SQLException {
+        logger.debug("convertTableMetaDataResultSet");
         List<TableMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             TableMetaData data = new TableMetaData();
@@ -160,6 +156,7 @@ public abstract class SQLMetadataProvider {
     }
 
     protected List<ColumnMetaData> convertColumnMetaDataResultSet(ResultSet resultSet) throws SQLException {
+        logger.debug("convertColumnMetaDataResultSet");
         List<ColumnMetaData> list = new ArrayList<>();
         while (resultSet.next()) {
             ColumnMetaData data = new ColumnMetaData();
@@ -207,18 +204,5 @@ public abstract class SQLMetadataProvider {
             list.add(data);
         }
         return list;
-    }
-
-    public void close() {
-        try {
-            Method method = dataSource.getClass().getMethod(destroyMethod);
-            if (method.isAccessible()) {
-                method.invoke(dataSource);
-            }
-        } catch (NoSuchMethodException | IllegalAccessException ignore) {
-        } catch (InvocationTargetException ex) {
-            logger.error(ex.getMessage(), ex);
-            DialogUtil.error(ex);
-        }
     }
 }

@@ -1,7 +1,5 @@
 package com.jean.database.mysql.controller;
 
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.util.JdbcConstants;
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.controller.AbstractController;
 import com.jean.database.mysql.ExecuteAnalyse;
@@ -72,10 +70,10 @@ public class MySQLQueryTabController extends AbstractController implements Initi
         catalogComboBox.getSelectionModel().select(catalog);
 
         formatButton.setOnAction(event -> {
-            String sql = sqlTextArea.getText();
+//            String sql = sqlTextArea.getText();
             try {
-                String result = SQLUtils.format(sql, JdbcConstants.MYSQL, SQLUtils.DEFAULT_LCASE_FORMAT_OPTION);
-                sqlTextArea.setText(result);
+//                String result = SQLUtils.format(sql, JdbcConstants.MYSQL, SQLUtils.DEFAULT_LCASE_FORMAT_OPTION);
+//                sqlTextArea.setText(sql);
             } catch (Throwable e) {
                 DialogUtil.error(e);
             }

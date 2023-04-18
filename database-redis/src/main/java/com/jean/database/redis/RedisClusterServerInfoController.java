@@ -1,11 +1,10 @@
 package com.jean.database.redis;
 
-import com.jean.database.api.*;
+import com.jean.database.api.DefaultController;
+import com.jean.database.api.KeyValuePair;
 import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BackgroundTask;
 import com.jean.database.utils.StringUtils;
-import com.jean.database.context.ViewContext;
-import com.jean.database.task.BaseTask;
-import com.jean.database.task.TaskManger;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import javafx.fxml.Initializable;
@@ -69,16 +68,21 @@ public class RedisClusterServerInfoController extends DefaultController implemen
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                TaskManger.execute(new RedisServerInfoTask());
+                getContext().execute(new RedisServerInfoTask());
             }
         }, 0, 5000);
     }
 
 
-    private class RedisServerInfoTask extends BaseTask<ServerInfo> {
+    private class RedisServerInfoTask extends BackgroundTask<ServerInfo> {
+
+
+        public RedisServerInfoTask() {
+            super("获取Redis服务器信息");
+        }
 
         @Override
-        protected ServerInfo call() throws Exception {
+        protected ServerInfo doBackground() throws Exception {
             try (StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
                 String value = connection.sync().info();
                 String[] strings = value.split("\r\n");

@@ -1,12 +1,10 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.task.BaseTask;
+import com.jean.database.task.BackgroundTask;
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.task.TaskManger;
 import com.jean.database.utils.ImageUtils;
-import com.jean.database.mysql.controller.MySQLObjectTabController;
-import com.jean.database.sql.item.BaseDatabaseItem;
+import com.jean.database.sql.item.SQLDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
 import com.jean.database.sql.meta.TableMetaData;
 import javafx.scene.control.ContextMenu;
@@ -17,14 +15,15 @@ import java.util.List;
 /**
  * @author jinshubao
  */
-public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
+public class MySQLTableTreeItem extends SQLDatabaseItem<TableMetaData> {
 
     private final ContextMenu contextMenu;
     private MySQLDataTableTab sqlDataTableTab;
 
     private final SQLMetadataProvider metadataProvider;
 
-    public MySQLTableTreeItem(ApplicationContext context,TableMetaData tableMetaData,
+    public MySQLTableTreeItem(ApplicationContext context,
+                              TableMetaData tableMetaData,
                               SQLMetadataProvider metadataProvider) {
         super(context, tableMetaData);
         this.metadataProvider =  metadataProvider;
@@ -48,7 +47,7 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
 
     @Override
     public void select() {
-        TaskManger.execute(new TableGeneralInfoTask());
+//        getContext().getBackgroundTaskManager().execute(new TableGeneralInfoTask("获取表信息"));
     }
 
     private void open() {
@@ -56,9 +55,10 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
             return;
         }
         setOpen(true);
-        sqlDataTableTab = new MySQLDataTableTab( getValue(), metadataProvider);
+        TableMetaData tableMetaData = getValue();
+        sqlDataTableTab = new MySQLDataTableTab(getContext(), tableMetaData, metadataProvider);
         sqlDataTableTab.setOnClosed(event -> sqlDataTableTab.close());
-        getContext().getRootContext().addObjectTab(sqlDataTableTab);
+        getContext().addObjectTab(sqlDataTableTab);
         refresh();
     }
 
@@ -73,7 +73,7 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
     @Override
     public void refresh() {
         sqlDataTableTab.refresh();
-        TaskManger.execute(new TableGeneralInfoTask());
+        getContext().execute(new TableGeneralInfoTask("获取表信息"));
     }
 
     private ContextMenu createContextMenu() {
@@ -99,10 +99,14 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
     }
 
 
-    private class TableGeneralInfoTask extends BaseTask<List<KeyValuePair<String, Object>>> {
+    private class TableGeneralInfoTask extends BackgroundTask<List<KeyValuePair<String, Object>>> {
+
+        public TableGeneralInfoTask(String taskName) {
+            super(taskName);
+        }
 
         @Override
-        protected List<KeyValuePair<String, Object>> call() throws Exception {
+        protected List<KeyValuePair<String, Object>> doBackground() throws Exception {
             TableMetaData tableMetaData = MySQLTableTreeItem.this.getValue();
             SQLMetadataProvider metadataProvider = MySQLTableTreeItem.this.metadataProvider;
             return metadataProvider.getTableDetails(tableMetaData.getTableCat(), tableMetaData.getTableSchema(), tableMetaData.getTableName(),

@@ -1,28 +1,23 @@
 package com.jean.database.gui.controller;
 
-import com.jean.database.context.ApplicationContext;
-import com.jean.database.controller.AbstractController;
-import com.jean.database.provider.IDatabaseProvider;
-import com.jean.database.factory.TreeCellFactory;
-import com.jean.database.context.ViewContext;
 import com.jean.database.action.IMouseAction;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.context.ViewContext;
+import com.jean.database.controller.AbstractController;
+import com.jean.database.factory.TreeCellFactory;
 import com.jean.database.utils.ImageUtils;
-import com.jean.database.provider.ProviderManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class MainController  extends AbstractController implements ViewContext {
+public class MainController extends AbstractController implements ViewContext {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -54,6 +49,8 @@ public class MainController  extends AbstractController implements ViewContext {
     private TabPane objectTabPan;
     @FXML
     private ProgressBar progressBar;
+
+//    private final ObservableList<>
 
     public MainController(ApplicationContext applicationContext) {
         super(applicationContext);
@@ -102,6 +99,11 @@ public class MainController  extends AbstractController implements ViewContext {
     }
 
     @Override
+    public void removeDatabaseItem(TreeItem treeItem) {
+        treeView.getRoot().getChildren().remove(treeItem);
+    }
+
+    @Override
     public void addFileMenus(MenuItem... menu) {
         file.getItems().addAll(menu);
     }
@@ -146,6 +148,10 @@ public class MainController  extends AbstractController implements ViewContext {
         }
     }
 
+    @Override
+    public void updateMessage(String message) {
+        logger.debug("updateMessage {}", message);
+    }
 
     public BorderPane getRoot() {
         return root;

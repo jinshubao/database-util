@@ -20,6 +20,7 @@ public class MySQLMetadataProvider extends SQLMetadataProvider {
 
     @Override
     public List<Map<String, Object>> getTableRows(TableMetaData tableMetaData, int pageSize, int pageIndex) throws SQLException {
+        logger.debug("getTableRows");
         try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             String quoteString = metaData.getIdentifierQuoteString();
@@ -51,11 +52,13 @@ public class MySQLMetadataProvider extends SQLMetadataProvider {
 
     @Override
     public int getTableRowCount(TableMetaData tableMetaData) throws SQLException {
+        logger.debug("getTableRowCount tableName={}", tableMetaData.getTableName());
         try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             String quoteString = metaData.getIdentifierQuoteString();
             String separator = metaData.getCatalogSeparator();
             String sql = "SELECT COUNT(*) FROM " + quoteString + tableMetaData.getTableCat() + quoteString + separator + quoteString + tableMetaData.getTableName() + quoteString;
+            logger.debug("getTableRowCount sql={}", sql);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
@@ -70,6 +73,7 @@ public class MySQLMetadataProvider extends SQLMetadataProvider {
 
     @Override
     public List<TableSummaries> getTableSummaries(String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException {
+        logger.debug("getTableSummaries catalog={}, schemaPattern={}, tableNamePattern={}, types={}", catalog, schemaPattern, tableNamePattern, types);
         try (Connection connection = getDataSource().getConnection()) {
             DatabaseMetaData metaData = connection.getMetaData();
             String quoteString = metaData.getIdentifierQuoteString();
@@ -77,7 +81,7 @@ public class MySQLMetadataProvider extends SQLMetadataProvider {
             String sql = "SELECT TABLE_NAME, AUTO_INCREMENT, UPDATE_TIME, DATA_LENGTH, ENGINE, TABLE_ROWS, TABLE_COMMENT" +
                     " FROM " + quoteString + "information_schema" + quoteString + separator + quoteString + "TABLES" + quoteString +
                     " WHERE TABLE_CATALOG = ? AND TABLE_SCHEMA = ? AND TABLE_TYPE = ?";
-
+            logger.debug("getTableSummaries sql={}", sql);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, "def");
                 statement.setString(2, catalog);
@@ -110,6 +114,8 @@ public class MySQLMetadataProvider extends SQLMetadataProvider {
 
             String sql = "SELECT * FROM " + quoteString + "information_schema" + quoteString + separator + quoteString + "TABLES" + quoteString +
                     " WHERE TABLE_CATALOG = ? AND TABLE_SCHEMA = ? AND TABLE_NAME = ? AND TABLE_TYPE = ?";
+
+            logger.debug("getTableDetails sql={}", sql);
 
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, "def");

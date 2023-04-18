@@ -1,15 +1,13 @@
 package com.jean.database.redis.view.cluster;
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.task.BaseTask;
-import com.jean.database.item.BaseTreeItem;
-import com.jean.database.task.TaskManger;
-import com.jean.database.context.ViewContext;
+import com.jean.database.redis.RedisClusterServerInfoController;
+import com.jean.database.redis.RedisObjectTabController;
+import com.jean.database.task.BackgroundTask;
 import com.jean.database.utils.DialogUtil;
 import com.jean.database.utils.FxmlUtils;
 import com.jean.database.utils.ImageUtils;
-import com.jean.database.redis.RedisClusterServerInfoController;
-import com.jean.database.redis.RedisObjectTabController;
+import com.jean.database.view.AbstractTreeItem;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
@@ -21,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RedisClusterServerItem extends BaseTreeItem<String> {
+public class RedisClusterServerItem extends AbstractTreeItem<String> {
 
     private final RedisClusterClient redisClusterClient;
     private final ContextMenu contextMenu;
@@ -39,7 +37,7 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
                     FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
                             new RedisObjectTabController(context, value));
             objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
-            context.getRootContext().addObjectTab(objectTabController.getObjectTab());
+            context.addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
             DialogUtil.error(e);
@@ -77,9 +75,9 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         if (!isOpen()) {
             setExpanded(true);
             setOpen(true);
-            getContext().getRootContext().addObjectTab(objectTabController.getObjectTab());
+            getContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
-            TaskManger.execute(new OpenServerTask());
+            getContext().execute(new OpenServerTask());
         }
     }
 
@@ -121,12 +119,19 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
     }
 
 
-    private class OpenServerTask extends BaseTask<List<Integer>> {
+    private class OpenServerTask extends BackgroundTask<List<Integer>> {
+
+
+
 
         private final RedisClusterServerItem redisServerItem = RedisClusterServerItem.this;
 
+        public OpenServerTask() {
+            super("打卡Redis链接");
+        }
+
         @Override
-        protected List<Integer> call() throws Exception {
+        protected List<Integer> doBackground() throws Exception {
             try (StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
                 RedisAdvancedClusterCommands<String, String> clusterCommands = connection.sync();
 

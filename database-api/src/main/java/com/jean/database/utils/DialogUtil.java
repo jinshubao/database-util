@@ -1,8 +1,8 @@
 package com.jean.database.utils;
 
-import com.jean.database.task.TaskManger;
+import com.jean.database.context.ApplicationContext;
+import com.jean.database.task.BackgroundTask;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,7 +14,6 @@ import javafx.util.Callback;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 
 /**
  * 弹框工具类
@@ -188,21 +187,17 @@ public final class DialogUtil {
         return dialog;
     }
 
-    public static <T> Optional<T> progressDialog(String title, String headerText, Task<T> task) {
-        return progressDialog(title, headerText, task, TaskManger.getExecutor());
-    }
-
     /**
      * 进度条对话框
      *
+     * @param context    context
      * @param title      title
      * @param headerText header
      * @param task       task
-     * @param executor   executor
      * @param <T>        任务返回类型
      * @return 任务执行成功，点击完成按钮返回task的执行结果，其他情况返回null
      */
-    public static <T> Optional<T> progressDialog(String title, String headerText, Task<T> task, Executor executor) {
+    public static <T> Optional<T> progressDialog(ApplicationContext context, String title, String headerText, BackgroundTask<T> task) {
 
         Label msg = new Label();
         msg.textProperty().bind(task.messageProperty());
@@ -249,7 +244,7 @@ public final class DialogUtil {
             }
 
         });
-        executor.execute(task);
+        context.execute(task);
         return dialog.showAndWait();
     }
 

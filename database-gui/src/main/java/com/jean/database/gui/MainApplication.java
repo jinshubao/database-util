@@ -12,7 +12,6 @@ import com.jean.database.utils.FxmlUtils;
 import com.jean.database.utils.ImageUtils;
 import com.jean.database.utils.StringUtils;
 import javafx.application.Application;
-import javafx.application.Preloader;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -29,7 +28,12 @@ import java.util.Locale;
  * @date 2017/4/8
  */
 public class MainApplication extends Application {
-    private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
+
+    static {
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+    }
+
+    private final Logger logger = LoggerFactory.getLogger(MainApplication.class);
 
     private Parameters parameters;
 
@@ -41,31 +45,30 @@ public class MainApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-        //启动参数
         logger.debug("application init");
+        //启动参数
         this.parameters = getParameters();
-//        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this));
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         logger.debug("application start");
-//        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START, this));
         String minThreads = parameters.getNamed().getOrDefault("minthreads", "1");
         String maxThreads = parameters.getNamed().getOrDefault("maxthreads", Runtime.getRuntime().availableProcessors() + "");
-        String name = parameters.getNamed().get("name");
-        String version = parameters.getNamed().get("version");
-        DefaultBackgroundTaskManager backgroundTaskManager = new DefaultBackgroundTaskManager(Integer.parseInt(minThreads), Integer.parseInt(maxThreads));
+        String name = parameters.getNamed().getOrDefault("name", "DB GUI");
+        String version = parameters.getNamed().getOrDefault("version", "1.0.0");
+        String localeStr = parameters.getNamed().getOrDefault("locale", "zh_CN");
 
         DefaultApplicationContext context = new DefaultApplicationContext();
+        DefaultBackgroundTaskManager backgroundTaskManager = new DefaultBackgroundTaskManager(Integer.parseInt(minThreads), Integer.parseInt(maxThreads));
         context.setBackgroundTaskManager(backgroundTaskManager);
 
-        MainControllerFactory factory = new MainControllerFactory(applicationContext);
-        Locale locale = Locale.SIMPLIFIED_CHINESE;
+        MainControllerFactory factory = new MainControllerFactory(context);
+        Locale locale = Locale.forLanguageTag(localeStr);
         FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/Scene.fxml", "message.scene", locale, factory);
         MainController controller = (MainController) loadFxmlResult.getController();
         context.setRootContext(controller);
+
         Scene scene = new Scene(loadFxmlResult.getParent());
         scene.getStylesheets().add("styles/Styles.css");
         String title = StringUtils.join(Arrays.asList(name, version), " ");
@@ -78,7 +81,6 @@ public class MainApplication extends Application {
                 event.consume();
             }
         }));
-        this.applicationContext = context;
 
         //初始化provider
         List<IDatabaseProvider> providers = ProviderManager.getProviders();
@@ -86,13 +88,14 @@ public class MainApplication extends Application {
         for (IDatabaseProvider provider : providers) {
             provider.init(context);
         }
+        this.applicationContext = context;
     }
 
     @Override
     public void stop() throws Exception {
         logger.debug("application stop");
-        if (this.applicationContext != null && this.applicationContext.getBackgroundTaskManager() != null) {
-            this.applicationContext.getBackgroundTaskManager().shutdown();
+        if (this.getApplicationContext() != null) {
+            this.getApplicationContext().close();
         }
     }
 
@@ -105,8 +108,10 @@ public class MainApplication extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        logger.debug("application launch");
         launch(MainApplication.class, args);
     }
 
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
 }

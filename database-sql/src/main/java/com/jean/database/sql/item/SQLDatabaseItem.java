@@ -1,24 +1,24 @@
 package com.jean.database.sql.item;
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.item.BaseTreeItem;
+import com.jean.database.view.AbstractTreeItem;
 import com.jean.database.ability.ICloseable;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 
 
-public abstract class BaseDatabaseItem<T> extends BaseTreeItem<T> {
+public abstract class SQLDatabaseItem<T> extends AbstractTreeItem<T> {
 
-//    private final SQLMetadataProvider metadataProvider;
 
-    public BaseDatabaseItem(ApplicationContext context, T value) {
+    public SQLDatabaseItem(ApplicationContext context, T value) {
         super(context, value);
-//        this.metadataProvider = metadataProvider;
     }
 
-//    public SQLMetadataProvider getMetadataProvider() {
-//        return metadataProvider;
-//    }
+    public SQLDatabaseItem(ApplicationContext context, T value, Node graphic) {
+        super(context, value, graphic);
+    }
+
 
 
     @Override

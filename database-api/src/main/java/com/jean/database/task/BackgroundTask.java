@@ -4,9 +4,8 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Base64;
 import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public abstract class BackgroundTask<V> extends Task<V> {
 
@@ -17,13 +16,31 @@ public abstract class BackgroundTask<V> extends Task<V> {
     private final String name;
 
     public BackgroundTask(String taskName) {
-        this(UUID.randomUUID().toString(), taskName);
+        this(Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes()), taskName);
     }
 
     public BackgroundTask(String taskId, String taskName) {
         this.name = taskName;
         this.taskId = taskId;
     }
+
+    @Override
+    protected final V call() throws Exception {
+        logger.debug("task[{}] call", this);
+        try {
+            return doBackground();
+        } catch (Throwable e) {
+            throw new Exception(e);
+        }
+    }
+
+    @Override
+    public boolean cancel(boolean b) {
+        logger.debug("task[{}] cancel", this);
+        return super.cancel(b);
+    }
+
+    protected abstract V doBackground() throws Exception;
 
     @Override
     protected void running() {
@@ -33,32 +50,24 @@ public abstract class BackgroundTask<V> extends Task<V> {
 
     @Override
     protected void scheduled() {
-//        updateMessage("开始执行");
         logger.debug("task[{}] scheduled", this);
     }
 
     @Override
     protected void cancelled() {
         super.cancelled();
-//        updateMessage("执行取消");
         logger.debug("task[{}] cancelled", this);
     }
 
     @Override
     protected void failed() {
         super.failed();
-//        updateMessage("执行失败");
-        logger.debug("task[{}] failed", this);
-//        Throwable exception = getException();
-//        if (exception != null) {
-//            DialogUtil.error(exception);
-//        }
+        logger.error("task[{}] failed {}", this, getException().getMessage());
     }
 
     @Override
     protected void succeeded() {
         super.done();
-//        updateMessage("执行成功");
         logger.debug("task[{}] succeeded", this);
     }
 
@@ -80,4 +89,5 @@ public abstract class BackgroundTask<V> extends Task<V> {
     public String getName() {
         return name;
     }
+
 }

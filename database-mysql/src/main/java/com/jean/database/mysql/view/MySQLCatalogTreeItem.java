@@ -1,21 +1,16 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.handler.ActionHandler;
-import com.jean.database.item.BaseTreeItem;
-import com.jean.database.task.BaseTask;
-import com.jean.database.task.TaskManger;
-import com.jean.database.utils.DialogUtil;
-import com.jean.database.utils.FxmlUtils;
-import com.jean.database.utils.ImageUtils;
-import com.jean.database.mysql.controller.MySQLObjectTabController;
 import com.jean.database.mysql.controller.MySQLQueryTabController;
-import com.jean.database.sql.item.BaseDatabaseItem;
 import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.item.SQLDatabaseItem;
 import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableTypeMetaData;
-import com.jean.database.view.CommonTreeItem;
+import com.jean.database.task.BackgroundTask;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
 import javafx.scene.control.*;
 
 import java.io.IOException;
@@ -26,17 +21,16 @@ import java.util.stream.Collectors;
 /**
  * @author jinshubao
  */
-public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
+public class MySQLCatalogTreeItem extends SQLDatabaseItem<CatalogMetaData> {
 
     private final ContextMenu contextMenu;
 
     private final SQLMetadataProvider metadataProvider;
 
     public MySQLCatalogTreeItem(ApplicationContext context, CatalogMetaData value, SQLMetadataProvider metadataProvider) {
-        super(context, value);
+        super(context, value, ImageUtils.createImageView("/mysql/catalog.png"));
         this.metadataProvider = metadataProvider;
         this.contextMenu = this.createContextMenu();
-        this.setGraphic(ImageUtils.createImageView("/mysql/catalog.png"));
     }
 
     @Override
@@ -52,7 +46,7 @@ public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
     @Override
     public void doubleClick() {
         if (!isOpen()) {
-            TaskManger.execute(new TableTypeTask());
+            getContext().execute(new TableTypeTask());
         }
     }
 
@@ -71,7 +65,7 @@ public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
                 FxmlUtils.LoadFxmlResult loadFxmlResult =
                         FxmlUtils.loadFxml("fxml/mysql-query-tab.fxml", null, new MySQLQueryTabController(getContext(), list, getValue().getTableCat()));
                 Tab tab = new Tab("查询", loadFxmlResult.getParent());
-                getContext().getRootContext().addObjectTab(tab);
+                getContext().addObjectTab(tab);
             } catch (IOException e) {
                 DialogUtil.error(e);
             }
@@ -134,7 +128,7 @@ public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
 
         MenuItem refresh = new MenuItem("刷新", ImageUtils.createImageView("/image/refresh.png"));
         refresh.setOnAction(event -> {
-            TaskManger.execute(new TableTypeTask());
+            getContext().execute(new TableTypeTask());
         });
 
         ContextMenu contextMenu = new ContextMenu();
@@ -151,7 +145,7 @@ public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
     }
 
 
-    private class TableTypeTask extends BaseTask<List<TableMetaData>> {
+    private class TableTypeTask extends BackgroundTask<List<TableMetaData>> {
 
         private final WeakReference<MySQLCatalogTreeItem> catalogTreeItem = new WeakReference<>(MySQLCatalogTreeItem.this);
         private final CatalogMetaData catalogMetaData = MySQLCatalogTreeItem.this.getValue();
@@ -159,8 +153,12 @@ public class MySQLCatalogTreeItem extends BaseTreeItem<CatalogMetaData> {
 
         private List<String> tableTypes = null;
 
+        public TableTypeTask() {
+            super("获取表类型");
+        }
+
         @Override
-        protected List<TableMetaData> call() throws Exception {
+        protected List<TableMetaData> doBackground() throws Exception {
             this.tableTypes = metadataProvider.getTableTypes();
             return metadataProvider.getTableMataData(catalogMetaData.getTableCat(), null, null, null);
         }

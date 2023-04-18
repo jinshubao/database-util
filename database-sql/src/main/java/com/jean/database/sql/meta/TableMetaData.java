@@ -3,6 +3,10 @@ package com.jean.database.sql.meta;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * 表信息
  *
@@ -169,18 +173,24 @@ public class TableMetaData {
     }
 
     public String getFullName() {
-        StringBuilder builder = new StringBuilder();
-        String quoteString = getQuoteString();
+
+        List<String> list = new ArrayList<>();
+        list.add(getTableCat());
+        list.add(getTableSchema());
+        list.add(getTableName());
         String separator = getSeparator();
-        builder.append(quoteString).append(getTableCat()).append(quoteString);
-        String schema = getTableSchema();
-        if (schema != null && !schema.isEmpty()) {
-            builder.append(separator)
-                    .append(quoteString).append(schema).append(quoteString);
+        if (separator == null) {
+            separator = "" ;
         }
-        builder.append(separator)
-                .append(quoteString).append(getTableName()).append(quoteString);
-        return builder.toString();
+        String quoteString = getQuoteString();
+        if (quoteString == null) {
+            quoteString = "" ;
+        }
+        String finalQuoteString = quoteString;
+        return list.stream()
+                .filter(item -> item != null && !item.isEmpty())
+                .map(item -> finalQuoteString + item + finalQuoteString)
+                .collect(Collectors.joining(separator));
     }
 
     @Override

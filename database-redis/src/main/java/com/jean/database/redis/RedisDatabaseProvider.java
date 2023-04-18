@@ -2,12 +2,11 @@ package com.jean.database.redis;
 
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.provider.DefaultDatabaseProvider;
-import com.jean.database.context.ViewContext;
+import com.jean.database.redis.view.cluster.RedisClusterServerItem;
+import com.jean.database.redis.view.single.RedisServerItem;
 import com.jean.database.utils.DialogUtil;
 import com.jean.database.utils.FxmlUtils;
 import com.jean.database.utils.ImageUtils;
-import com.jean.database.redis.view.cluster.RedisClusterServerItem;
-import com.jean.database.redis.view.single.RedisServerItem;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
@@ -59,13 +58,13 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
                     }
                     RedisClusterClient redisClusterClient = RedisClusterClient.create(Collections.singletonList(builder.build()));
                     redisClusterClient.setOptions(options);
-                    getContext().getRootContext().addDatabaseItem(new RedisClusterServerItem(getContext(), configuration.getConnectionName(), redisClusterClient));
+                    getContext().addDatabaseItem(new RedisClusterServerItem(getContext(), configuration.getConnectionName(), redisClusterClient));
                 } else {
-                    getContext().getRootContext().addDatabaseItem(new RedisServerItem(getContext(), configuration));
+                    getContext().addDatabaseItem(new RedisServerItem(getContext(), configuration));
                 }
             }
         });
-        getContext().getRootContext().addConnectionMenus(menuItem);
+        getContext().addConnectionMenus(menuItem);
     }
 
     @Override

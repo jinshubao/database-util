@@ -4,7 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TaskThreadFactory implements ThreadFactory {
+public class DefaultTaskThreadFactory implements ThreadFactory {
 
     //默认线程栈大小为0
     private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();

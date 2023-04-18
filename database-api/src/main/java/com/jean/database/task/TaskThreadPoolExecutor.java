@@ -30,8 +30,7 @@ public class TaskThreadPoolExecutor extends ThreadPoolExecutor implements Reject
         super.afterExecute(r, t);
         logger.debug("任务[{}]执行完成", r);
         if (t != null) {
-            logger.error("execute task {} has an exception {}", r, t);
-            throw new RuntimeException(t);
+            logger.error("任务[{}]执行异常: {}", r, t.getMessage());
         }
     }
 

@@ -20,6 +20,8 @@ public interface ViewContext {
 
     void addDatabaseItem(TreeItem treeItem);
 
+    void removeDatabaseItem(TreeItem treeItem);
+
     void addFileMenus(MenuItem... menu);
 
     void addConnectionMenus(MenuItem... menu);
@@ -35,4 +37,6 @@ public interface ViewContext {
     void addHelpMenus(MenuItem... menu);
 
     void updateProgress(double progress);
+    void updateMessage(String message);
+
 }

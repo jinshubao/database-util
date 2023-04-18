@@ -35,10 +35,9 @@ public class MongoDatabaseProvider extends DefaultDatabaseProvider {
         super.init(context);
         MenuItem menuItem = new MenuItem(getName(), ImageUtils.createImageView("/mongo/mongodb.png"));
         menuItem.setOnAction(event -> {
-
-            context.getRootContext().addDatabaseItem(new MongoServerItem(context, "mongo[127.0.0.1:21017]"));
+            context.addDatabaseItem(new MongoServerItem(context, "mongo[127.0.0.1:21017]"));
         });
-        context.getRootContext().addConnectionMenus(menuItem);
+        context.addConnectionMenus(menuItem);
     }
 
 

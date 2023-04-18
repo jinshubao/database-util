@@ -1,16 +1,14 @@
 package com.jean.database.redis.view.single;
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.task.BaseTask;
-import com.jean.database.item.BaseTreeItem;
-import com.jean.database.task.TaskManger;
-import com.jean.database.context.ViewContext;
-import com.jean.database.utils.DialogUtil;
-import com.jean.database.utils.FxmlUtils;
-import com.jean.database.utils.ImageUtils;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.RedisServerInfoController;
+import com.jean.database.task.BackgroundTask;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
+import com.jean.database.view.AbstractTreeItem;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
@@ -34,7 +32,7 @@ import java.util.List;
 /**
  * @author jinshubao
  */
-public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> {
+public class RedisServerItem extends AbstractTreeItem<RedisConnectionConfiguration> {
     private final RedisConnectionConfiguration connectionConfiguration;
     private final ContextMenu contextMenu;
     private RedisObjectTabController objectTabController;
@@ -49,7 +47,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
             FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
                     new RedisObjectTabController(getContext(), title));
             objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
-            context.getRootContext().addObjectTab(objectTabController.getObjectTab());
+            context.addObjectTab(objectTabController.getObjectTab());
         } catch (IOException e) {
             DialogUtil.error(e);
             return;
@@ -84,9 +82,9 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         if (!isOpen()) {
             setExpanded(true);
             setOpen(true);
-            getContext().getRootContext().addObjectTab(objectTabController.getObjectTab());
+            getContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
-            TaskManger.execute(new OpenServerTask());
+            getContext().execute(new OpenServerTask());
         }
     }
 
@@ -109,7 +107,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
             textArea.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
             textArea.setOnKeyPressed(event1 -> {
                 if (event1.getCode() == KeyCode.ENTER) {
-                    TaskManger.execute(new RedisCommandTask("PING"));
+                    getContext().execute(new RedisCommandTask("PING"));
                 }
             });
             objectTabController.addDatabaseTab(new Tab("命令行", textArea));
@@ -119,7 +117,7 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         propertyItem.disableProperty().bind(openProperty().not());
         propertyItem.setOnAction(event -> {
             objectTabController.addDatabaseTab(serverInfoController.getServerInfoTab());
-            TaskManger.execute(new RedisServerInfoTask());
+            getContext().execute(new RedisServerInfoTask());
             serverInfoController.startTimerTask();
         });
 
@@ -132,12 +130,16 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
     }
 
 
-    private class OpenServerTask extends BaseTask<List<Integer>> {
+    private class OpenServerTask extends BackgroundTask<List<Integer>> {
 
         private final RedisServerItem redisServerItem = RedisServerItem.this;
 
+        public OpenServerTask() {
+            super("打开连接");
+        }
+
         @Override
-        protected List<Integer> call() throws Exception {
+        protected List<Integer> doBackground() throws Exception {
             try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
                 RedisCommands<byte[], byte[]> commands = connection.sync();
                 List<Integer> list = new ArrayList<>();
@@ -165,10 +167,14 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
     }
 
 
-    private class RedisServerInfoTask extends BaseTask<String> {
+    private class RedisServerInfoTask extends BackgroundTask<String> {
+
+        public RedisServerInfoTask() {
+            super("Redis服务器信息");
+        }
 
         @Override
-        protected String call() throws Exception {
+        protected String doBackground() throws Exception {
             updateProgress(0, 1);
             try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
                 String info = connection.sync().info();
@@ -184,16 +190,18 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         }
     }
 
-    private class RedisCommandTask extends BaseTask<byte[]> {
+    private class RedisCommandTask extends BackgroundTask<byte[]> {
 
         private final String redisCommand;
 
         public RedisCommandTask(String redisCommand) {
+            super("执行命令");
             this.redisCommand = redisCommand;
+
         }
 
         @Override
-        protected byte[] call() throws Exception {
+        protected byte[] doBackground() throws Exception {
             try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
                 Command<byte[], byte[], byte[]> command = new Command<>(new StringCommandType(redisCommand), new ByteArrayOutput<>(ByteArrayCodec.INSTANCE));
                 RedisCommand<byte[], byte[], byte[]> dispatch = connection.dispatch(command);

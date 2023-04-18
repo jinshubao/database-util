@@ -1,7 +1,6 @@
 package com.jean.database.redis.view.handler.impl;
 
-import com.jean.database.task.BaseTask;
-import com.jean.database.task.TaskManger;
+import com.jean.database.context.ApplicationContext;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
@@ -9,6 +8,7 @@ import com.jean.database.redis.model.RedisKey;
 import com.jean.database.redis.model.RedisValue;
 import com.jean.database.redis.model.RedisValueWrapper;
 import com.jean.database.redis.view.handler.IRedisKeyActionEventHandler;
+import com.jean.database.task.BackgroundTask;
 import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -24,9 +24,11 @@ import java.util.stream.Collectors;
 
 public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandler {
 
+    private final ApplicationContext context;
     private final RedisDatabaseTabController objectTabController;
 
-    public RedisKeyActionEventHandlerImpl(RedisDatabaseTabController objectTabController) {
+    public RedisKeyActionEventHandlerImpl(ApplicationContext context, RedisDatabaseTabController objectTabController) {
+        this.context = context;
         this.objectTabController = objectTabController;
     }
 
@@ -57,10 +59,14 @@ public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandl
     @Override
     public void onSelected(TableRow<RedisKey> tableRow) {
         RedisKey item = tableRow.getItem();
-        TaskManger.execute(new RedisValueTask(item, objectTabController));
+        getContext().execute(new RedisValueTask(item, objectTabController));
     }
 
-    private static class RedisValueTask extends BaseTask<RedisValueWrapper> {
+    public ApplicationContext getContext() {
+        return context;
+    }
+
+    private static class RedisValueTask extends BackgroundTask<RedisValueWrapper> {
 
         private final RedisDatabaseTabController objectTabController;
         private final RedisConnectionConfiguration configuration;
@@ -68,6 +74,7 @@ public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandl
         private final byte[] key;
 
         public RedisValueTask(RedisKey redisKey, RedisDatabaseTabController objectTabController) {
+            super("获取value");
             this.configuration = redisKey.getConnectionConfiguration();
             this.database = redisKey.getDatabase();
             this.key = redisKey.getKey();
@@ -81,7 +88,7 @@ public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandl
         }
 
         @Override
-        protected RedisValueWrapper call() throws Exception {
+        protected RedisValueWrapper doBackground() throws Exception {
             try (StatefulRedisConnection<byte[], byte[]> connection = configuration.getConnection()) {
                 RedisCommands<byte[], byte[]> commands = connection.sync();
                 commands.select(database);
@@ -215,10 +222,12 @@ public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandl
             objectTabController.updateValueTableView(value.getValues());
         }
 
+
         @Override
         public String toString() {
             return "getValue-task-" + super.toString();
         }
     }
+
 
 }

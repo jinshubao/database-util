@@ -4,18 +4,10 @@ import com.jean.database.ability.IRefreshable;
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.handler.AbstractActionHandler;
 import com.jean.database.mysql.provider.MySQLMetadataProvider;
-import com.jean.database.mysql.view.MySQLCatalogTreeItem;
-import com.jean.database.mysql.view.MySQLServerTreeItem;
-import com.jean.database.sql.meta.CatalogMetaData;
-import com.jean.database.task.BackgroundTask;
-import com.jean.database.task.BaseTask;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.TreeItem;
-
-import java.util.List;
 
 public class ServerTreeItemActionHandler extends AbstractActionHandler implements IRefreshable {
     private final MySQLMetadataProvider metadataProvider;

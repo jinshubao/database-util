@@ -1,14 +1,13 @@
 package com.jean.database.oracle.provider;
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.oracle.controller.OracleConfigurationController;
 import com.jean.database.oracle.config.OracleConnectionConfiguration;
+import com.jean.database.oracle.controller.OracleConfigurationController;
 import com.jean.database.provider.DefaultDatabaseProvider;
-import com.jean.database.context.ViewContext;
+import com.jean.database.sql.SQLConnectionConfiguration;
 import com.jean.database.utils.DialogUtil;
 import com.jean.database.utils.FxmlUtils;
 import com.jean.database.utils.ImageUtils;
-import com.jean.database.sql.SQLConnectionConfiguration;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.util.Callback;
@@ -51,7 +50,7 @@ public class OracleDatabaseProvider extends DefaultDatabaseProvider {
 //                getViewContext().addDatabaseItem(treeItem);
             }
         });
-        context.getRootContext().addConnectionMenus(menuItem);
+        context.addConnectionMenus(menuItem);
 
     }
 
@@ -67,7 +66,6 @@ public class OracleDatabaseProvider extends DefaultDatabaseProvider {
 
     private SQLConnectionConfiguration getConfiguration() {
         try {
-            ViewContext viewContext = getContext().getRootContext();
             FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/oracle-conn-cfg.fxml",
                     "message.oracle",
                     new OracleConfigurationController(getContext(), defaultCollectConfiguration));

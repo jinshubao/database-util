@@ -2,18 +2,16 @@ package com.jean.database.redis.view.cluster;
 
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.task.BaseTask;
-import com.jean.database.item.BaseTreeItem;
-import com.jean.database.task.TaskManger;
-import com.jean.database.context.ViewContext;
-import com.jean.database.utils.DialogUtil;
-import com.jean.database.utils.FxmlUtils;
-import com.jean.database.utils.ImageUtils;
-import com.jean.database.utils.StringUtils;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.model.RedisKey;
+import com.jean.database.task.BackgroundTask;
+import com.jean.database.utils.DialogUtil;
+import com.jean.database.utils.FxmlUtils;
+import com.jean.database.utils.ImageUtils;
+import com.jean.database.utils.StringUtils;
+import com.jean.database.view.AbstractTreeItem;
 import io.lettuce.core.KeyScanCursor;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanCursor;
@@ -32,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * @author jinshubao
  */
-public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
+public class RedisClusterDatabaseItem extends AbstractTreeItem<String> {
 
     private final int database;
     private final RedisClusterClient redisClusterClient;
@@ -82,7 +80,7 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
             }
         }
         databaseTabController.selected();
-        TaskManger.execute(new RedisKeysTask());
+        getContext().execute(new RedisKeysTask());
     }
 
     @Override
@@ -91,7 +89,11 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
     }
 
 
-    private class RedisKeysTask extends BaseTask<List<RedisKey>> {
+    private class RedisKeysTask extends BackgroundTask<List<RedisKey>> {
+
+        public RedisKeysTask() {
+            super("获取redis key");
+        }
 
         @Override
         protected void scheduled() {
@@ -99,7 +101,7 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
         }
 
         @Override
-        protected List<RedisKey> call() throws Exception {
+        protected List<RedisKey> doBackground() throws Exception {
             try (StatefulRedisClusterConnection<String, String> connection = redisClusterClient.connect()) {
                 RedisAdvancedClusterCommands<String, String> commands = connection.sync();
                 Long size = commands.dbsize();

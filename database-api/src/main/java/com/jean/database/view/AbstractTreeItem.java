@@ -1,4 +1,4 @@
-package com.jean.database.item;
+package com.jean.database.view;
 
 import com.jean.database.ability.ICloseable;
 import com.jean.database.action.IContextMenu;
@@ -12,18 +12,18 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 
 
-public abstract class BaseTreeItem<T> extends TreeItem<T> implements IContextMenu, IMouseAction, IRefreshable, ICloseable {
+public abstract class AbstractTreeItem<T> extends TreeItem<T> implements IContextMenu, IMouseAction, IRefreshable, ICloseable {
 
     private final BooleanProperty open = new SimpleBooleanProperty(this, "onOpen", false);
 
 
     private final ApplicationContext context;
 
-    public BaseTreeItem(ApplicationContext context, T value) {
+    public AbstractTreeItem(ApplicationContext context, T value) {
         this(context, value, null);
     }
 
-    public BaseTreeItem(ApplicationContext context, T value, Node graphic) {
+    public AbstractTreeItem(ApplicationContext context, T value, Node graphic) {
         super(value, graphic);
         this.context = context;
     }

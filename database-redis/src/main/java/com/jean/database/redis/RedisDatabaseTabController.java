@@ -66,7 +66,7 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
         TableColumn<RedisKey, Number> ttlColumn = (TableColumn<RedisKey, Number>) keyTableView.getColumns().get(4);
         ttlColumn.setCellValueFactory(param -> param.getValue().ttlProperty());
 
-        IRedisKeyActionEventHandler handler = new RedisKeyActionEventHandlerImpl(this);
+        IRedisKeyActionEventHandler handler = new RedisKeyActionEventHandlerImpl(getContext(),this);
         keyTableView.setRowFactory(new RedisKeyTableRowFactory(handler));
 
         TableColumn<RedisValue, Integer> valueNoColumn = (TableColumn<RedisValue, Integer>) valueTableView.getColumns().get(0);
