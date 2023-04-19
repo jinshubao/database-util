@@ -99,6 +99,11 @@ public class MainController extends AbstractController implements ViewContext {
     }
 
     @Override
+    public void setSelected(TreeItem treeItem) {
+        treeView.getSelectionModel().select(treeItem);
+    }
+
+    @Override
     public void removeDatabaseItem(TreeItem treeItem) {
         treeView.getRoot().getChildren().remove(treeItem);
     }
@@ -152,6 +157,7 @@ public class MainController extends AbstractController implements ViewContext {
     public void updateMessage(String message) {
         logger.debug("updateMessage {}", message);
     }
+
 
     public BorderPane getRoot() {
         return root;

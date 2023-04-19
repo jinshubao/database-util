@@ -24,6 +24,7 @@ public interface ApplicationContext {
      * @param treeItem 节点
      */
     void addDatabaseItem(TreeItem treeItem);
+    void setSelected(TreeItem treeItem);
 
     /**
      * 删除一个根节点

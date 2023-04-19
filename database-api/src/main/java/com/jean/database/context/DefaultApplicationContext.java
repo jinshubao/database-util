@@ -70,6 +70,11 @@ public class DefaultApplicationContext implements ApplicationContext {
     }
 
     @Override
+    public void setSelected(TreeItem treeItem) {
+        rootContext.setSelected(treeItem);
+    }
+
+    @Override
     public void removeDatabaseItem(TreeItem treeItem) {
         rootContext.removeDatabaseItem(treeItem);
     }

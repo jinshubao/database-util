@@ -39,4 +39,5 @@ public interface ViewContext {
     void updateProgress(double progress);
     void updateMessage(String message);
 
+    void setSelected(TreeItem treeItem);
 }

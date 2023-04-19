@@ -37,4 +37,8 @@ public class MySQLConnectionConfiguration extends SQLConnectionConfiguration {
         return builder.toString();
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
