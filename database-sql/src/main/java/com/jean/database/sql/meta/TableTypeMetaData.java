@@ -2,6 +2,10 @@ package com.jean.database.sql.meta;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.util.List;
 
 /**
  * 表类型信息
@@ -16,6 +20,8 @@ public class TableTypeMetaData {
     private StringProperty separator = new SimpleStringProperty(this, "separator");
     private StringProperty tableSchema = new SimpleStringProperty(this, "tableSchema");
     private StringProperty tableType = new SimpleStringProperty(this, "tableType");
+
+    private ObservableList<TableMetaData> tableMetaDataList = FXCollections.observableArrayList();
 
     public TableTypeMetaData() {
     }
@@ -86,6 +92,15 @@ public class TableTypeMetaData {
 
     public void setTableType(String tableType) {
         this.tableType.set(tableType);
+    }
+
+    public void setTableMetaDataList(List<TableMetaData> tables) {
+        this.tableMetaDataList.clear();
+        this.tableMetaDataList.addAll(tables);
+    }
+
+    public ObservableList<TableMetaData> getTableMetaDataList() {
+        return tableMetaDataList;
     }
 
     @Override

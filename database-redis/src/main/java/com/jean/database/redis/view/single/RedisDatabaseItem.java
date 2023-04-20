@@ -8,8 +8,6 @@ import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.model.RedisKey;
 import com.jean.database.task.BackgroundTask;
-import com.jean.database.utils.DialogUtil;
-import com.jean.database.utils.FxmlUtils;
 import com.jean.database.utils.ImageUtils;
 import com.jean.database.utils.StringUtils;
 import com.jean.database.view.AbstractTreeItem;
@@ -21,7 +19,6 @@ import io.lettuce.core.api.sync.RedisCommands;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +39,7 @@ public class RedisDatabaseItem extends AbstractTreeItem<String> {
     public RedisDatabaseItem(ApplicationContext context, int database,
                              RedisConnectionConfiguration connectionConfiguration,
                              RedisObjectTabController objectTabController) {
-        super(context, "db" + database);
+        super("db" + database);
         this.connectionConfiguration = connectionConfiguration;
         this.database = database;
         this.objectTabController = objectTabController;
@@ -65,14 +62,14 @@ public class RedisDatabaseItem extends AbstractTreeItem<String> {
 
         setGraphic(ImageUtils.createImageView("/redis/db.png"));
 
-        try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("fxml/redis-db-tab.fxml", null,
-                            new RedisDatabaseTabController(getContext(), RedisDatabaseItem.this.getValue(), objectTabController));
-            databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
-        } catch (IOException e) {
-            DialogUtil.error(e);
-        }
+//        try {
+//            FxmlUtils.LoadFxmlResult loadFxmlResult =
+//                    FxmlUtils.loadFxml("fxml/redis-db-tab.fxml", null,
+//                            new RedisDatabaseTabController(getContext(), RedisDatabaseItem.this.getValue(), objectTabController));
+//            databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
+//        } catch (IOException e) {
+//            DialogUtil.error(e);
+//        }
     }
 
 
@@ -82,11 +79,8 @@ public class RedisDatabaseItem extends AbstractTreeItem<String> {
 
     @Override
     public void doubleClick() {
-        if (!isOpen()) {
-            setOpen(true);
-        }
         databaseTabController.selected();
-        getContext().execute(new RedisKeysTask());
+//        getContext().execute(new RedisKeysTask());
     }
 
     @Override

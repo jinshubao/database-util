@@ -3,7 +3,8 @@ package com.jean.database.mysql.provider;
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.mysql.config.MySQLConnectionConfiguration;
 import com.jean.database.mysql.controller.MySQLConfigurationController;
-import com.jean.database.mysql.controller.MySQLServerTreeItemController;
+import com.jean.database.mysql.handler.DefaultMySQLServerTreeItemActionEventHandler;
+import com.jean.database.mysql.view.item.MySQLServerTreeItem;
 import com.jean.database.provider.DefaultDatabaseProvider;
 import com.jean.database.utils.DialogUtil;
 import com.jean.database.utils.FxmlUtils;
@@ -14,9 +15,6 @@ import javafx.scene.control.MenuItem;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
 
@@ -26,8 +24,6 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
     private final String name;
 
     private final MySQLConnectionConfiguration defaultConnectionConfiguration;
-
-    private List<WeakReference<MySQLServerTreeItemController>> controllers = new ArrayList<>();
 
     public MySQLDatabaseProvider() {
         this.identifier = NAME;
@@ -47,7 +43,10 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
         menuItem.setOnAction(event -> {
             MySQLConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                controllers.add(new WeakReference<>(new MySQLServerTreeItemController(getContext(), configuration)));
+                MySQLServerTreeItem treeItem = new MySQLServerTreeItem(configuration);
+                DefaultMySQLServerTreeItemActionEventHandler eventHandler = new DefaultMySQLServerTreeItemActionEventHandler(getContext(), treeItem);
+                treeItem.setItemActionHandler(eventHandler);
+                getContext().addDatabaseItem(treeItem);
             }
         });
         getContext().addConnectionMenus(menuItem);

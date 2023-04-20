@@ -1,4 +1,4 @@
-package com.jean.database.mysql.view;
+package com.jean.database.mysql.view.item;
 
 
 import com.jean.database.context.ApplicationContext;
@@ -13,11 +13,17 @@ import java.util.List;
 
 public class MySQLTableTypeTreeItem extends SQLDatabaseItem<TableTypeMetaData> {
 
+    ApplicationContext context;
     private final SQLMetadataProvider metadataProvider;
 
     public MySQLTableTypeTreeItem(ApplicationContext context, TableTypeMetaData value, SQLMetadataProvider metadataProvider) {
-        super(context, value);
+        super(value);
+        this.context = context;
         this.metadataProvider = metadataProvider;
+    }
+
+    public ApplicationContext getContext() {
+        return context;
     }
 
     @Override

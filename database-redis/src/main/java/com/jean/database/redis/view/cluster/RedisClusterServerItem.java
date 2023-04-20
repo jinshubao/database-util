@@ -13,7 +13,6 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TreeItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class RedisClusterServerItem extends AbstractTreeItem<String> {
 
 
     public RedisClusterServerItem(ApplicationContext context, String value, RedisClusterClient redisClusterClient) {
-        super(context, value, ImageUtils.createImageView("/redis/redis.png"));
+        super(value, ImageUtils.createImageView("/redis/redis.png"));
         this.redisClusterClient = redisClusterClient;
         this.contextMenu = this.createContextMenu();
         try {
@@ -72,13 +71,13 @@ public class RedisClusterServerItem extends AbstractTreeItem<String> {
 
 
     private void open() {
-        if (!isOpen()) {
-            setExpanded(true);
-            setOpen(true);
-            getContext().addObjectTab(objectTabController.getObjectTab());
-            objectTabController.select();
-            getContext().execute(new OpenServerTask());
-        }
+//        if (!isOpen()) {
+//            setExpanded(true);
+//            setOpen(true);
+//            getContext().addObjectTab(objectTabController.getObjectTab());
+//            objectTabController.select();
+//            getContext().execute(new OpenServerTask());
+//        }
     }
 
     @Override
@@ -89,23 +88,23 @@ public class RedisClusterServerItem extends AbstractTreeItem<String> {
 
     private ContextMenu createContextMenu() {
         MenuItem openItem = new MenuItem("打开连接", ImageUtils.createImageView("/image/connect.png"));
-        openItem.disableProperty().bind(openProperty());
+//        openItem.disableProperty().bind(openProperty());
         openItem.setOnAction(event -> open());
 
         MenuItem closeItem = new MenuItem("关闭连接", ImageUtils.createImageView("/image/disconnect.png"));
-        closeItem.disableProperty().bind(openProperty().not());
+//        closeItem.disableProperty().bind(openProperty().not());
         closeItem.setOnAction(event -> {
 
         });
 
         MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/delete.png"));
-        commandLine.disableProperty().bind(openProperty().not());
+//        commandLine.disableProperty().bind(openProperty().not());
         commandLine.setOnAction(event -> {
 
         });
 
         MenuItem propertyItem = new MenuItem("连接属性");
-        propertyItem.disableProperty().bind(openProperty().not());
+//        propertyItem.disableProperty().bind(openProperty().not());
         propertyItem.setOnAction(event -> {
 
         });
@@ -145,11 +144,11 @@ public class RedisClusterServerItem extends AbstractTreeItem<String> {
         @SuppressWarnings({"rawtypes", "unchecked"})
         protected void succeeded() {
             super.succeeded();
-            List<Integer> number = getValue();
-            for (Integer index : number) {
-                TreeItem databaseItem = new RedisClusterDatabaseItem(getContext(), index, redisClusterClient, objectTabController);
-                redisServerItem.getChildren().add(databaseItem);
-            }
+//            List<Integer> number = getValue();
+//            for (Integer index : number) {
+//                TreeItem databaseItem = new RedisClusterDatabaseItem(getContext(), index, redisClusterClient, objectTabController);
+//                redisServerItem.getChildren().add(databaseItem);
+//            }
         }
     }
 }

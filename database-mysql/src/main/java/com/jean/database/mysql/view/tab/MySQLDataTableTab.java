@@ -1,4 +1,4 @@
-package com.jean.database.mysql.view;
+package com.jean.database.mysql.view.tab;
 
 
 import com.jean.database.context.ApplicationContext;
@@ -46,7 +46,7 @@ public class MySQLDataTableTab extends AbstractTab implements ChangeListener<Num
         tableView = new TableView<>();
         tableView.setEditable(true);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tableView.getSelectionModel().setCellSelectionEnabled(false);
+        tableView.getSelectionModel().setCellSelectionEnabled(true);
 
         VBox.setVgrow(tableView, Priority.ALWAYS);
         this.pagination = new Pagination(0, 0);

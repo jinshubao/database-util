@@ -33,13 +33,17 @@ import java.util.List;
  * @author jinshubao
  */
 public class RedisServerItem extends AbstractTreeItem<RedisConnectionConfiguration> {
+
+    ApplicationContext context;
     private final RedisConnectionConfiguration connectionConfiguration;
     private final ContextMenu contextMenu;
     private RedisObjectTabController objectTabController;
     private RedisServerInfoController serverInfoController;
 
     public RedisServerItem(ApplicationContext context, RedisConnectionConfiguration connectionConfiguration) {
-        super(context, connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
+        super(connectionConfiguration, ImageUtils.createImageView("/redis/redis.png"));
+
+        this.context = context;
         this.connectionConfiguration = connectionConfiguration;
         this.contextMenu = createContextMenu();
         try {
@@ -62,6 +66,11 @@ public class RedisServerItem extends AbstractTreeItem<RedisConnectionConfigurati
         }
     }
 
+
+    public ApplicationContext getContext() {
+        return context;
+    }
+
     @Override
     public void doubleClick() {
         open();
@@ -79,28 +88,25 @@ public class RedisServerItem extends AbstractTreeItem<RedisConnectionConfigurati
 
 
     private void open() {
-        if (!isOpen()) {
-            setExpanded(true);
-            setOpen(true);
-            getContext().addObjectTab(objectTabController.getObjectTab());
-            objectTabController.select();
-            getContext().execute(new OpenServerTask());
-        }
+        setExpanded(true);
+        getContext().addObjectTab(objectTabController.getObjectTab());
+        objectTabController.select();
+        getContext().execute(new OpenServerTask());
     }
 
     private ContextMenu createContextMenu() {
         MenuItem openItem = new MenuItem("打开连接", ImageUtils.createImageView("/image/connect.png"));
-        openItem.disableProperty().bind(openProperty());
+//        openItem.disableProperty().bind(openProperty());
         openItem.setOnAction(event -> open());
 
         MenuItem closeItem = new MenuItem("关闭连接", ImageUtils.createImageView("/image/disconnect.png"));
-        closeItem.disableProperty().bind(openProperty().not());
+//        closeItem.disableProperty().bind(openProperty().not());
         closeItem.setOnAction(event -> {
 
         });
 
         MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/delete.png"));
-        commandLine.disableProperty().bind(openProperty().not());
+//        commandLine.disableProperty().bind(openProperty().not());
         commandLine.setOnAction(event -> {
             TextArea textArea = new TextArea();
             textArea.setFont(Font.font(16.0D));
@@ -114,7 +120,7 @@ public class RedisServerItem extends AbstractTreeItem<RedisConnectionConfigurati
         });
 
         MenuItem propertyItem = new MenuItem("连接属性");
-        propertyItem.disableProperty().bind(openProperty().not());
+//        propertyItem.disableProperty().bind(openProperty().not());
         propertyItem.setOnAction(event -> {
             objectTabController.addDatabaseTab(serverInfoController.getServerInfoTab());
             getContext().execute(new RedisServerInfoTask());
