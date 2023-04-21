@@ -1,7 +1,7 @@
 package com.jean.database.mysql.task;
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.task.BackgroundTask;
 
@@ -10,10 +10,10 @@ import java.util.List;
 public class TableGeneralInfoTask extends BackgroundTask<List<KeyValuePair<String, Object>>> {
 
 
-    SQLMetadataProvider metadataProvider;
+    SQLMetadataFactory metadataProvider;
     TableMetaData tableMetaData;
 
-    public TableGeneralInfoTask(SQLMetadataProvider metadataProvider, TableMetaData tableMetaData) {
+    public TableGeneralInfoTask(SQLMetadataFactory metadataProvider, TableMetaData tableMetaData) {
         super("获取表信息");
         this.metadataProvider = metadataProvider;
         this.tableMetaData = tableMetaData;

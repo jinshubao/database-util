@@ -1,7 +1,7 @@
 package com.jean.database.mysql.provider;
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableSummaries;
 
@@ -12,9 +12,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MySQLMetadataProvider extends SQLMetadataProvider {
+public class MySQLMetadataFactory extends SQLMetadataFactory {
 
-    public MySQLMetadataProvider(DataSource dataSource) {
+    public MySQLMetadataFactory(DataSource dataSource) {
         super(dataSource);
     }
 

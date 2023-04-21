@@ -3,11 +3,11 @@ package com.jean.database.mysql.handler;
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.handler.AbstractActionHandler;
 import com.jean.database.mysql.config.MySQLConnectionConfiguration;
-import com.jean.database.mysql.provider.MySQLMetadataProvider;
+import com.jean.database.mysql.provider.MySQLMetadataFactory;
 import com.jean.database.mysql.task.CreateDataSourceTask;
 import com.jean.database.mysql.task.OpenServerTask;
 import com.jean.database.mysql.view.item.MySQLCatalogTreeItem;
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.task.BackgroundTask;
 import com.jean.database.utils.DialogUtil;
@@ -29,7 +29,7 @@ public class DefaultMySQLServerTreeItemActionEventHandler extends AbstractAction
 
     private final AbstractTreeItem<MySQLConnectionConfiguration> treeItem;
     private ObjectProperty<DataSource> dataSource = new SimpleObjectProperty<>(null, "dataSource");
-    private ObjectProperty<SQLMetadataProvider> metadataProvider = new SimpleObjectProperty<>(null, "metadataProvider");
+    private ObjectProperty<SQLMetadataFactory> metadataProvider = new SimpleObjectProperty<>(null, "metadataProvider");
 
     private BooleanProperty taskRunning = new SimpleBooleanProperty(false, "taskRunning");
     private BooleanProperty connected = new SimpleBooleanProperty(false, "connected");
@@ -126,7 +126,7 @@ public class DefaultMySQLServerTreeItemActionEventHandler extends AbstractAction
             CreateDataSourceTask createDataSourceTask = new CreateDataSourceTask((MySQLConnectionConfiguration) getTreeItem().getValue());
             createDataSourceTask.setOnSucceeded(event -> {
                 dataSource.set((DataSource) event.getSource().getValue());
-                metadataProvider.set(new MySQLMetadataProvider(dataSource.get()));
+                metadataProvider.set(new MySQLMetadataFactory(dataSource.get()));
                 executeOpenServerTask();
             });
 

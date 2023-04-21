@@ -20,13 +20,13 @@ import java.util.Map;
  * @author jinshubao
  * @date 2017/4/9
  */
-public abstract class SQLMetadataProvider {
+public abstract class SQLMetadataFactory {
 
-    protected final Logger logger = LoggerFactory.getLogger(SQLMetadataProvider.class);
+    protected final Logger logger = LoggerFactory.getLogger(SQLMetadataFactory.class);
 
     protected final DataSource dataSource;
 
-    public SQLMetadataProvider(DataSource dataSource) {
+    public SQLMetadataFactory(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

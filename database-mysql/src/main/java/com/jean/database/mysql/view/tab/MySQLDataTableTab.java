@@ -2,8 +2,8 @@ package com.jean.database.mysql.view.tab;
 
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.sql.SQLMetadataProvider;
-import com.jean.database.sql.factory.TableCellFactory;
+import com.jean.database.sql.SQLMetadataFactory;
+import com.jean.database.sql.factory.CustomTableFactory;
 import com.jean.database.sql.meta.ColumnMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.task.BackgroundTask;
@@ -26,14 +26,14 @@ public class MySQLDataTableTab extends AbstractTab implements ChangeListener<Num
 
     private static final int PAGE_SIZE = 1000;
 
-    private SQLMetadataProvider metadataProvider;
+    private SQLMetadataFactory metadataProvider;
     private TableView<Map<String, Object>> tableView;
     private Pagination pagination;
     private TableMetaData tableMetaData;
 
     private List<ColumnMetaData> columnDataCache;
 
-    public MySQLDataTableTab(ApplicationContext context, TableMetaData tableMetaData, SQLMetadataProvider metadataProvider) {
+    public MySQLDataTableTab(ApplicationContext context, TableMetaData tableMetaData, SQLMetadataFactory metadataProvider) {
         super(context, tableMetaData.getTableName());
 
         this.tableMetaData = tableMetaData;
@@ -44,9 +44,10 @@ public class MySQLDataTableTab extends AbstractTab implements ChangeListener<Num
         this.setTooltip(new Tooltip(tableMetaData.getFullName()));
 
         tableView = new TableView<>();
-        tableView.setEditable(true);
+//        tableView.setEditable(true);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tableView.getSelectionModel().setCellSelectionEnabled(true);
+
+        tableView.setRowFactory(CustomTableFactory.tableRowFactory());
 
         VBox.setVgrow(tableView, Priority.ALWAYS);
         this.pagination = new Pagination(0, 0);
@@ -83,7 +84,7 @@ public class MySQLDataTableTab extends AbstractTab implements ChangeListener<Num
             for (ColumnMetaData columnMetaData : columnList) {
                 TableColumn<Map<String, Object>, Object> tableColumn = new DataColumn(columnMetaData);
                 tableColumn.setEditable(true);
-                tableColumn.setCellFactory(TableCellFactory.forTableView());
+                tableColumn.setCellFactory(CustomTableFactory.tableCellFactory());
                 String columnName = columnMetaData.getColumnName();
                 tableColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().get(columnName)));
                 tableView.getColumns().add(tableColumn);

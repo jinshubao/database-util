@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
-<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.gui.controller.MainController">
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.database.gui.controller.MainController">
     <top>
         <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <Menu fx:id="file" mnemonicParsing="false" text="文件">
                 <Menu fx:id="connection" mnemonicParsing="false" text="新建链接" />
-                <MenuItem fx:id="setting" mnemonicParsing="false" text="设置"/>
+                <MenuItem fx:id="setting" mnemonicParsing="false" text="设置" />
                 <MenuItem fx:id="exist" mnemonicParsing="false" text="退出" />
             </Menu>
             <Menu fx:id="view" mnemonicParsing="false" text="查看" />
@@ -25,9 +33,10 @@
         </SplitPane>
     </center>
     <bottom>
-        <HBox alignment="CENTER_LEFT" maxHeight="30.0" prefHeight="30.0" BorderPane.alignment="CENTER_LEFT">
+        <HBox id="bottom-bar" alignment="CENTER_LEFT" styleClass="bottom-bar" BorderPane.alignment="CENTER_LEFT">
          <children>
-            <ProgressBar fx:id="progressBar" progress="0.0" />
+            <ProgressBar fx:id="progressBar" focusTraversable="false" progress="0.71" styleClass="task-progress" />
+            <Label fx:id="taskMessage" />
          </children>
         </HBox>
     </bottom>

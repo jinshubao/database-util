@@ -1,6 +1,6 @@
 package com.jean.database.mysql.task;
 
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableTypeMetaData;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 public class TableTypeTask extends BackgroundTask<List<TableTypeMetaData>> {
 
     private final CatalogMetaData catalogMetaData;
-    private final SQLMetadataProvider metadataProvider;
+    private final SQLMetadataFactory metadataProvider;
 
 
-    public TableTypeTask(SQLMetadataProvider metadataProvider, CatalogMetaData catalogMetaData) {
+    public TableTypeTask(SQLMetadataFactory metadataProvider, CatalogMetaData catalogMetaData) {
         super("获取表类型");
         this.metadataProvider = metadataProvider;
         this.catalogMetaData = catalogMetaData;

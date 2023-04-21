@@ -2,7 +2,7 @@ package com.jean.database.mysql.view.item;
 
 
 import com.jean.database.context.ApplicationContext;
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.constant.TableType;
 import com.jean.database.sql.item.SQLDatabaseItem;
 import com.jean.database.sql.meta.TableSummaries;
@@ -14,9 +14,9 @@ import java.util.List;
 public class MySQLTableTypeTreeItem extends SQLDatabaseItem<TableTypeMetaData> {
 
     ApplicationContext context;
-    private final SQLMetadataProvider metadataProvider;
+    private final SQLMetadataFactory metadataProvider;
 
-    public MySQLTableTypeTreeItem(ApplicationContext context, TableTypeMetaData value, SQLMetadataProvider metadataProvider) {
+    public MySQLTableTypeTreeItem(ApplicationContext context, TableTypeMetaData value, SQLMetadataFactory metadataProvider) {
         super(value);
         this.context = context;
         this.metadataProvider = metadataProvider;
@@ -43,7 +43,7 @@ public class MySQLTableTypeTreeItem extends SQLDatabaseItem<TableTypeMetaData> {
 
     private class RefreshTableInfoTask extends BackgroundTask<List<TableSummaries>> {
 
-        SQLMetadataProvider metadataProvider = MySQLTableTypeTreeItem.this.metadataProvider;
+        SQLMetadataFactory metadataProvider = MySQLTableTypeTreeItem.this.metadataProvider;
         TableTypeMetaData tableTypeMetaData = MySQLTableTypeTreeItem.this.getValue();
 
         public RefreshTableInfoTask() {

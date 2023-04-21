@@ -49,6 +49,8 @@ public class MainController extends AbstractController implements ViewContext {
     private TabPane objectTabPan;
     @FXML
     private ProgressBar progressBar;
+    @FXML
+    private Label taskMessage;
 
 //    private final ObservableList<>
 
@@ -61,6 +63,7 @@ public class MainController extends AbstractController implements ViewContext {
     public void initialize(URL location, ResourceBundle resources) {
         logger.debug("main controller initialize");
         this.initMenuBar();
+        this.initBottomBar();
         treeView.setCellFactory(TreeCellFactory.forTreeView());
         treeView.setRoot(new TreeItem<>());
         treeView.setShowRoot(false);
@@ -79,6 +82,11 @@ public class MainController extends AbstractController implements ViewContext {
         setting.setGraphic(ImageUtils.createImageView("image/settings.png"));
         exist.setGraphic(ImageUtils.createImageView("image/exit.png"));
         exist.setOnAction(event -> Platform.exit());
+    }
+
+    private void initBottomBar(){
+        progressBar.setProgress(0);
+        taskMessage.setText(null);
     }
 
     @Override
@@ -155,7 +163,7 @@ public class MainController extends AbstractController implements ViewContext {
 
     @Override
     public void updateMessage(String message) {
-        logger.debug("updateMessage {}", message);
+        taskMessage.setText(message);
     }
 
 

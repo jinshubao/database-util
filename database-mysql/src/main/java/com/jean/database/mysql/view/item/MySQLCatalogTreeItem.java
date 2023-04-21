@@ -16,6 +16,24 @@ public class MySQLCatalogTreeItem extends AbstractTreeItem<CatalogMetaData> {
 
     private final ContextMenu contextMenu;
 
+    MenuItem open;
+    MenuItem query;
+    MenuItem create;
+    MenuItem delete;
+    MenuItem properties;
+    MenuItem commandLine;
+    MenuItem executeSqlFile;
+    MenuItem exportStructAndData;
+    MenuItem exportStruct;
+    MenuItem printDatabase;
+    MenuItem dataTransform;
+    MenuItem convertDatabaseToMode;
+
+
+    MenuItem findInDatabase;
+    MenuItem refresh;
+
+
     private MySQLCatalogTreeItemActionEventHandler itemActionEventHandler;
 
 
@@ -25,61 +43,91 @@ public class MySQLCatalogTreeItem extends AbstractTreeItem<CatalogMetaData> {
     }
 
 
-    private ContextMenu createContextMenu() {
+    public void setItemActionEventHandler(MySQLCatalogTreeItemActionEventHandler itemActionEventHandler) {
+        this.itemActionEventHandler = itemActionEventHandler;
 
-        MenuItem open = new MenuItem("打开数据库", ImageUtils.createImageView("/image/connect.png"));
-//        open.disableProperty().bind(this.openProperty());
+        open.disableProperty().bind(getItemActionEventHandler().openMenuDisableProperty());
         open.setOnAction(event -> getItemActionEventHandler().open());
 
-        MenuItem query = new MenuItem("新建查询", ImageUtils.createImageView("/image/add.png"));
-//        query.disableProperty().bind(this.openProperty().not());
+        query.disableProperty().bind(getItemActionEventHandler().queryMenuDisableProperty());
         query.setOnAction(event -> getItemActionEventHandler().newQuery());
 
-        MenuItem close = new MenuItem("关闭数据库", ImageUtils.createImageView("/image/disconnect.png"));
-//        close.disableProperty().bind(this.openProperty().not());
-        close.setOnAction(event -> getItemActionEventHandler().close());
-
-        MenuItem create = new MenuItem("新建数据库...", ImageUtils.createImageView("/image/add.png"));
+        create.disableProperty().bind(getItemActionEventHandler().createMenuDisableProperty());
         create.setOnAction(event -> getItemActionEventHandler().newDatabase());
 
-        MenuItem delete = new MenuItem("删除数据库", ImageUtils.createImageView("/image/delete.png"));
+        delete.disableProperty().bind(getItemActionEventHandler().deleteMenuDisableProperty());
         delete.setOnAction(event -> getItemActionEventHandler().delete());
 
-        MenuItem properties = new MenuItem("数据库属性...", ImageUtils.createImageView("/image/info.png"));
+        properties.disableProperty().bind(getItemActionEventHandler().propertiesMenuDisableProperty());
         properties.setOnAction(event -> getItemActionEventHandler().properties());
 
-        MenuItem commandLine = new MenuItem("命令行界面...", ImageUtils.createImageView("/image/command.png"));
+        commandLine.disableProperty().bind(getItemActionEventHandler().commandLineMenuDisableProperty());
         commandLine.setOnAction(event -> getItemActionEventHandler().commandLine());
 
-        MenuItem executeSqlFile = new MenuItem("运行SQL文件...", ImageUtils.createImageView("/image/run.png"));
+        executeSqlFile.disableProperty().bind(getItemActionEventHandler().executeSqlFileDisableProperty());
         executeSqlFile.setOnAction(event -> getItemActionEventHandler().executeSqlFile());
 
-        MenuItem exportStructAndData = new MenuItem("结构和数据...");
+        exportStructAndData.disableProperty().bind(getItemActionEventHandler().exportStructAndDataMenuDisableProperty());
         exportStructAndData.setOnAction(event -> getItemActionEventHandler().exportStructAndData());
 
-        MenuItem exportStruct = new MenuItem("仅结构...");
+        exportStruct.disableProperty().bind(getItemActionEventHandler().exportStructMenuDisableProperty());
         exportStruct.setOnAction(event -> getItemActionEventHandler().exportStruct());
+
+        printDatabase.disableProperty().bind(getItemActionEventHandler().printDatabaseMenuDisableProperty());
+        printDatabase.setOnAction(event -> getItemActionEventHandler().printDatabase());
+
+        dataTransform.disableProperty().bind(getItemActionEventHandler().dataTransformMenuDisableProperty());
+        dataTransform.setOnAction(event -> getItemActionEventHandler().dataTransform());
+
+        convertDatabaseToMode.disableProperty().bind(getItemActionEventHandler().convertDatabaseToModeMenuDisableProperty());
+        convertDatabaseToMode.setOnAction(event -> getItemActionEventHandler().convertDatabaseToMode());
+
+        findInDatabase.disableProperty().bind(getItemActionEventHandler().findInDatabaseMenuDisableProperty());
+        findInDatabase.setOnAction(event -> getItemActionEventHandler().findInDatabase());
+
+        refresh.disableProperty().bind(getItemActionEventHandler().refreshMenuDisableProperty());
+        refresh.setOnAction(event -> getItemActionEventHandler().refresh());
+
+
+    }
+
+
+    private ContextMenu createContextMenu() {
+
+        open = new MenuItem("打开数据库", ImageUtils.createImageView("/image/connect.png"));
+
+        query = new MenuItem("新建查询", ImageUtils.createImageView("/image/add.png"));
+
+        create = new MenuItem("新建数据库...", ImageUtils.createImageView("/image/add.png"));
+
+        delete = new MenuItem("删除数据库", ImageUtils.createImageView("/image/delete.png"));
+
+        properties = new MenuItem("数据库属性...", ImageUtils.createImageView("/image/info.png"));
+
+        commandLine = new MenuItem("命令行界面...", ImageUtils.createImageView("/image/command.png"));
+
+        executeSqlFile = new MenuItem("运行SQL文件...", ImageUtils.createImageView("/image/run.png"));
+
+        exportStructAndData = new MenuItem("结构和数据...");
+
+        exportStruct = new MenuItem("仅结构...");
 
         Menu exportSqlFile = new Menu("转储SQL文件...", ImageUtils.createImageView("/image/export.png"));
         exportSqlFile.getItems().addAll(exportStructAndData, exportStruct);
 
-        MenuItem printDatabase = new MenuItem("打印数据库...", ImageUtils.createImageView("/image/print.png"));
-        printDatabase.setOnAction(event -> getItemActionEventHandler().printDatabase());
+        printDatabase = new MenuItem("打印数据库...", ImageUtils.createImageView("/image/print.png"));
 
-        MenuItem dataTransform = new MenuItem("数据传输...");
-        dataTransform.setOnAction(event -> getItemActionEventHandler().dataTransform());
+        dataTransform = new MenuItem("数据传输...");
 
-        MenuItem convertDatabaseToMode = new MenuItem("逆向数据库到模型...");
-        convertDatabaseToMode.setOnAction(event -> getItemActionEventHandler().convertDatabaseToMode());
+        convertDatabaseToMode = new MenuItem("逆向数据库到模型...");
 
-        MenuItem findInDatabase = new MenuItem("在数据库中查找...", ImageUtils.createImageView("/image/search.png"));
-        findInDatabase.setOnAction(event -> getItemActionEventHandler().findInDatabase());
+        findInDatabase = new MenuItem("在数据库中查找...", ImageUtils.createImageView("/image/search.png"));
 
-        MenuItem refresh = new MenuItem("刷新", ImageUtils.createImageView("/image/refresh.png"));
-        refresh.setOnAction(event -> getItemActionEventHandler().refresh());
+        refresh = new MenuItem("刷新", ImageUtils.createImageView("/image/refresh.png"));
 
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().addAll(open, close,
+        contextMenu.getItems().addAll(
+                open,
                 new SeparatorMenuItem(),
                 query,
                 new SeparatorMenuItem(),
@@ -87,13 +135,11 @@ public class MySQLCatalogTreeItem extends AbstractTreeItem<CatalogMetaData> {
                 new SeparatorMenuItem(),
                 commandLine, executeSqlFile, exportSqlFile, printDatabase, dataTransform, convertDatabaseToMode, findInDatabase,
                 new SeparatorMenuItem(),
-                refresh);
+                refresh
+        );
         return contextMenu;
     }
 
-    public void setItemActionEventHandler(MySQLCatalogTreeItemActionEventHandler itemActionEventHandler) {
-        this.itemActionEventHandler = itemActionEventHandler;
-    }
 
     public MySQLCatalogTreeItemActionEventHandler getItemActionEventHandler() {
         return itemActionEventHandler;

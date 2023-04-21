@@ -1,7 +1,7 @@
 package com.jean.database.oracle.provider;
 
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableSummaries;
 
@@ -12,9 +12,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class OracleMetadataProvider extends SQLMetadataProvider {
+public class OracleMetadataFactory extends SQLMetadataFactory {
 
-    public OracleMetadataProvider(DataSource dataSource) {
+    public OracleMetadataFactory(DataSource dataSource) {
         super(dataSource);
     }
 

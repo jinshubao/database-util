@@ -36,6 +36,7 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
     public void init(ApplicationContext context) {
         super.init(context);
         initMenus();
+        initDatabaseItem(defaultConnectionConfiguration);
     }
 
     private void initMenus() {
@@ -43,13 +44,17 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
         menuItem.setOnAction(event -> {
             MySQLConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                MySQLServerTreeItem treeItem = new MySQLServerTreeItem(configuration);
-                DefaultMySQLServerTreeItemActionEventHandler eventHandler = new DefaultMySQLServerTreeItemActionEventHandler(getContext(), treeItem);
-                treeItem.setItemActionHandler(eventHandler);
-                getContext().addDatabaseItem(treeItem);
+                initDatabaseItem(configuration);
             }
         });
         getContext().addConnectionMenus(menuItem);
+    }
+
+    private void initDatabaseItem(MySQLConnectionConfiguration configuration) {
+        MySQLServerTreeItem treeItem = new MySQLServerTreeItem(configuration);
+        DefaultMySQLServerTreeItemActionEventHandler eventHandler = new DefaultMySQLServerTreeItemActionEventHandler(getContext(), treeItem);
+        treeItem.setItemActionHandler(eventHandler);
+        getContext().addDatabaseItem(treeItem);
     }
 
 

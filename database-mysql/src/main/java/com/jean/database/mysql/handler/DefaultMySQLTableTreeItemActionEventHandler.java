@@ -3,7 +3,7 @@ package com.jean.database.mysql.handler;
 import com.jean.database.context.ApplicationContext;
 import com.jean.database.handler.AbstractActionHandler;
 import com.jean.database.mysql.view.tab.MySQLDataTableTab;
-import com.jean.database.sql.SQLMetadataProvider;
+import com.jean.database.sql.SQLMetadataFactory;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.view.AbstractTreeItem;
 import javafx.beans.binding.BooleanBinding;
@@ -16,7 +16,7 @@ public class DefaultMySQLTableTreeItemActionEventHandler extends AbstractActionH
 
     private final AbstractTreeItem<TableMetaData> treeItem;
 
-    private final SQLMetadataProvider metadataProvider;
+    private final SQLMetadataFactory metadataProvider;
 
     ObjectProperty<MySQLDataTableTab> sqlDataTableTab = new SimpleObjectProperty<>(null);
 
@@ -28,7 +28,7 @@ public class DefaultMySQLTableTreeItemActionEventHandler extends AbstractActionH
     private BooleanProperty open = new SimpleBooleanProperty(false);
     private BooleanProperty taskRunning = new SimpleBooleanProperty(false);
 
-    public DefaultMySQLTableTreeItemActionEventHandler(ApplicationContext context, AbstractTreeItem<TableMetaData> treeItem, SQLMetadataProvider metadataProvider) {
+    public DefaultMySQLTableTreeItemActionEventHandler(ApplicationContext context, AbstractTreeItem<TableMetaData> treeItem, SQLMetadataFactory metadataProvider) {
         super(context);
         this.treeItem = treeItem;
         this.metadataProvider = metadataProvider;
@@ -84,8 +84,7 @@ public class DefaultMySQLTableTreeItemActionEventHandler extends AbstractActionH
             MySQLDataTableTab tableTab = new MySQLDataTableTab(getContext(), tableMetaData, metadataProvider);
             setSqlDataTableTab(tableTab);
             tableTab.setOnClosed(event -> {
-                getSqlDataTableTab().close();
-                setSqlDataTableTab(null);
+                close();
             });
             getContext().addObjectTab(tableTab);
         }
@@ -104,9 +103,11 @@ public class DefaultMySQLTableTreeItemActionEventHandler extends AbstractActionH
 
     @Override
     public void close() {
-        getSqlDataTableTab().close();
-        getContext().removeObjectTab(getSqlDataTableTab());
-        sqlDataTableTab.set(null);
+        MySQLDataTableTab tableTab = getSqlDataTableTab();
+        if (tableTab != null) {
+            tableTab.close();
+            setSqlDataTableTab(null);
+        }
     }
 
     @Override

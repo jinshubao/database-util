@@ -1,4 +1,116 @@
+.root {
+
+    -fx-selection-color: #2962da;
+
+    /* -fx-accent: #5d96f6; */
+    -fx-accent: -fx-selection-color;
+
+    -fx-selection-bar: -fx-accent;
+
+    -fx-base: #fcfbfb;
+
+
+}
+
+
+.split-pane>.split-pane-divider {
+
+    -fx-padding: 0 0.1em 0 0.1em;
+    /* 0 3 0 3 */
+}
+
+
+.bottom-bar {
+    -fx-pref-height: 1.5em;
+
+
+}
+
 .task-progress {
 
+    -fx-pref-width: 10em;
 
+    -fx-padding: 0 0 0 1em;
+
+}
+
+.task-progress>.bar {
+
+
+    -fx-padding: 0.50em;
+
+    -fx-background-color: -fx-accent;
+
+
+}
+
+.task-progress>.track {
+
+    -fx-background-color: none;
+
+}
+
+
+.scroll-bar>.thumb {
+    -fx-background-radius: 4;
+}
+
+
+/* Selected rows */
+.table-view:focused>.virtual-flow>.clipped-container>.sheet>.table-row-cell:filled:selected,
+.table-view:focused>.virtual-flow>.clipped-container>.sheet>.table-row-cell .table-cell:selected {
+    -fx-background: -fx-selection-color;
+    -fx-background-color: -fx-selection-color;
+    -fx-table-cell-border-color: none;
+    -fx-color: white;
+}
+
+
+
+.list-view,
+.tree-view,
+.table-view {
+    -fx-background-color: none;
+    -fx-background-insets: 0, 1;
+    -fx-padding: 1;
+}
+
+.list-view:focused,
+.tree-view:focused,
+.table-view:focused {
+    -fx-background-color: none;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: none;
+}
+/* 
+.table-cell-empty:selected,
+.table-cell-null:selected {
+    -fx-color: derive(white, 20%);
+}
+
+.table-cell-empty,
+.table-cell-null {
+    -fx-color: derive(black, 20%);
+
+} */
+
+
+
+/* Selected rows */
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected
+ {
+    -fx-background: none;
+    -fx-table-cell-border-color: none;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected > .text 
+ {
+    -fx-background: -fx-selection-bar;
+    -fx-color: white;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled > .text 
+ {
+    -fx-background: none;
+    -fx-color: black;
 }
