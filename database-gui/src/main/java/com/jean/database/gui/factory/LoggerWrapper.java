@@ -29,7 +29,7 @@ public class LoggerWrapper {
 
         LoggerInvocationHandler(Object target) {
             this.target = target;
-            logger = LoggerFactory.getLogger(target.getClass().getName());
+            this.logger = LoggerFactory.getLogger(target.getClass().getName());
         }
 
         @Override

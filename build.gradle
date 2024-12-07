@@ -1,13 +1,31 @@
+buildscript {
+    ext {
+        javafx = ['platform': 'win']
+    }
+    repositories {
+        maven {
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+    }
+}
+
+
 group 'com.jean'
 version '1.0-SNAPSHOT'
 
-buildscript {
+
+ext {
+    javafx = ['platform': 'win', 'version':'17.0.14-ea+2']
+}
+
+allprojects {
     repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
         mavenLocal()
-    }
-    dependencies {
-        classpath 'de.dynamicfiles.projects.gradle.plugins:javafx-gradle-plugin:8.8.2'
+        mavenCentral()
     }
 }
 
@@ -15,13 +33,43 @@ subprojects {
 
     apply plugin: 'java'
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 
-    repositories {
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
-        mavenCentral()
+    dependencies {
+
+        implementation "org.slf4j:jcl-over-slf4j:2.0.7"
+
+//        implementation "org.openjfx:javafx:${javafx.version}"
+//        implementation "org.openjfx:javafx-base:${javafx.version}"
+//        implementation "org.openjfx:javafx-controls:${javafx.version}"
+//        implementation "org.openjfx:javafx-fxml:${javafx.version}"
+//        implementation "org.openjfx:javafx-graphics:${javafx.version}"
+//        implementation "org.openjfx:javafx-media:${javafx.version}"
+//        implementation "org.openjfx:javafx-properties:${javafx.version}"
+//        implementation "org.openjfx:javafx-swing:${javafx.version}"
+//        implementation "org.openjfx:javafx-web:${javafx.version}"
+//        implementation "org.openjfx:javafx-swt:${javafx.version}"
+
+//        implementation  "org.slf4j:jcl-over-slf4j:1.7.25"
+
+        implementation fileTree(dir: '../libs', include: '*.jar')
+//        implementation 'org.openjfx:javafx:11.0.18'
+//        implementation "org.openjfx:javafx:${javafx.platform}:17.0.6"
+//        implementation "org.openjfx:javafx-base:${javafx.platform}:17.0.6"
+//        implementation "org.openjfx:javafx-controls:${javafx.platform}:17.0.6"
+//        implementation "org.openjfx:javafx-fxml:${javafx.platform}:17.0.6"
+//        implementation "org.openjfx:javafx-graphics:${javafx.platform}:17.0.6"
+//        implementation "org.openjfx:javafx-media:${javafx.platform}:17.0.6"
+//        implementation "org.openjfx:javafx-swing:${javafx.platform}:17.0.6"
+
+//        implementation "org.openjfx:javafx-base:17.0.6"
+//        implementation "org.openjfx:javafx-controls:17.0.6"
+//        implementation "org.openjfx:javafx-fxml:17.0.6"
+//        implementation "org.openjfx:javafx-graphics:17.0.6"
+//        implementation "org.openjfx:javafx-media:17.0.6"
+//        implementation "org.openjfx:javafx-swing:17.0.6"
     }
 }

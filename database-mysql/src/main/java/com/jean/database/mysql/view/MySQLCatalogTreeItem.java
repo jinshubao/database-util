@@ -14,7 +14,6 @@ import com.jean.database.sql.meta.CatalogMetaData;
 import com.jean.database.sql.meta.TableMetaData;
 import com.jean.database.sql.meta.TableTypeMetaData;
 import javafx.scene.control.*;
-import javafx.util.Callback;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -77,8 +76,8 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
             List<String> list = getParent().getChildren().stream().map(item -> item.getValue().getTableCat()).collect(Collectors.toList());
             try {
                 FxmlUtils.LoadFxmlResult loadFxmlResult =
-                        FxmlUtils.loadFxml("/fxml/mysql-query-tab.fxml", null, new MySQLQueryTabController(getViewContext(), list, getValue().getTableCat()));
-                Tab tab = new Tab("查询", loadFxmlResult.getParent());
+                        FxmlUtils.loadFxml("fxml/mysql-query-tab.fxml", null, new MySQLQueryTabController(getViewContext(), list, getValue().getTableCat()));
+                Tab tab = new Tab("查询", loadFxmlResult.parent());
                 objectTabController.addObjectTab(tab);
                 objectTabController.selectObjectTab(tab);
             } catch (IOException e) {

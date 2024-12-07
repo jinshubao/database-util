@@ -64,17 +64,17 @@ public class OracleDatabaseProvider extends DefaultDatabaseProvider {
     private SQLConnectionConfiguration getConfiguration() {
         try {
             ViewContext viewContext = getViewContext();
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/oracle-conn-cfg.fxml",
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/oracle-conn-cfg.fxml",
                     "message.oracle",
                     new OracleConfigurationController(viewContext, defaultCollectConfiguration));
-            OracleConfigurationController controller = (OracleConfigurationController) loadFxmlResult.getController();
+            OracleConfigurationController controller = (OracleConfigurationController) loadFxmlResult.controller();
             Callback<ButtonType, OracleConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return controller.getValue();
                 }
                 return null;
             };
-            return DialogUtil.customizeDialog("New Oracle connection", loadFxmlResult.getParent(), callback).orElse(null);
+            return DialogUtil.customizeDialog("New Oracle connection", loadFxmlResult.parent(), callback).orElse(null);
         } catch (IOException e) {
             DialogUtil.error(e);
         }

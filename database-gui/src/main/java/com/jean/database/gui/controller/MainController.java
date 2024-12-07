@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class MainController implements ViewContext, Initializable {
+public class MainController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -73,7 +73,7 @@ public class MainController implements ViewContext, Initializable {
         List<IDatabaseProvider> providers = ProviderManager.getProviders();
         providers.sort(Comparator.comparingInt(IDatabaseProvider::getOrder));
         for (IDatabaseProvider provider : providers) {
-            provider.setViewContext(this);
+            provider.setViewContext(new DefaultViewContext());
             provider.init();
         }
     }
@@ -84,80 +84,85 @@ public class MainController implements ViewContext, Initializable {
         exist.setOnAction(event -> Platform.exit());
     }
 
-    @Override
-    public void addObjectTab(Tab tab) {
-        objectTabPan.getTabs().add(tab);
-    }
 
-    @Override
-    public void removeObjectTab(Tab tab) {
-        objectTabPan.getTabs().remove(tab);
-    }
+    private class DefaultViewContext implements ViewContext {
 
-    @Override
-    public void addDatabaseItem(TreeItem treeItem) {
-        treeView.getRoot().getChildren().add(treeItem);
-    }
+        @Override
+        public void addObjectTab(Tab tab) {
+            objectTabPan.getTabs().add(tab);
+        }
 
-    @Override
-    public void addFileMenus(MenuItem... menu) {
-        file.getItems().addAll(menu);
-    }
+        @Override
+        public void removeObjectTab(Tab tab) {
+            objectTabPan.getTabs().remove(tab);
+        }
 
-    @Override
-    public void addConnectionMenus(MenuItem... menu) {
-        connection.getItems().addAll(menu);
-    }
+        @Override
+        public void addDatabaseItem(TreeItem treeItem) {
+            treeView.getRoot().getChildren().add(treeItem);
+        }
 
-    @Override
-    public void addViewMenus(MenuItem... menu) {
-        view.getItems().addAll(menu);
-    }
+        @Override
+        public void addFileMenus(MenuItem... menu) {
+            file.getItems().addAll(menu);
+        }
 
-    @Override
-    public void addCollectionMenus(MenuItem... menu) {
-        collection.getItems().addAll(menu);
-    }
+        @Override
+        public void addConnectionMenus(MenuItem... menu) {
+            connection.getItems().addAll(menu);
+        }
 
-    @Override
-    public void addToolsMenus(MenuItem... menu) {
-        tools.getItems().addAll(menu);
-    }
+        @Override
+        public void addViewMenus(MenuItem... menu) {
+            view.getItems().addAll(menu);
+        }
 
-    @Override
-    public void addWindowMenus(MenuItem... menu) {
-        window.getItems().addAll(menu);
-    }
+        @Override
+        public void addCollectionMenus(MenuItem... menu) {
+            collection.getItems().addAll(menu);
+        }
+
+        @Override
+        public void addToolsMenus(MenuItem... menu) {
+            tools.getItems().addAll(menu);
+        }
+
+        @Override
+        public void addWindowMenus(MenuItem... menu) {
+            window.getItems().addAll(menu);
+        }
 
 
-    @Override
-    public void addHelpMenus(MenuItem... menu) {
-        help.getItems().addAll(menu);
-    }
+        @Override
+        public void addHelpMenus(MenuItem... menu) {
+            help.getItems().addAll(menu);
+        }
 
-    @Override
-    public void updateProgress(double progress) {
-        if (Platform.isFxApplicationThread()) {
-            progressBar.setProgress(progress);
-        } else {
-            Platform.runLater(() -> progressBar.setProgress(progress));
+        @Override
+        public void updateProgress(double progress) {
+            if (Platform.isFxApplicationThread()) {
+                progressBar.setProgress(progress);
+            } else {
+                Platform.runLater(() -> progressBar.setProgress(progress));
+            }
+        }
+
+
+        public BorderPane getRoot() {
+            return root;
+        }
+
+        public MenuBar getMenuBar() {
+            return menuBar;
+        }
+
+        public TreeView<?> getTreeView() {
+            return treeView;
+        }
+
+        public TabPane getObjectTabPan() {
+            return objectTabPan;
         }
     }
-
-
-    public BorderPane getRoot() {
-        return root;
-    }
-
-    public MenuBar getMenuBar() {
-        return menuBar;
-    }
-
-    public TreeView<?> getTreeView() {
-        return treeView;
-    }
-
-    public TabPane getObjectTabPan() {
-        return objectTabPan;
-    }
 }
+

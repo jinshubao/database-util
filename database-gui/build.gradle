@@ -1,20 +1,21 @@
 apply plugin: 'application'
-apply plugin: 'javafx-gradle-plugin'
+//apply plugin: 'javafx-gradle-plugin'
+
+//apply plugin: 'org.openjfx.javafxplugin'
 
 mainClassName = 'com.jean.database.gui.MainApplication'
 
 dependencies {
-    compile project(":database-api")
-    compile "org.slf4j:jcl-over-slf4j:1.7.25"
-    compile "ch.qos.logback:logback-classic:1.2.3"
-
+    implementation group: 'ch.qos.logback', name: 'logback-access', version: '1.4.6'
+//    implementation  "ch.qos.logback:logback-classic:1.2.9"
+    implementation  project(":database-api")
     runtimeOnly project(":database-mysql")
     runtimeOnly project(":database-oracle")
     runtimeOnly project(":database-redis")
     runtimeOnly project(":database-mongo")
 }
 
-jfx {
+/*jfx {
     // gradle common
     jfxMainAppJarName = "database-gui.jar"
     jfxAppOutputDir = "build/jfx/app"
@@ -38,4 +39,4 @@ jfx {
     jvmProperties = [:]
     userJvmArgs = [:]
     launcherArguments = ["--name=database-GUI", "--version=0.1-snapshot"]
-}
+}*/

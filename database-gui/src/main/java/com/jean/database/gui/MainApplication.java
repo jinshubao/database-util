@@ -6,7 +6,6 @@ import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
 import javafx.application.Application;
-import javafx.application.Preloader;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -17,7 +16,7 @@ import java.util.Arrays;
 
 /**
  * @author jinshubao
- * @date 2017/4/8
+ * &#064;date  2017/4/8
  */
 public class MainApplication extends Application {
     private static final Logger logger = LoggerFactory.getLogger(MainApplication.class);
@@ -29,15 +28,13 @@ public class MainApplication extends Application {
         //启动参数
         logger.debug("application init");
         this.parameters = getParameters();
-        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this));
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         logger.debug("application start");
-        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START, this));
-        FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/Scene.fxml", "message.scene");
-        Scene scene = new Scene(loadFxmlResult.getParent());
+        FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/Scene.fxml", "message.scene");
+        Scene scene = new Scene(loadFxmlResult.parent());
         scene.getStylesheets().add("/styles/Styles.css");
         String name = parameters.getNamed().get("name");
         String version = parameters.getNamed().get("version");

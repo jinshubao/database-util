@@ -35,9 +35,9 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         this.contextMenu = this.createContextMenu();
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", null,
+                    FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
                             new RedisObjectTabController(viewContext, value));
-            objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
+            objectTabController = (RedisObjectTabController) loadFxmlResult.controller();
             getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
@@ -47,9 +47,9 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
 
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-cluster-server-tab.fxml", null,
+                    FxmlUtils.loadFxml("fxml/redis-cluster-server-tab.fxml", null,
                             new RedisClusterServerInfoController(viewContext, redisClusterClient));
-            serverInfoController = (RedisClusterServerInfoController) loadFxmlResult.getController();
+            serverInfoController = (RedisClusterServerInfoController) loadFxmlResult.controller();
         } catch (IOException e) {
             DialogUtil.error(e);
         }

@@ -82,15 +82,15 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
     private RedisConnectionConfiguration getConnectionConfiguration() {
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/redis-conn-cfg.fxml", null, new RedisConnectionConfigurationController(getViewContext(), defaultCollectConfiguration));
-            RedisConnectionConfigurationController cfgController = (RedisConnectionConfigurationController) loadFxmlResult.getController();
+                    FxmlUtils.loadFxml("fxml/redis-conn-cfg.fxml", null, new RedisConnectionConfigurationController(getViewContext(), defaultCollectConfiguration));
+            RedisConnectionConfigurationController cfgController = (RedisConnectionConfigurationController) loadFxmlResult.controller();
             Callback<ButtonType, RedisConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return cfgController.getValue();
                 }
                 return null;
             };
-            return DialogUtil.customizeDialog("New Redis connection", loadFxmlResult.getParent(), callback).orElse(null);
+            return DialogUtil.customizeDialog("New Redis connection", loadFxmlResult.parent(), callback).orElse(null);
         } catch (Exception e) {
             DialogUtil.error(e);
         }

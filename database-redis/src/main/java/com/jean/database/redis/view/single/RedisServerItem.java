@@ -45,9 +45,9 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         this.contextMenu = createContextMenu();
         try {
             String title = connectionConfiguration.getConnectionName();
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-object-tab.fxml", null,
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
                     new RedisObjectTabController(getViewContext(), title));
-            objectTabController = (RedisObjectTabController) loadFxmlResult.getController();
+            objectTabController = (RedisObjectTabController) loadFxmlResult.controller();
             getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
@@ -56,9 +56,9 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         }
 
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("/fxml/redis-server-tab.fxml", null,
+            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-server-tab.fxml", null,
                     new RedisServerInfoController(getViewContext(), connectionConfiguration));
-            serverInfoController = (RedisServerInfoController) loadFxmlResult.getController();
+            serverInfoController = (RedisServerInfoController) loadFxmlResult.controller();
         } catch (IOException e) {
             DialogUtil.error(e);
         }

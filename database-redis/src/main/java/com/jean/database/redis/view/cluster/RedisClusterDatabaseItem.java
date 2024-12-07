@@ -72,9 +72,9 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
         if (!isOpen()) {
             try {
                 FxmlUtils.LoadFxmlResult loadFxmlResult =
-                        FxmlUtils.loadFxml("/fxml/redis-db-tab.fxml", null,
+                        FxmlUtils.loadFxml("fxml/redis-db-tab.fxml", null,
                                 new RedisDatabaseTabController(getViewContext(), RedisClusterDatabaseItem.this.getValue(), objectTabController));
-                databaseTabController = (RedisDatabaseTabController) loadFxmlResult.getController();
+                databaseTabController = (RedisDatabaseTabController) loadFxmlResult.controller();
                 setOpen(true);
             } catch (IOException e) {
                 DialogUtil.error(e);

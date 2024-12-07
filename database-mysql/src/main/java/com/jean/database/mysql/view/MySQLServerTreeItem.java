@@ -29,8 +29,8 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         this.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
         this.contextMenu = this.createContextMenu();
         try {
-            FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("/fxml/mysql-object-tab.fxml", null, new MySQLObjectTabController(viewContext, value));
-            objectTabController = (MySQLObjectTabController) fxmlResult.getController();
+            FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("fxml/mysql-object-tab.fxml", null, new MySQLObjectTabController(viewContext, value));
+            objectTabController = (MySQLObjectTabController) fxmlResult.controller();
             getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {

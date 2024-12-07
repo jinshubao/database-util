@@ -5,27 +5,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.util.Callback;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public final class FxmlUtils {
 
     public static LoadFxmlResult loadFxml(String name) throws IOException {
-        Callback<Class<?>, Object> factory = param -> {
-            try {
-                return param.newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-        return loadFxml(name, null, Locale.SIMPLIFIED_CHINESE,factory);
+        return loadFxml(name, null);
     }
 
     public static LoadFxmlResult loadFxml(String name, String resource) throws IOException {
         Callback<Class<?>, Object> factory = param -> {
             try {
-                return param.newInstance();
+                return param.getConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -43,26 +38,20 @@ public final class FxmlUtils {
             loader.setResources(ResourceBundle.getBundle(resource, locale, new EncodingResourceBundleControl()));
         }
         loader.setControllerFactory(factory);
-        Parent parent = loader.load(FxmlUtils.class.getResourceAsStream(name));
+
+        InputStream stream = FXMLLoader.getDefaultClassLoader().getResourceAsStream(name);
+        if (stream == null) {
+            stream = FXMLLoader.getDefaultClassLoader().getResourceAsStream(File.pathSeparator + name);
+        }
+        if (stream == null) {
+            throw new RuntimeException("资源文件[" + name + "]不存在");
+        }
+
+        Parent parent = loader.load(stream);
         Object controller = loader.getController();
         return new LoadFxmlResult(parent, controller);
     }
 
-    public static class LoadFxmlResult {
-        private final Parent parent;
-        private final Object controller;
-
-        public LoadFxmlResult(Parent parent, Object controller) {
-            this.parent = parent;
-            this.controller = controller;
-        }
-
-        public Parent getParent() {
-            return parent;
-        }
-
-        public Object getController() {
-            return controller;
-        }
+    public record LoadFxmlResult(Parent parent, Object controller) {
     }
 }

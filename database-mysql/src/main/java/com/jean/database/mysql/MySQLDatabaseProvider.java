@@ -13,7 +13,6 @@ import javafx.scene.control.MenuItem;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.util.Locale;
 
 public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
 
@@ -66,9 +65,9 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
     public SQLConnectionConfiguration getConnectionConfiguration() {
         try {
             FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("/fxml/mysql-conn-cfg.fxml", "message.mysql", new MySQLConfigurationController(getViewContext()));
-            Parent parent = loadFxmlResult.getParent();
-            MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.getController();
+                    FxmlUtils.loadFxml("fxml/mysql-conn-cfg.fxml", "message.mysql", new MySQLConfigurationController(getViewContext()));
+            Parent parent = loadFxmlResult.parent();
+            MySQLConfigurationController controller = (MySQLConfigurationController) loadFxmlResult.controller();
             controller.setValue(this.defaultConnectionConfiguration);
             Callback<ButtonType, SQLConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
