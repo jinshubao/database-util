@@ -26,8 +26,8 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
     public MySQLDatabaseProvider() {
         this.identifier = NAME;
         this.name = NAME;
-        this.defaultConnectionConfiguration = new MySQLConnectionConfiguration("mysql[127.0.0.1]", "127.0.0.1",
-                3307, "root", "123456");
+        this.defaultConnectionConfiguration = new MySQLConnectionConfiguration("mysql[192.168.1.15]", "192.168.1.15",
+                3306, "root", "12345678");
     }
 
     @Override

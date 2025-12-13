@@ -24,7 +24,7 @@ public class TableMetaData {
     private StringProperty selfReferencingColName = new SimpleStringProperty(this, "selfReferencingColName");
     private StringProperty refGeneration = new SimpleStringProperty(this, "refGeneration");
 
-    public java.lang.String getTableCat() {
+    public String getTableCat() {
         return tableCat.get();
     }
 
@@ -32,11 +32,11 @@ public class TableMetaData {
         return tableCat;
     }
 
-    public void setTableCat(java.lang.String tableCat) {
+    public void setTableCat(String tableCat) {
         this.tableCat.set(tableCat);
     }
 
-    public java.lang.String getQuoteString() {
+    public String getQuoteString() {
         return quoteString.get();
     }
 
@@ -44,11 +44,11 @@ public class TableMetaData {
         return quoteString;
     }
 
-    public void setQuoteString(java.lang.String quoteString) {
+    public void setQuoteString(String quoteString) {
         this.quoteString.set(quoteString);
     }
 
-    public java.lang.String getSeparator() {
+    public String getSeparator() {
         return separator.get();
     }
 
@@ -56,11 +56,11 @@ public class TableMetaData {
         return separator;
     }
 
-    public void setSeparator(java.lang.String separator) {
+    public void setSeparator(String separator) {
         this.separator.set(separator);
     }
 
-    public java.lang.String getTableSchema() {
+    public String getTableSchema() {
         return tableSchema.get();
     }
 
@@ -68,11 +68,11 @@ public class TableMetaData {
         return tableSchema;
     }
 
-    public void setTableSchema(java.lang.String tableSchema) {
+    public void setTableSchema(String tableSchema) {
         this.tableSchema.set(tableSchema);
     }
 
-    public java.lang.String getTableName() {
+    public String getTableName() {
         return tableName.get();
     }
 
@@ -80,11 +80,11 @@ public class TableMetaData {
         return tableName;
     }
 
-    public void setTableName(java.lang.String tableName) {
+    public void setTableName(String tableName) {
         this.tableName.set(tableName);
     }
 
-    public java.lang.String getTableType() {
+    public String getTableType() {
         return tableType.get();
     }
 
@@ -92,11 +92,11 @@ public class TableMetaData {
         return tableType;
     }
 
-    public void setTableType(java.lang.String tableType) {
+    public void setTableType(String tableType) {
         this.tableType.set(tableType);
     }
 
-    public java.lang.String getRemarks() {
+    public String getRemarks() {
         return remarks.get();
     }
 
@@ -104,11 +104,11 @@ public class TableMetaData {
         return remarks;
     }
 
-    public void setRemarks(java.lang.String remarks) {
+    public void setRemarks(String remarks) {
         this.remarks.set(remarks);
     }
 
-    public java.lang.String getTypeCat() {
+    public String getTypeCat() {
         return typeCat.get();
     }
 
@@ -116,11 +116,11 @@ public class TableMetaData {
         return typeCat;
     }
 
-    public void setTypeCat(java.lang.String typeCat) {
+    public void setTypeCat(String typeCat) {
         this.typeCat.set(typeCat);
     }
 
-    public java.lang.String getTypeSchema() {
+    public String getTypeSchema() {
         return typeSchema.get();
     }
 
@@ -128,11 +128,11 @@ public class TableMetaData {
         return typeSchema;
     }
 
-    public void setTypeSchema(java.lang.String typeSchema) {
+    public void setTypeSchema(String typeSchema) {
         this.typeSchema.set(typeSchema);
     }
 
-    public java.lang.String getTypeName() {
+    public String getTypeName() {
         return typeName.get();
     }
 
@@ -140,11 +140,11 @@ public class TableMetaData {
         return typeName;
     }
 
-    public void setTypeName(java.lang.String typeName) {
+    public void setTypeName(String typeName) {
         this.typeName.set(typeName);
     }
 
-    public java.lang.String getSelfReferencingColName() {
+    public String getSelfReferencingColName() {
         return selfReferencingColName.get();
     }
 
@@ -152,11 +152,11 @@ public class TableMetaData {
         return selfReferencingColName;
     }
 
-    public void setSelfReferencingColName(java.lang.String selfReferencingColName) {
+    public void setSelfReferencingColName(String selfReferencingColName) {
         this.selfReferencingColName.set(selfReferencingColName);
     }
 
-    public java.lang.String getRefGeneration() {
+    public String getRefGeneration() {
         return refGeneration.get();
     }
 
@@ -164,7 +164,7 @@ public class TableMetaData {
         return refGeneration;
     }
 
-    public void setRefGeneration(java.lang.String refGeneration) {
+    public void setRefGeneration(String refGeneration) {
         this.refGeneration.set(refGeneration);
     }
 

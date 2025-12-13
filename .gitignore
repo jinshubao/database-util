@@ -1,10 +1,19 @@
-.gradle
-/build/
-/logs/
-/temp/
-!gradle/wrapper/gradle-wrapper.jar
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-### STS ###
+### IntelliJ IDEA ###
+.idea/
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -13,28 +22,18 @@
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-.idea/
-*.iws
-*.iml
-*.ipr
-*.pid
-/out/
-
-database-*/.idea
-database-*/.idea/
-database-*/*.iws
-database-*/*.iml
-database-*/*.ipr
-database-*/*.pid
-database-*/out/
-database-*/build/
-
 ### NetBeans ###
 /nbproject/private/
-/build/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store

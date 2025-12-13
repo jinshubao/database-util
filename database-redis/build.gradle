@@ -1,5 +1,0 @@
-dependencies {
-    implementation  'io.lettuce:lettuce-core:6.2.3.RELEASE'
-    implementation  "org.apache.commons:commons-pool2:2.6.0"
-    compileOnly project(":database-api")
-}
