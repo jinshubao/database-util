@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/10.0.2-internal"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.jean.database.redis.view.console.RedisConsoleController">
+    <children>
+        <TextArea fx:id="outputArea" editable="false" VBox.vgrow="ALWAYS"/>
+        <HBox spacing="5">
+            <children>
+                <TextField fx:id="inputField" HBox.hgrow="ALWAYS" onAction="#executeCommand"/>
+                <Button fx:id="executeButton" text="执行" onAction="#executeCommand"/>
+                <Button fx:id="clearButton" text="清空" onAction="#clearOutput"/>
+            </children>
+        </HBox>
+    </children>
+</VBox>

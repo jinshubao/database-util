@@ -50,11 +50,26 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- 数据库驱动模块 - 通过 SPI 自动发现，无需硬编码 -->
         <dependency>
             <groupId>com.jean</groupId>
             <artifactId>database-mysql</artifactId>
             <version>${project.parent.version}</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jean</groupId>
+            <artifactId>database-mongo</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jean</groupId>
+            <artifactId>database-oracle</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jean</groupId>
+            <artifactId>database-redis</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
     <build>

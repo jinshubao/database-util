@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx/10.0.2-internal"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.jean.database.redis.view.dialog.RedisNewKeyDialogController">
+    <columnConstraints>
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="25.0"/>
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="75.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
+    </rowConstraints>
+    <Label text="Key" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <TextField fx:id="keyField" promptText="key name" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+    <Label text="数据类型" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <ComboBox fx:id="typeComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    <Label text="Value" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <TextArea fx:id="valueArea" promptText="value" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="3"/>
+    <Label text="TTL (秒)" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+    <TextField fx:id="ttlField" promptText="-1 表示永不过期" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    <CheckBox fx:id="persistCheckBox" text="设置永不过期" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+</GridPane>

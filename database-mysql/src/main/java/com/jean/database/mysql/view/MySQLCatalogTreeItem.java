@@ -202,7 +202,7 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
                 List<MySQLTableTreeItem> items = tableMataData.stream()
                         .filter(metaData -> metaData.getTableType().equals(tableType))
                         .map(metaData -> new MySQLTableTreeItem(getViewContext(), metaData, metadataProvider, objectTabController))
-                        .collect(Collectors.toList());
+                        .toList();
                 //noinspection unchecked
                 catalogTreeItem.getChildren().add(typeItem);
                 if (!items.isEmpty()) {

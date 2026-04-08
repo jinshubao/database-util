@@ -1,8 +1,11 @@
 package com.jean.database.redis;
 
+import com.jean.database.api.BaseTask;
 import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultController;
+import com.jean.database.api.TaskManger;
 import com.jean.database.api.TableViewRowIndexColumnCellFactory;
+import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.redis.factory.RedisKeyTableRowFactory;
 import com.jean.database.redis.factory.RedisValueTableRowFactory;
 import com.jean.database.redis.factory.TableViewByteColumnCellFactory;
@@ -12,6 +15,8 @@ import com.jean.database.redis.view.handler.IRedisKeyActionEventHandler;
 import com.jean.database.redis.view.handler.IRedisValueActionEventHandler;
 import com.jean.database.redis.view.handler.impl.RedisKeyActionEventHandlerImpl;
 import com.jean.database.redis.view.handler.impl.RedisValueActionEventHandlerImpl;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
@@ -26,6 +31,8 @@ import java.util.ResourceBundle;
 public class RedisDatabaseTabController extends DefaultController implements Initializable {
 
     public static final String ATTR_OBJECT_TAB_CONTROLLER = "objectTabController";
+    public static final String ATTR_CONNECTION_CONFIGURATION = "connectionConfiguration";
+    public static final String ATTR_DATABASE = "database";
 
     public SplitPane root;
     public TableView<RedisKey> keyTableView;
@@ -37,11 +44,16 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
     private Tab databaseTab;
 
     private RedisObjectTabController objectTabController;
+    private RedisConnectionConfiguration connectionConfiguration;
+    private int database;
+    private RedisKey currentKey;
 
     public RedisDatabaseTabController(ControllerContext context) {
         super(context);
         this.databaseTab = new Tab(getTitle());
         this.objectTabController = context.getAttribute(ATTR_OBJECT_TAB_CONTROLLER);
+        this.connectionConfiguration = context.getAttribute(ATTR_CONNECTION_CONFIGURATION);
+        this.database = context.getAttribute(ATTR_DATABASE);
     }
 
     @Override
@@ -50,8 +62,6 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
         this.databaseTab.setOnCloseRequest(event -> {
 
         });
-
-        objectTabController.addDatabaseTab(databaseTab);
 
         TableViewRowIndexColumnCellFactory tableViewRowIndexColumnCellFactory = new TableViewRowIndexColumnCellFactory();
         TableViewByteColumnCellFactory tableViewByteColumnCellFactory = new TableViewByteColumnCellFactory();
@@ -85,6 +95,93 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
         IRedisValueActionEventHandler valueActionEventHandler = new RedisValueActionEventHandlerImpl(this);
         valueTableView.setRowFactory(new RedisValueTableRowFactory(valueActionEventHandler));
 
+        // 保存按钮点击事件
+        saveButton.setOnAction(event -> saveKeyValue());
+
+        // Key 表格选择变化时更新 keyTextFiled
+        keyTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                currentKey = newVal;
+                keyTextFiled.setText(new String(newVal.getKey()));
+            }
+        });
+
+    }
+
+    /**
+     * 保存 Key 的 Value 和 TTL
+     */
+    private void saveKeyValue() {
+        if (currentKey == null) {
+            DialogUtil.warning("警告", "请先选择一个 Key", null);
+            return;
+        }
+
+        String newValue = valueTextArea.getText();
+
+        TaskManger.execute(new SaveKeyTask(currentKey, newValue));
+    }
+
+    /**
+     * 保存 Key 任务
+     */
+    private class SaveKeyTask extends BaseTask<Boolean> {
+
+        private final RedisKey redisKey;
+        private final String newValue;
+
+        public SaveKeyTask(RedisKey redisKey, String newValue) {
+            this.redisKey = redisKey;
+            this.newValue = newValue;
+        }
+
+        @Override
+        protected void scheduled() {
+            updateMessage("正在保存...");
+        }
+
+        @Override
+        protected Boolean call() throws Exception {
+            try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
+                RedisCommands<byte[], byte[]> commands = connection.sync();
+                commands.select(database);
+
+                byte[] keyBytes = redisKey.getKey();
+                String type = redisKey.getType();
+
+                switch (type) {
+                    case RedisConstant.KeyType.STRING -> commands.set(keyBytes, newValue.getBytes(RedisConstant.CHARSET_UTF8));
+                    case RedisConstant.KeyType.LIST -> {
+                        commands.del(keyBytes);
+                        commands.rpush(keyBytes, newValue.getBytes(RedisConstant.CHARSET_UTF8));
+                    }
+                    case RedisConstant.KeyType.SET -> {
+                        commands.del(keyBytes);
+                        commands.sadd(keyBytes, newValue.getBytes(RedisConstant.CHARSET_UTF8));
+                    }
+                    default -> throw new RuntimeException("当前类型不支持直接编辑: " + type);
+                }
+
+                return true;
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            if (getValue()) {
+                DialogUtil.information("成功", "保存成功！", null);
+            }
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable ex = getException();
+            if (ex != null) {
+                DialogUtil.error("保存失败", ex);
+            }
+        }
     }
 
 
@@ -104,5 +201,12 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
 
     public void selected() {
         objectTabController.selectDatabaseTab(databaseTab);
+    }
+
+    /**
+     * 获取数据库 Tab
+     */
+    public Tab getDatabaseTab() {
+        return databaseTab;
     }
 }

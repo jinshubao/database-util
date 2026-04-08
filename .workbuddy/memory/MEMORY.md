@@ -36,6 +36,23 @@ database-mgr-maven（父 POM）
 - `ViewContext`：主界面操作门面
 - `BaseTreeItem<T>`：树节点基类（含 IContextMenu/IMouseAction/IRefreshable/ICloseable）
 - `SQLMetadataProvider`：JDBC 元数据抽象类
+- `BaseTask<V>`：异步任务基类，统一使用 TaskManger.execute() 执行
+
+## 架构特点（SPI 插件机制）
+
+1. 每个数据库模块在 `src/main/resources/META-INF/services/com.jean.database.api.IDatabaseProvider` 注册
+2. `database-gui` 依赖所有数据库模块，运行时通过 `ServiceLoader` 自动发现
+3. `ProviderManager` 负责加载和管理所有 Provider
+4. 启动时 `MainController` 遍历所有 Provider 并调用 `init()`
+
+## 启动命令
+
+```bash
+cd e:/my-workspace/database-util/database-gui
+mvn compile javafx:run -am
+```
+
+`-am` 参数确保依赖模块（database-api, database-sql, database-mysql 等）先被编译。
 
 ## 模块成熟度
 
@@ -66,10 +83,25 @@ database-mgr-maven（父 POM）
 **涉及文件**：`database-mysql/src/main/java/com/jean/database/mysql/MySQLObjectTabController.java`
 
 ### 2. 执行 SQL 时 `Not on FX application thread` 异常
-**根因**：`MySQLQueryTabController.executeSql()` 在后台线程执行 SQL，但 `processResultSet()` 和其他 UI 操作直接修改 TabPane、TextArea 等 JavaFX 组件。JavaFX 规定所有 UI 操作必须在 Application Thread 执行。
+**根因**：`MySQLQueryTabController.executeSql()` 在后台线程执行 SQL，但 `processResultSet()` 和其他 UI 操作直接修改 TabPane、TextArea 等 JavaFX 组件。
 
-**修复**：使用 `Platform.runLater()` 将所有 UI 操作调度到 Application Thread：
-- `processResultSet()` 中的 TabPane 操作
-- `executeInfoTextArea.setText()` 的所有调用
+**修复**：重构为使用 `BaseTask` + `TaskManger.execute()` 模式，统一异步调用：
+- `ExecuteSqlTask` 继承 `BaseTask<ExecuteSqlResult>`
+- `call()` 在后台线程执行 SQL
+- `succeeded()` 在 FX Application Thread 更新 UI
 
 **涉及文件**：`database-mysql/src/main/java/com/jean/database/mysql/MySQLQueryTabController.java`
+
+### 3. Maven 多模块编译后代码不生效
+**根因**：`javafx:run` 从本地 Maven 仓库读取 classpath，修改代码后需要先 install。
+
+**修复**：使用 `-am` 参数（also-make），Maven 会先编译所有依赖模块：
+```bash
+mvn compile javafx:run -am
+```
+
+## 代码规范
+
+1. **异步任务**：统一继承 `BaseTask`，通过 `TaskManger.execute(task)` 执行
+2. **UI 更新**：在 `BaseTask.succeeded()` 方法中进行，JavaFX 自动在 Application Thread 执行
+3. **错误处理**：`BaseTask.failed()` 方法统一处理，展示错误对话框

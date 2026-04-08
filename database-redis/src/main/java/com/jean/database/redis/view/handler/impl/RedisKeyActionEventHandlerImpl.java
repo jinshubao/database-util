@@ -2,6 +2,7 @@ package com.jean.database.redis.view.handler.impl;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.TaskManger;
+import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisConstant;
 import com.jean.database.redis.RedisDatabaseTabController;
@@ -13,6 +14,7 @@ import com.jean.database.redis.view.handler.IRedisKeyActionEventHandler;
 import io.lettuce.core.*;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableRow;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -42,7 +44,58 @@ public class RedisKeyActionEventHandlerImpl implements IRedisKeyActionEventHandl
 
     @Override
     public void delete(TableRow<RedisKey> tableRow) {
-        tableRow.getTableView().getItems().remove(tableRow.getItem());
+        RedisKey redisKey = tableRow.getItem();
+        var result = DialogUtil.confirmation("确认", "删除 Key [" + new String(redisKey.getKey()) + "]？", "此操作不可恢复！");
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            TaskManger.execute(new DeleteKeyTask(redisKey, tableRow));
+        }
+    }
+
+    /**
+     * 删除 Key 任务
+     */
+    private static class DeleteKeyTask extends BaseTask<Boolean> {
+
+        private final RedisKey redisKey;
+        private final TableRow<RedisKey> tableRow;
+
+        public DeleteKeyTask(RedisKey redisKey, TableRow<RedisKey> tableRow) {
+            this.redisKey = redisKey;
+            this.tableRow = tableRow;
+        }
+
+        @Override
+        protected void scheduled() {
+            updateMessage("正在删除 Key...");
+        }
+
+        @Override
+        protected Boolean call() throws Exception {
+            try (StatefulRedisConnection<byte[], byte[]> connection = redisKey.getConnectionConfiguration().getConnection()) {
+                RedisCommands<byte[], byte[]> commands = connection.sync();
+                commands.select(redisKey.getDatabase());
+                Long result = commands.del(redisKey.getKey());
+                return result > 0;
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            if (getValue()) {
+                tableRow.getTableView().getItems().remove(redisKey);
+                DialogUtil.information("成功", "Key [" + new String(redisKey.getKey()) + "] 已删除！", null);
+            }
+        }
+
+        @Override
+        protected void failed() {
+            super.failed();
+            Throwable ex = getException();
+            if (ex != null) {
+                DialogUtil.error("删除 Key 失败", ex);
+            }
+        }
     }
 
     @Override

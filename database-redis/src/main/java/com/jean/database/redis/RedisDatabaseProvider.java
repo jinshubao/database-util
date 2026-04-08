@@ -25,9 +25,9 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
     private final RedisConnectionConfiguration defaultCollectConfiguration;
 
     public RedisDatabaseProvider() {
-        String host = "127.0.0.1";
+        String host = "192.168.1.15";
         this.defaultCollectConfiguration
-                = new RedisConnectionConfiguration("Redis[" + host + "]", host, 6379, null);
+                = new RedisConnectionConfiguration("Redis[" + host + "]", host, 6379, "12345678");
     }
 
     @Override

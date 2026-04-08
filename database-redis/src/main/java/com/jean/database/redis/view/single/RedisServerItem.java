@@ -8,28 +8,33 @@ import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.ImageUtils;
+import com.jean.database.api.utils.StringUtils;
 import com.jean.database.redis.RedisConnectionConfiguration;
+import com.jean.database.redis.RedisConstant;
+import com.jean.database.redis.RedisDatabaseTabController;
 import com.jean.database.redis.RedisObjectTabController;
 import com.jean.database.redis.RedisServerInfoController;
+import com.jean.database.redis.model.RedisKey;
+import com.jean.database.redis.view.console.RedisConsoleController;
+import com.jean.database.redis.view.dialog.RedisNewKeyDialogController;
+import io.lettuce.core.KeyScanCursor;
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanCursor;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import io.lettuce.core.codec.ByteArrayCodec;
-import io.lettuce.core.output.ByteArrayOutput;
-import io.lettuce.core.protocol.Command;
-import io.lettuce.core.protocol.ProtocolKeyword;
-import io.lettuce.core.protocol.RedisCommand;
-import javafx.geometry.Insets;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TreeItem;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 /**
  * @author jinshubao
@@ -102,23 +107,11 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
 
         MenuItem closeItem = new MenuItem("关闭连接", ImageUtils.createImageView("/image/disconnect.png"));
         closeItem.disableProperty().bind(openProperty().not());
-        closeItem.setOnAction(event -> {
-
-        });
+        closeItem.setOnAction(event -> closeConnection());
 
         MenuItem commandLine = new MenuItem("命令行", ImageUtils.createImageView("/image/delete.png"));
         commandLine.disableProperty().bind(openProperty().not());
-        commandLine.setOnAction(event -> {
-            TextArea textArea = new TextArea();
-            textArea.setFont(Font.font(16.0D));
-            textArea.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
-            textArea.setOnKeyPressed(event1 -> {
-                if (event1.getCode() == KeyCode.ENTER) {
-                    TaskManger.execute(new RedisCommandTask("PING"));
-                }
-            });
-            objectTabController.addDatabaseTab(new Tab("命令行", textArea));
-        });
+        commandLine.setOnAction(event -> openConsole());
 
         MenuItem propertyItem = new MenuItem("连接属性");
         propertyItem.disableProperty().bind(openProperty().not());
@@ -129,11 +122,65 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         });
 
         MenuItem deleteItem = new MenuItem("删除连接", ImageUtils.createImageView("/image/delete.png"));
-        deleteItem.setOnAction(event -> {
-        });
+        deleteItem.setOnAction(event -> deleteConnection());
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(openItem, closeItem, commandLine, propertyItem, deleteItem);
         return contextMenu;
+    }
+
+    /**
+     * 关闭连接
+     */
+    private void closeConnection() {
+        if (isOpen()) {
+            // 关闭所有数据库连接
+            connectionConfiguration.close();
+            // 清空子节点
+            getChildren().clear();
+            // 设置为未打开状态
+            setOpen(false);
+            DialogUtil.information("成功", "连接已关闭", null);
+        }
+    }
+
+    /**
+     * 删除连接
+     */
+    private void deleteConnection() {
+        var result = DialogUtil.confirmation("确认", "删除连接 [" + connectionConfiguration.getConnectionName() + "]？", null);
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // 先关闭连接
+            if (isOpen()) {
+                connectionConfiguration.close();
+            }
+            // 从树中移除
+            TreeItem parent = getParent();
+            if (parent != null) {
+                parent.getChildren().remove(this);
+            }
+            DialogUtil.information("成功", "连接已删除", null);
+        }
+    }
+
+    /**
+     * 打开 Redis Console
+     */
+    private void openConsole() {
+        try {
+            // 默认打开 db0
+            int db = 0;
+            ControllerContext context = ControllerContext.builder(getViewContext(), "Console - db" + db)
+                    .attribute(RedisConsoleController.ATTR_CONNECTION_CONFIGURATION, connectionConfiguration)
+                    .attribute(RedisConsoleController.ATTR_DATABASE, db)
+                    .build();
+            FxmlControllerFactory.LoadResult<RedisConsoleController> result =
+                    FxmlControllerFactory.load("fxml/redis-console-tab.fxml", context, RedisConsoleController::new);
+            Tab consoleTab = new Tab("Console - db" + db);
+            consoleTab.setContent(result.getParent());
+            objectTabController.addDatabaseTab(consoleTab);
+        } catch (IOException e) {
+            DialogUtil.error(e);
+        }
     }
 
 
@@ -186,58 +233,6 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         protected void succeeded() {
             super.succeeded();
             serverInfoController.serverProperties.setText(getValue());
-        }
-    }
-
-    private class RedisCommandTask extends BaseTask<byte[]> {
-
-        private final String redisCommand;
-
-        public RedisCommandTask(String redisCommand) {
-            this.redisCommand = redisCommand;
-        }
-
-        @Override
-        protected byte[] call() throws Exception {
-            try (StatefulRedisConnection<byte[], byte[]> connection = connectionConfiguration.getConnection()) {
-                Command<byte[], byte[], byte[]> command = new Command<>(new StringCommandType(redisCommand), new ByteArrayOutput<>(ByteArrayCodec.INSTANCE));
-                RedisCommand<byte[], byte[], byte[]> dispatch = connection.dispatch(command);
-                return dispatch.getOutput().get();
-            }
-        }
-
-        @Override
-        protected void succeeded() {
-            super.succeeded();
-            byte[] value = getValue();
-            logger.debug("command result: {}", value);
-        }
-    }
-
-
-    static class StringCommandType implements ProtocolKeyword {
-
-        private final byte[] commandTypeBytes;
-        private final String commandType;
-
-        StringCommandType(String commandType) {
-            this.commandType = commandType;
-            this.commandTypeBytes = commandType.getBytes();
-        }
-
-        @Override
-        public byte[] getBytes() {
-            return commandTypeBytes;
-        }
-
-        @Override
-        public String name() {
-            return commandType;
-        }
-
-        @Override
-        public String toString() {
-            return name();
         }
     }
 }
