@@ -14,7 +14,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Redis 服务器信息 Controller
+ */
 public class RedisServerInfoController extends DefaultController implements Initializable {
+
+    public static final String ATTR_CONNECTION_CONFIGURATION = "connectionConfiguration";
 
     public SplitPane root;
     public LineChart<String, Long> memoryLineChart;
@@ -28,9 +33,9 @@ public class RedisServerInfoController extends DefaultController implements Init
     private XYChart.Series<String, Long> usedMemoryPeek = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryLua = new XYChart.Series<>();
 
-    public RedisServerInfoController(ViewContext viewContext, RedisConnectionConfiguration connectionConfiguration) {
-        super(viewContext);
-        this.connectionConfiguration = connectionConfiguration;
+    public RedisServerInfoController(ControllerContext context) {
+        super(context);
+        this.connectionConfiguration = context.getAttribute(ATTR_CONNECTION_CONFIGURATION);
     }
 
     @Override

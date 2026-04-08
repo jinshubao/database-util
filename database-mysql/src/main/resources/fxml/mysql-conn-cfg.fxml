@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
@@ -9,11 +10,16 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
 
 <TabPane xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="com.jean.database.mysql.MySQLConfigurationController">
     <Tab text="常规" closable="false">
-        <GridPane prefWidth="400.0">
+        <GridPane prefWidth="400.0" vgap="5.0" hgap="5.0">
+            <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+            </padding>
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="25.0"/>
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="75.0"/>
@@ -25,7 +31,7 @@
                 <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
                 <RowConstraints maxHeight="-Infinity" minHeight="30.0" prefHeight="30.0" vgrow="NEVER"/>
-                <RowConstraints/>
+                <RowConstraints maxHeight="-Infinity" minHeight="35.0" prefHeight="35.0" vgrow="NEVER"/>
             </rowConstraints>
             <Label text="连接名称" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
             <TextField fx:id="name" promptText="MySQL-localhost" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
@@ -40,10 +46,16 @@
             <Label text="其它参数" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
             <TextField fx:id="properties" promptText="useUnicode=true&amp;useSSL=false" GridPane.columnIndex="1"
                        GridPane.rowIndex="5"/>
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="6" spacing="10.0" alignment="CENTER_RIGHT">
+                <Button fx:id="testConnectionButton" text="测试连接"/>
+            </HBox>
         </GridPane>
     </Tab>
     <Tab text="高级" closable="false">
-        <GridPane>
+        <GridPane vgap="5.0" hgap="5.0">
+            <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+            </padding>
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="25.0"/>
                 <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="75.0"/>
@@ -55,7 +67,7 @@
             <Label text="位置" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
             <TextField fx:id="location" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
             <Label text="编码" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <ComboBox fx:id="charset"  editable="true" prefWidth="150.0" promptText="UTF-8" GridPane.columnIndex="1"
+            <ComboBox fx:id="charset" editable="true" prefWidth="150.0" promptText="UTF-8" GridPane.columnIndex="1"
                       GridPane.rowIndex="1"/>
         </GridPane>
     </Tab>

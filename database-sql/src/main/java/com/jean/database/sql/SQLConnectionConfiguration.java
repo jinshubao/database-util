@@ -92,5 +92,7 @@ public abstract class SQLConnectionConfiguration implements IConnectionConfigura
         return this.connectionName;
     }
 
+    @Override
+    public abstract String getUrl();
 
 }

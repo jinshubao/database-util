@@ -24,6 +24,7 @@ public class MySQLTableTypeTreeItem extends BaseDatabaseItem<TableTypeMetaData> 
 
     @Override
     public void click() {
+        objectTabController.selectObjectTab(getValue().getTableType());
     }
 
     @Override

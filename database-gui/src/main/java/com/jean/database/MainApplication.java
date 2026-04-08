@@ -40,8 +40,8 @@ public class MainApplication extends Application {
         FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/Scene.fxml", "message.scene");
         Scene scene = new Scene(loadFxmlResult.parent());
 //        scene.getStylesheets().add("/styles/Styles.css");
-        String name = parameters.getNamed().get("name");
-        String version = parameters.getNamed().get("version");
+        String name = StringUtils.withDefault(parameters.getNamed().get("name"), "Database Util");
+        String version = StringUtils.withDefault(parameters.getNamed().get("version"), "1.0.0");
         String title = StringUtils.join(Arrays.asList(name, version), " ");
         stage.setTitle(title);
         stage.getIcons().add(ImageUtils.LOGO_IMAGE);

@@ -42,8 +42,11 @@ public class TreeCellFactory {
                     this.setOnMouseClicked(event -> {
                         if (event.getButton() == MouseButton.PRIMARY) {
                             if (event.getClickCount() == 1) {
+                                // 单击：先触发select，再触发click
+                                node.select();
                                 node.click();
                             } else if (event.getClickCount() == 2) {
+                                // 双击：触发doubleClick
                                 node.doubleClick();
                             }
                         }

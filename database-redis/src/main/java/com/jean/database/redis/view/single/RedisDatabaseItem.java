@@ -3,10 +3,11 @@ package com.jean.database.redis.view.single;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.ControllerContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
 import com.jean.database.redis.RedisConnectionConfiguration;
@@ -67,10 +68,12 @@ public class RedisDatabaseItem extends BaseTreeItem<String> {
         setGraphic(ImageUtils.createImageView("/redis/db.png"));
 
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("fxml/redis-db-tab.fxml", null,
-                            new RedisDatabaseTabController(getViewContext(), RedisDatabaseItem.this.getValue(), objectTabController));
-            databaseTabController = (RedisDatabaseTabController) loadFxmlResult.controller();
+            ControllerContext context = ControllerContext.builder(getViewContext(), RedisDatabaseItem.this.getValue())
+                    .attribute(RedisDatabaseTabController.ATTR_OBJECT_TAB_CONTROLLER, objectTabController)
+                    .build();
+            FxmlControllerFactory.LoadResult<RedisDatabaseTabController> result =
+                    FxmlControllerFactory.load("fxml/redis-db-tab.fxml", context, RedisDatabaseTabController::new);
+            databaseTabController = result.getController();
         } catch (IOException e) {
             DialogUtil.error(e);
         }

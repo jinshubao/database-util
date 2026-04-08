@@ -2,10 +2,11 @@ package com.jean.database.redis.view.cluster;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.ControllerContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.redis.RedisClusterServerInfoController;
 import com.jean.database.redis.RedisObjectTabController;
@@ -34,10 +35,10 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         this.redisClusterClient = redisClusterClient;
         this.contextMenu = this.createContextMenu();
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
-                            new RedisObjectTabController(viewContext, value));
-            objectTabController = (RedisObjectTabController) loadFxmlResult.controller();
+            ControllerContext objectContext = ControllerContext.builder(viewContext, value).build();
+            FxmlControllerFactory.LoadResult<RedisObjectTabController> objectResult =
+                    FxmlControllerFactory.load("fxml/redis-object-tab.fxml", objectContext, RedisObjectTabController::new);
+            objectTabController = objectResult.getController();
             getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
@@ -46,10 +47,12 @@ public class RedisClusterServerItem extends BaseTreeItem<String> {
         }
 
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("fxml/redis-cluster-server-tab.fxml", null,
-                            new RedisClusterServerInfoController(viewContext, redisClusterClient));
-            serverInfoController = (RedisClusterServerInfoController) loadFxmlResult.controller();
+            ControllerContext serverContext = ControllerContext.builder(viewContext, "Cluster Server Info")
+                    .attribute(RedisClusterServerInfoController.ATTR_CLUSTER_CLIENT, redisClusterClient)
+                    .build();
+            FxmlControllerFactory.LoadResult<RedisClusterServerInfoController> serverResult =
+                    FxmlControllerFactory.load("fxml/redis-cluster-server-tab.fxml", serverContext, RedisClusterServerInfoController::new);
+            serverInfoController = serverResult.getController();
         } catch (IOException e) {
             DialogUtil.error(e);
         }

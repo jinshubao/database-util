@@ -1,12 +1,13 @@
 package com.jean.database.mysql;
 
+import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultController;
 import com.jean.database.api.KeyValuePair;
-import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.sql.meta.TableSummaries;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -17,30 +18,36 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * MySQL 对象标签页 Controller
+ */
 public class MySQLObjectTabController extends DefaultController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MySQLObjectTabController.class);
 
+    @FXML
     public Pane root;
+    @FXML
     public SplitPane splitPane;
+    @FXML
     public TabPane sqlObjectTabPan;
+    @FXML
     public TableView<TableSummaries> sqlObjectTableView;
+    @FXML
     public TableView<KeyValuePair<String, Object>> generalInfoTableView;
+    @FXML
     public TextArea ddlInfoTextArea;
     private Tab objectTab;
 
-    private String title;
-
-    public MySQLObjectTabController(ViewContext viewContext, String title) {
-        super(viewContext);
-        this.title = title;
+    public MySQLObjectTabController(ControllerContext context) {
+        super(context);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
         logger.debug("initialize sql object pan");
-        this.objectTab = new Tab(title);
+        this.objectTab = new Tab(getTitle());
         this.objectTab.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
         this.objectTab.setContent(root);
         this.objectTab.setOnCloseRequest(event -> {
@@ -100,6 +107,13 @@ public class MySQLObjectTabController extends DefaultController implements Initi
 
     public void selectObjectTab(Tab tab) {
         sqlObjectTabPan.getSelectionModel().select(tab);
+    }
+
+    public void selectObjectTab(String tabId) {
+        sqlObjectTabPan.getTabs().stream()
+                .filter(t -> t.getId().equals(tabId))
+                .findFirst()
+                .ifPresent(tab -> sqlObjectTabPan.getSelectionModel().select(tab));
     }
 
     public Tab getObjectTab() {

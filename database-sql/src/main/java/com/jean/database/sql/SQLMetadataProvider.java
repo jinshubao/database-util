@@ -111,6 +111,8 @@ public abstract class SQLMetadataProvider {
     public abstract List<TableSummaries> getTableSummaries(String catalog, String schemaPattern, String[] tableNamePattern, String[] types) throws SQLException;
 
     public abstract List<KeyValuePair<String, Object>> getTableDetails(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
+    
+    public abstract String getTableDDL(String catalog, String schema, String tableName) throws SQLException;
 
     protected List<CatalogMetaData> covertCatalogMetaDataResultSet(ResultSet resultSet) throws SQLException {
         List<CatalogMetaData> list = new ArrayList<>();

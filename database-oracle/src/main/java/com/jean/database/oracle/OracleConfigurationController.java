@@ -1,7 +1,7 @@
 package com.jean.database.oracle;
 
+import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultController;
-import com.jean.database.api.ViewContext;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
@@ -13,7 +13,12 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+/**
+ * Oracle 连接配置 Controller
+ */
 public class OracleConfigurationController extends DefaultController implements Initializable {
+
+    public static final String ATTR_DEFAULT_CONFIGURATION = "defaultConfiguration";
 
     public TextField name;
     public TextField host;
@@ -27,9 +32,9 @@ public class OracleConfigurationController extends DefaultController implements 
 
     private OracleConnectionConfiguration defaultConfiguration;
 
-    public OracleConfigurationController(ViewContext viewContext,OracleConnectionConfiguration defaultConfiguration) {
-        super(viewContext);
-        this.defaultConfiguration = defaultConfiguration;
+    public OracleConfigurationController(ControllerContext context) {
+        super(context);
+        this.defaultConfiguration = context.getAttribute(ATTR_DEFAULT_CONFIGURATION);
     }
 
 

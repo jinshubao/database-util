@@ -61,13 +61,10 @@ public class MainController implements Initializable {
         treeView.setCellFactory(TreeCellFactory.forTreeView());
         treeView.setRoot(new TreeItem<>());
         treeView.setShowRoot(false);
-        treeView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                TreeItem<?> treeItem = treeView.getTreeItem(newValue.intValue());
-                if (treeItem instanceof IMouseAction) {
-                    ((IMouseAction) treeItem).select();
-                }
-            }
+        // select() 方法现在在 TreeCellFactory 的鼠标点击事件中被调用
+        // 这里保留选中项变化的监听，用于其他用途（如日志记录等）
+        treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            // 选中项变化时的处理（如果有需要）
         });
 
         List<IDatabaseProvider> providers = ProviderManager.getProviders();

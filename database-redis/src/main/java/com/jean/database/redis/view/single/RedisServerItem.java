@@ -2,10 +2,11 @@ package com.jean.database.redis.view.single;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.ControllerContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.redis.RedisConnectionConfiguration;
 import com.jean.database.redis.RedisObjectTabController;
@@ -45,9 +46,10 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         this.contextMenu = createContextMenu();
         try {
             String title = connectionConfiguration.getConnectionName();
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-object-tab.fxml", null,
-                    new RedisObjectTabController(getViewContext(), title));
-            objectTabController = (RedisObjectTabController) loadFxmlResult.controller();
+            ControllerContext objectContext = ControllerContext.builder(getViewContext(), title).build();
+            FxmlControllerFactory.LoadResult<RedisObjectTabController> objectResult =
+                    FxmlControllerFactory.load("fxml/redis-object-tab.fxml", objectContext, RedisObjectTabController::new);
+            objectTabController = objectResult.getController();
             getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {
@@ -56,9 +58,12 @@ public class RedisServerItem extends BaseTreeItem<RedisConnectionConfiguration> 
         }
 
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/redis-server-tab.fxml", null,
-                    new RedisServerInfoController(getViewContext(), connectionConfiguration));
-            serverInfoController = (RedisServerInfoController) loadFxmlResult.controller();
+            ControllerContext serverContext = ControllerContext.builder(getViewContext(), "Server Info")
+                    .attribute(RedisServerInfoController.ATTR_CONNECTION_CONFIGURATION, connectionConfiguration)
+                    .build();
+            FxmlControllerFactory.LoadResult<RedisServerInfoController> serverResult =
+                    FxmlControllerFactory.load("fxml/redis-server-tab.fxml", serverContext, RedisServerInfoController::new);
+            serverInfoController = serverResult.getController();
         } catch (IOException e) {
             DialogUtil.error(e);
         }

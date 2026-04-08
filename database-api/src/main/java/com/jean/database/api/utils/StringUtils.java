@@ -56,4 +56,9 @@ public final class StringUtils {
     public static String byteArrayToString(byte[] bytes, Charset charset) {
         return new String(bytes, charset);
     }
+
+    public static String withDefault(String text, String defaultValue) {
+        return isBlank(text) ? defaultValue : text;
+    }
+    
 }

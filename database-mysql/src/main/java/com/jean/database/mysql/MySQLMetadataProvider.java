@@ -132,4 +132,27 @@ public class MySQLMetadataProvider extends SQLMetadataProvider {
             }
         }
     }
+
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            String quoteString = metaData.getIdentifierQuoteString();
+            String separator = metaData.getCatalogSeparator();
+            // 构造：SHOW CREATE TABLE `catalog`.`tableName`
+            String qualifiedName = quoteString + catalog + quoteString + separator + quoteString + tableName + quoteString;
+            String sql = "SHOW CREATE TABLE " + qualifiedName;
+
+            try (Statement statement = connection.createStatement()) {
+                try (ResultSet rs = statement.executeQuery(sql)) {
+                    if (rs.next()) {
+                        // 第一列是表名，第二列是 CREATE TABLE 语句
+                        String ddl = rs.getString(2);
+                        return ddl != null ? ddl : "";
+                    }
+                    return "";
+                }
+            }
+        }
+    }
 }

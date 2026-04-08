@@ -1,8 +1,8 @@
 package com.jean.database.redis;
 
+import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultController;
 import com.jean.database.api.TableViewRowIndexColumnCellFactory;
-import com.jean.database.api.ViewContext;
 import com.jean.database.redis.factory.RedisKeyTableRowFactory;
 import com.jean.database.redis.factory.RedisValueTableRowFactory;
 import com.jean.database.redis.factory.TableViewByteColumnCellFactory;
@@ -19,8 +19,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Redis 数据库标签页 Controller
+ */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class RedisDatabaseTabController extends DefaultController implements Initializable {
+
+    public static final String ATTR_OBJECT_TAB_CONTROLLER = "objectTabController";
 
     public SplitPane root;
     public TableView<RedisKey> keyTableView;
@@ -31,14 +36,12 @@ public class RedisDatabaseTabController extends DefaultController implements Ini
     public Button saveButton;
     private Tab databaseTab;
 
-    RedisObjectTabController objectTabController;
+    private RedisObjectTabController objectTabController;
 
-
-
-    public RedisDatabaseTabController(ViewContext viewContext, String title, RedisObjectTabController objectTabController) {
-        super(viewContext);
-        this.databaseTab = new Tab(title);
-        this.objectTabController = objectTabController;
+    public RedisDatabaseTabController(ControllerContext context) {
+        super(context);
+        this.databaseTab = new Tab(getTitle());
+        this.objectTabController = context.getAttribute(ATTR_OBJECT_TAB_CONTROLLER);
     }
 
     @Override

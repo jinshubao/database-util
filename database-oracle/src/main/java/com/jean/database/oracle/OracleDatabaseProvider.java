@@ -1,9 +1,9 @@
 package com.jean.database.oracle;
 
+import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultDatabaseProvider;
-import com.jean.database.api.ViewContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.sql.SQLConnectionConfiguration;
 import javafx.scene.control.ButtonType;
@@ -63,18 +63,21 @@ public class OracleDatabaseProvider extends DefaultDatabaseProvider {
 
     private SQLConnectionConfiguration getConfiguration() {
         try {
-            ViewContext viewContext = getViewContext();
-            FxmlUtils.LoadFxmlResult loadFxmlResult = FxmlUtils.loadFxml("fxml/oracle-conn-cfg.fxml",
-                    "message.oracle",
-                    new OracleConfigurationController(viewContext, defaultCollectConfiguration));
-            OracleConfigurationController controller = (OracleConfigurationController) loadFxmlResult.controller();
+            ControllerContext context = ControllerContext.builder(getViewContext(), "Oracle Configuration")
+                    .attribute(OracleConfigurationController.ATTR_DEFAULT_CONFIGURATION, defaultCollectConfiguration)
+                    .build();
+
+            FxmlControllerFactory.LoadResult<OracleConfigurationController> result =
+                    FxmlControllerFactory.load("fxml/oracle-conn-cfg.fxml", "message.oracle", context, OracleConfigurationController::new);
+
+            OracleConfigurationController controller = result.getController();
             Callback<ButtonType, OracleConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return controller.getValue();
                 }
                 return null;
             };
-            return DialogUtil.customizeDialog("New Oracle connection", loadFxmlResult.parent(), callback).orElse(null);
+            return DialogUtil.customizeDialog("New Oracle connection", result.getParent(), callback).orElse(null);
         } catch (IOException e) {
             DialogUtil.error(e);
         }

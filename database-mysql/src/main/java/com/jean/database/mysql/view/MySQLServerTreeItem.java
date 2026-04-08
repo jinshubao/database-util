@@ -1,10 +1,11 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.api.BaseTask;
+import com.jean.database.api.ControllerContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mysql.MySQLMetadataProvider;
 import com.jean.database.mysql.MySQLObjectTabController;
@@ -29,8 +30,10 @@ public class MySQLServerTreeItem extends BaseDatabaseItem<String> {
         this.setGraphic(ImageUtils.createImageView("/mysql/mysql.png"));
         this.contextMenu = this.createContextMenu();
         try {
-            FxmlUtils.LoadFxmlResult fxmlResult = FxmlUtils.loadFxml("fxml/mysql-object-tab.fxml", null, new MySQLObjectTabController(viewContext, value));
-            objectTabController = (MySQLObjectTabController) fxmlResult.controller();
+            ControllerContext context = ControllerContext.builder(viewContext, value).build();
+            FxmlControllerFactory.LoadResult<MySQLObjectTabController> result =
+                    FxmlControllerFactory.load("fxml/mysql-object-tab.fxml", context, MySQLObjectTabController::new);
+            objectTabController = result.getController();
             getViewContext().addObjectTab(objectTabController.getObjectTab());
             objectTabController.select();
         } catch (IOException e) {

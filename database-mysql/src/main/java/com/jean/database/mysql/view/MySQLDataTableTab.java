@@ -36,6 +36,7 @@ public class MySQLDataTableTab extends Tab {
     private List<ColumnMetaData> columnDataCache;
 
     public MySQLDataTableTab(TableMetaData tableMetaData, SQLMetadataProvider metadataProvider) {
+        setId(tableMetaData.getFullName());
         this.tableMetaData = tableMetaData;
         this.metadataProvider = metadataProvider;
 

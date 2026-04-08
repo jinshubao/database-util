@@ -1,8 +1,9 @@
 package com.jean.database.redis;
 
+import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultDatabaseProvider;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.redis.view.cluster.RedisClusterServerItem;
 import com.jean.database.redis.view.single.RedisServerItem;
@@ -81,16 +82,21 @@ public class RedisDatabaseProvider extends DefaultDatabaseProvider {
 
     private RedisConnectionConfiguration getConnectionConfiguration() {
         try {
-            FxmlUtils.LoadFxmlResult loadFxmlResult =
-                    FxmlUtils.loadFxml("fxml/redis-conn-cfg.fxml", null, new RedisConnectionConfigurationController(getViewContext(), defaultCollectConfiguration));
-            RedisConnectionConfigurationController cfgController = (RedisConnectionConfigurationController) loadFxmlResult.controller();
+            ControllerContext context = ControllerContext.builder(getViewContext(), "Redis Configuration")
+                    .attribute(RedisConnectionConfigurationController.ATTR_DEFAULT_CONFIGURATION, defaultCollectConfiguration)
+                    .build();
+
+            FxmlControllerFactory.LoadResult<RedisConnectionConfigurationController> result =
+                    FxmlControllerFactory.load("fxml/redis-conn-cfg.fxml", context, RedisConnectionConfigurationController::new);
+
+            RedisConnectionConfigurationController cfgController = result.getController();
             Callback<ButtonType, RedisConnectionConfiguration> callback = buttonType -> {
                 if (buttonType == ButtonType.OK) {
                     return cfgController.getValue();
                 }
                 return null;
             };
-            return DialogUtil.customizeDialog("New Redis connection", loadFxmlResult.parent(), callback).orElse(null);
+            return DialogUtil.customizeDialog("New Redis connection", result.getParent(), callback).orElse(null);
         } catch (Exception e) {
             DialogUtil.error(e);
         }

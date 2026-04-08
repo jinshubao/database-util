@@ -1,7 +1,7 @@
 package com.jean.database.redis;
 
+import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultController;
-import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.ImageUtils;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
@@ -10,20 +10,21 @@ import javafx.scene.control.TabPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Redis 对象标签页 Controller
+ */
 public class RedisObjectTabController extends DefaultController implements Initializable {
 
     public TabPane root;
     private Tab objectTab;
-    private String title;
 
-    public RedisObjectTabController(ViewContext viewContext, String title) {
-        super(viewContext);
-        this.title = title;
+    public RedisObjectTabController(ControllerContext context) {
+        super(context);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.objectTab = new Tab(title);
+        this.objectTab = new Tab(getTitle());
         this.objectTab.setGraphic(ImageUtils.createImageView("/redis/redis.png"));
         this.objectTab.setContent(root);
         this.objectTab.setOnCloseRequest(event -> {

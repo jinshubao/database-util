@@ -43,16 +43,28 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
 
     @Override
     public void doubleClick() {
+        // 先切换到主连接Tab
+        objectTabController.select();
+        // 然后打开表（会创建或切换到对应的子Tab）
         open();
     }
 
     @Override
     public void select() {
+        // 先切换到 Object Tab
+        objectTabController.select();
+        // 如果表已打开，切换到对应的数据 Tab
+        if (isOpen() && sqlDataTableTab != null) {
+            objectTabController.selectObjectTab(sqlDataTableTab);
+        }
         TaskManger.execute(new TableGeneralInfoTask());
     }
 
     private void open() {
         if (isOpen()) {
+            // 如果已经打开，直接切换到对应的子 Tab
+            // 主 Tab 已经在 select() 方法中切换过了
+            objectTabController.selectObjectTab(sqlDataTableTab);
             return;
         }
         setOpen(true);
@@ -100,22 +112,40 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
     }
 
 
-    private class TableGeneralInfoTask extends BaseTask<List<KeyValuePair<String, Object>>> {
+    private class TableGeneralInfoTask extends BaseTask<List<com.jean.database.api.KeyValuePair<String, Object>>> {
+
+        private String ddlStatement;
 
         @Override
-        protected List<KeyValuePair<String, Object>> call() throws Exception {
+        protected List<com.jean.database.api.KeyValuePair<String, Object>> call() throws Exception {
             TableMetaData tableMetaData = MySQLTableTreeItem.this.getValue();
             SQLMetadataProvider metadataProvider = getMetadataProvider();
-            return metadataProvider.getTableDetails(tableMetaData.getTableCat(), tableMetaData.getTableSchema(), tableMetaData.getTableName(),
+            
+            // 获取表详情
+            List<com.jean.database.api.KeyValuePair<String, Object>> details = metadataProvider.getTableDetails(
+                    tableMetaData.getTableCat(), 
+                    tableMetaData.getTableSchema(), 
+                    tableMetaData.getTableName(),
                     new String[]{tableMetaData.getTableType()});
+            
+            // 获取表 DDL 语句
+            try {
+                ddlStatement = metadataProvider.getTableDDL(
+                        tableMetaData.getTableCat(), 
+                        tableMetaData.getTableSchema(), 
+                        tableMetaData.getTableName());
+            } catch (Exception e) {
+                ddlStatement = "-- 获取 DDL 失败: " + e.getMessage();
+            }
+            
+            return details;
         }
 
         @Override
         protected void succeeded() {
             super.succeeded();
             objectTabController.setGeneralInfoValue(getValue());
-            TableMetaData tableMetaData = MySQLTableTreeItem.this.getValue();
-            objectTabController.setDdlInfo(tableMetaData.getTableName());
+            objectTabController.setDdlInfo(ddlStatement);
         }
     }
 

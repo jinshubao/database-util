@@ -1,0 +1,43 @@
+/* SQL 语法高亮样式 */
+.keyword {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+
+.string {
+    -fx-fill: green;
+}
+
+.number {
+    -fx-fill: orange;
+}
+
+.comment {
+    -fx-fill: gray;
+    -fx-font-style: italic;
+}
+
+/* CodeArea 样式 */
+.code-area {
+    -fx-font-family: "Consolas", "Monaco", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-background-color: #f8f8f8;
+}
+
+.code-area .caret {
+    -fx-stroke: #000000;
+}
+
+.code-area .paragraph-text {
+    -fx-padding: 0 0 0 5px;
+}
+
+/* 行号样式 */
+.line-number {
+    -fx-background-color: #e8e8e8;
+    -fx-text-fill: #888888;
+    -fx-font-family: "Consolas", "Monaco", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-padding: 0 10px 0 5px;
+    -fx-alignment: center-right;
+}

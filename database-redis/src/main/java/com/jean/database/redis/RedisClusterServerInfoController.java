@@ -15,7 +15,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Redis 集群服务器信息 Controller
+ */
 public class RedisClusterServerInfoController extends DefaultController implements Initializable {
+
+    public static final String ATTR_CLUSTER_CLIENT = "redisClusterClient";
 
     public SplitPane root;
     public LineChart<String, Long> memoryLineChart;
@@ -28,9 +33,9 @@ public class RedisClusterServerInfoController extends DefaultController implemen
     private XYChart.Series<String, Long> usedMemoryPeek = new XYChart.Series<>();
     private XYChart.Series<String, Long> usedMemoryLua = new XYChart.Series<>();
 
-    public RedisClusterServerInfoController(ViewContext viewContext, RedisClusterClient redisClusterClient) {
-        super(viewContext);
-        this.redisClusterClient = redisClusterClient;
+    public RedisClusterServerInfoController(ControllerContext context) {
+        super(context);
+        this.redisClusterClient = context.getAttribute(ATTR_CLUSTER_CLIENT);
     }
 
     @Override

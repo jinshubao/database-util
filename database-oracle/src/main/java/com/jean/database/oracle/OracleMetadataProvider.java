@@ -50,4 +50,22 @@ public class OracleMetadataProvider extends SQLMetadataProvider {
         }
     }
 
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            // 使用 Oracle 的 DBMS_METADATA.GET_DDL 函数获取表的 DDL
+            String sql = "SELECT DBMS_METADATA.GET_DDL('TABLE', ?, ?) FROM DUAL";
+            try (java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, tableName);
+                statement.setString(2, schema);
+                try (java.sql.ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString(1);
+                    }
+                    return "";
+                }
+            }
+        }
+    }
+
 }

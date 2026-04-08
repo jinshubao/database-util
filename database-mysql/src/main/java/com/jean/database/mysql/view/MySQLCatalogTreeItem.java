@@ -1,10 +1,11 @@
 package com.jean.database.mysql.view;
 
 import com.jean.database.api.BaseTask;
+import com.jean.database.api.ControllerContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mysql.MySQLObjectTabController;
 import com.jean.database.mysql.MySQLQueryTabController;
@@ -54,7 +55,7 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
 
     @Override
     public void select() {
-        objectTabController.setDdlInfo(getValue().getTableCat());
+        objectTabController.setDdlInfo("-- 选择一个表来查看其 DDL 语句 --");
     }
 
 
@@ -75,9 +76,14 @@ public class MySQLCatalogTreeItem extends BaseDatabaseItem<CatalogMetaData> {
         query.setOnAction(event -> {
             List<String> list = getParent().getChildren().stream().map(item -> item.getValue().getTableCat()).collect(Collectors.toList());
             try {
-                FxmlUtils.LoadFxmlResult loadFxmlResult =
-                        FxmlUtils.loadFxml("fxml/mysql-query-tab.fxml", null, new MySQLQueryTabController(getViewContext(), list, getValue().getTableCat()));
-                Tab tab = new Tab("查询", loadFxmlResult.parent());
+                ControllerContext context = ControllerContext.builder(getViewContext(), "查询")
+                        .attribute(MySQLQueryTabController.ATTR_CATALOGS, list)
+                        .attribute(MySQLQueryTabController.ATTR_CATALOG, getValue().getTableCat())
+                        .attribute("dataSource", getMetadataProvider().getDataSource())
+                        .build();
+                FxmlControllerFactory.LoadResult<MySQLQueryTabController> result =
+                        FxmlControllerFactory.load("fxml/mysql-query-tab.fxml", context, MySQLQueryTabController::new);
+                Tab tab = new Tab("查询", result.getParent());
                 objectTabController.addObjectTab(tab);
                 objectTabController.selectObjectTab(tab);
             } catch (IOException e) {

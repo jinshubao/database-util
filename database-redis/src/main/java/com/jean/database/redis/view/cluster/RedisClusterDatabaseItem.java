@@ -3,10 +3,11 @@ package com.jean.database.redis.view.cluster;
 
 import com.jean.database.api.BaseTask;
 import com.jean.database.api.BaseTreeItem;
+import com.jean.database.api.ControllerContext;
+import com.jean.database.api.FxmlControllerFactory;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.ViewContext;
 import com.jean.database.api.utils.DialogUtil;
-import com.jean.database.api.utils.FxmlUtils;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.api.utils.StringUtils;
 import com.jean.database.redis.RedisConstant;
@@ -71,10 +72,12 @@ public class RedisClusterDatabaseItem extends BaseTreeItem<String> {
     public void doubleClick() {
         if (!isOpen()) {
             try {
-                FxmlUtils.LoadFxmlResult loadFxmlResult =
-                        FxmlUtils.loadFxml("fxml/redis-db-tab.fxml", null,
-                                new RedisDatabaseTabController(getViewContext(), RedisClusterDatabaseItem.this.getValue(), objectTabController));
-                databaseTabController = (RedisDatabaseTabController) loadFxmlResult.controller();
+                ControllerContext context = ControllerContext.builder(getViewContext(), RedisClusterDatabaseItem.this.getValue())
+                        .attribute(RedisDatabaseTabController.ATTR_OBJECT_TAB_CONTROLLER, objectTabController)
+                        .build();
+                FxmlControllerFactory.LoadResult<RedisDatabaseTabController> result =
+                        FxmlControllerFactory.load("fxml/redis-db-tab.fxml", context, RedisDatabaseTabController::new);
+                databaseTabController = result.getController();
                 setOpen(true);
             } catch (IOException e) {
                 DialogUtil.error(e);
