@@ -17,6 +17,7 @@ public class MySQLConnectionConfiguration extends SQLConnectionConfiguration {
         this.getProperties().put("zeroDateTimeBehavior", "convertToNull");
         this.getProperties().put("serverTimezone", "UTC");
         this.getProperties().put("useSSL", "false");
+        this.getProperties().put("allowPublicKeyRetrieval", "true");
         this.getProperties().put("remarks", "true");
         this.getProperties().put("useInformationSchema", "true");
     }

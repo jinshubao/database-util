@@ -1,8 +1,10 @@
 package com.jean.database.mysql;
 
+import com.jean.database.api.BaseTask;
 import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultDatabaseProvider;
 import com.jean.database.api.FxmlControllerFactory;
+import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.DialogUtil;
 import com.jean.database.api.utils.ImageUtils;
 import com.jean.database.mysql.view.MySQLServerTreeItem;
@@ -41,17 +43,20 @@ public class MySQLDatabaseProvider extends DefaultDatabaseProvider {
         menuItem.setOnAction(event -> {
             SQLConnectionConfiguration configuration = getConnectionConfiguration();
             if (configuration != null) {
-                try {
-                    DataSource dataSource = DataSourceManager.createDataSource(configuration);
-                    // 测试连接
-                    if (DataSourceManager.testConnection(dataSource)) {
-                        getViewContext().addDatabaseItem(new MySQLServerTreeItem(getViewContext(), configuration.getConnectionName(), new MySQLMetadataProvider(dataSource)));
-                    } else {
-                        DialogUtil.information("连接测试", "连接测试", "连接测试失败");
+                TaskManger.execute(new BaseTask<DataSource>() {
+                    @Override
+                    protected DataSource call() throws Exception {
+                        DataSourceManager.testConnectionDirect(configuration);
+                        DataSource dataSource = DataSourceManager.createDataSource(configuration);
+                        return dataSource;
                     }
-                } catch (Exception e) {
-                    com.jean.database.mysql.exception.MySQLExceptionHandler.handleConnectionException(e);
-                }
+
+                    @Override
+                    protected void succeeded() {
+                        DataSource dataSource = getValue();
+                        getViewContext().addDatabaseItem(new MySQLServerTreeItem(getViewContext(), configuration.getConnectionName(), new MySQLMetadataProvider(dataSource)));
+                    }
+                });
             }
         });
         getViewContext().addConnectionMenus(menuItem);

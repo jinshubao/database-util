@@ -69,7 +69,13 @@ public class MySQLTableTreeItem extends BaseDatabaseItem<TableMetaData> {
         }
         setOpen(true);
         sqlDataTableTab = new MySQLDataTableTab(getValue(), getMetadataProvider());
-        sqlDataTableTab.setOnClosed(event -> sqlDataTableTab.close());
+        sqlDataTableTab.setOnClosed(event -> {
+            if (sqlDataTableTab != null) {
+                sqlDataTableTab.close();
+                sqlDataTableTab = null;
+                setOpen(false);
+            }
+        });
         objectTabController.addObjectTab(sqlDataTableTab);
         objectTabController.selectObjectTab(sqlDataTableTab);
         refresh();

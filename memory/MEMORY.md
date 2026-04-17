@@ -47,6 +47,9 @@ database-mgr-maven（父 POM）
 
 ## 启动命令
 
+
+[Maven JavaFX 运行流程](maven_javafx_workflow.md) — 修改代码后必须先 install 再启动，否则加载的是旧 jar
+
 ```bash
 cd e:/my-workspace/database-util/database-gui
 mvn compile javafx:run -am
@@ -72,6 +75,8 @@ mvn compile javafx:run -am
 - database-oracle 的 init() 核心逻辑被注释，未实现
 - database-mongo 功能几乎为空，硬编码了 127.0.0.1:21017
 - MySQLMetadataProvider.getTableDDL 中有 `System.out.println` 调试代码未清理
+
+- [表格复制数据格式扩展](copy_format_future.md) — 当前统一CSV，未来需支持Tab/SQL INSERT/UPDATE/JSON等
 
 ## 已修复的 Bug（2026-04-08）
 
@@ -105,3 +110,5 @@ mvn compile javafx:run -am
 1. **异步任务**：统一继承 `BaseTask`，通过 `TaskManger.execute(task)` 执行
 2. **UI 更新**：在 `BaseTask.succeeded()` 方法中进行，JavaFX 自动在 Application Thread 执行
 3. **错误处理**：`BaseTask.failed()` 方法统一处理，展示错误对话框
+
+

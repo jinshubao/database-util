@@ -98,23 +98,20 @@ public class DataSourceManager {
      * @throws SQLException 连接失败时抛出，包含详细错误信息
      */
     public static void testConnectionDirect(SQLConnectionConfiguration configuration) throws SQLException {
-        DruidDataSource ds = new DruidDataSource();
-        try {
-            ds.setUrl(configuration.getUrl());
-            ds.setUsername(configuration.getUsername());
-            ds.setPassword(configuration.getPassword());
-            ds.setInitialSize(0);          // 不预建连接
-            ds.setMaxActive(1);
-            ds.setMinIdle(0);
-            ds.setMaxWait(5000);           // 最多等待 5 秒
-            ds.setValidationQuery("SELECT 1");
-            try (Connection conn = ds.getConnection()) {
-                if (conn == null || conn.isClosed()) {
-                    throw new SQLException("无法获取有效连接");
-                }
+        String url = configuration.getUrl();
+        // 在 URL 上强制追加 MySQL 超时参数，确保 connectTimeout 真正生效
+        String separator = url.contains("?") ? "&" : "?";
+        if (!url.contains("connectTimeout")) {
+            url += separator + "connectTimeout=5000";
+            separator = "&";
+        }
+        if (!url.contains("socketTimeout")) {
+            url += separator + "socketTimeout=5000";
+        }
+        try (Connection conn = java.sql.DriverManager.getConnection(url, configuration.getUsername(), configuration.getPassword())) {
+            if (conn == null || conn.isClosed()) {
+                throw new SQLException("无法获取有效连接");
             }
-        } finally {
-            ds.close();  // 用完立即关闭，不缓存
         }
     }
 

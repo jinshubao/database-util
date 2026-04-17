@@ -211,6 +211,19 @@ public abstract class SQLMetadataProvider {
         return list;
     }
 
+    public List<String> getPrimaryKeyColumns(String catalog, String schema, String tableName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet resultSet = metaData.getPrimaryKeys(catalog, schema, tableName)) {
+                List<String> list = new ArrayList<>();
+                while (resultSet.next()) {
+                    list.add(resultSet.getString("COLUMN_NAME"));
+                }
+                return list;
+            }
+        }
+    }
+
     public void close() {
         try {
             Method method = dataSource.getClass().getMethod(destroyMethod);

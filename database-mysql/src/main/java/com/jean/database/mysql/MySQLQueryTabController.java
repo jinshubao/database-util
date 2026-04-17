@@ -7,10 +7,15 @@ import com.jean.database.api.ControllerContext;
 import com.jean.database.api.DefaultController;
 import com.jean.database.api.TaskManger;
 import com.jean.database.api.utils.DialogUtil;
+import com.jean.database.sql.factory.TableCellFactory;
+import com.jean.database.sql.view.SelectableTableView;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -86,17 +91,25 @@ public class MySQLQueryTabController extends DefaultController implements Initia
         // 加载 CSS 样式
         String cssPath = getClass().getResource("/css/sql-highlight.css").toExternalForm();
         sqlTextArea.getStylesheets().add(cssPath);
-        
+
         // 设置行号
         sqlTextArea.setParagraphGraphicFactory(LineNumberFactory.get(sqlTextArea));
-        
+
         // 设置语法高亮
         sqlTextArea.textProperty().addListener((obs, oldText, newText) -> {
             sqlTextArea.setStyleSpans(0, computeHighlighting(newText));
         });
-        
+
         // 设置初始内容
         sqlTextArea.replaceText("");
+
+        // Ctrl + Enter 执行选中 SQL
+        sqlTextArea.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
+                executeSql();
+                event.consume();
+            }
+        });
     }
 
 
@@ -147,7 +160,11 @@ public class MySQLQueryTabController extends DefaultController implements Initia
     }
 
     private void executeSql() {
-        String sql = sqlTextArea.getText().trim();
+        String sql = sqlTextArea.getSelectedText();
+        if (sql == null || sql.trim().isEmpty()) {
+            sql = sqlTextArea.getText();
+        }
+        sql = sql.trim();
         if (sql.isEmpty()) {
             executeInfoTextArea.setText("请输入 SQL 语句");
             return;
@@ -256,24 +273,31 @@ public class MySQLQueryTabController extends DefaultController implements Initia
         }
 
         private void showQueryResult(String[] columnNames, List<Map<String, Object>> data, long duration) {
-            // 创建新的结果表格
-            TableView<Map<String, Object>> resultTable = new TableView<>();
-            for (int i = 0; i < columnNames.length; i++) {
-                final String columnName = columnNames[i];
-                TableColumn<Map<String, Object>, String> column = new TableColumn<>(columnName);
-                column.setCellValueFactory(param -> {
-                    Object value = param.getValue().get(columnName);
-                    return new SimpleStringProperty(value != null ? value.toString() : "");
-                });
+            // 统一数据模型
+            List<Map<String, ObjectProperty>> convertedData = new ArrayList<>();
+            for (Map<String, Object> row : data) {
+                Map<String, ObjectProperty> newRow = new LinkedHashMap<>();
+                for (String colName : columnNames) {
+                    newRow.put(colName, new SimpleObjectProperty<>(row.get(colName)));
+                }
+                convertedData.add(newRow);
+            }
+
+            SelectableTableView<Map<String, ObjectProperty>> resultTable = new SelectableTableView<>();
+            resultTable.setEditable(false);
+
+            for (String columnName : columnNames) {
+                TableColumn<Map<String, ObjectProperty>, ObjectProperty> column = new TableColumn<>(columnName);
+                column.setCellValueFactory(param -> param.getValue().get(columnName));
+                column.setCellFactory(TableCellFactory.forTableView());
+                column.setSortable(false);
                 resultTable.getColumns().add(column);
             }
-            resultTable.getItems().addAll(data);
+            resultTable.getItems().addAll(convertedData);
 
-            // 创建结果标签页
             Tab resultTab = new Tab("查询结果");
             resultTab.setContent(resultTable);
 
-            // 清空现有的结果标签页
             resultTabPane.getTabs().clear();
             resultTabPane.getTabs().addAll(executeInfoTab, analyseTab, statusTab);
             resultTabPane.getTabs().add(0, resultTab);
@@ -340,7 +364,12 @@ public class MySQLQueryTabController extends DefaultController implements Initia
     
     private StyleSpans<Collection<String>> computeHighlighting(String text) {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        
+
+        if (text == null || text.isEmpty()) {
+            spansBuilder.add(java.util.Collections.emptyList(), 0);
+            return spansBuilder.create();
+        }
+
         // SQL 关键字
         String[] keywords = {"SELECT", "FROM", "WHERE", "INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "TABLE", "DATABASE", "SCHEMA", "VIEW", "INDEX", "TRIGGER", "PROCEDURE", "FUNCTION", "RETURN", "AS", "JOIN", "LEFT", "RIGHT", "INNER", "OUTER", "ON", "AND", "OR", "NOT", "IN", "LIKE", "BETWEEN", "ORDER", "GROUP", "HAVING", "LIMIT", "OFFSET", "ASC", "DESC", "NULL", "NOT", "IS", "DISTINCT", "ALL", "ANY", "SOME", "UNION", "INTERSECT", "EXCEPT", "VALUES", "SET", "DEFAULT", "PRIMARY", "FOREIGN", "KEY", "REFERENCES", "CHECK", "UNIQUE", "AUTO_INCREMENT", "DEFAULT", "NULL", "NOT", "NULL", "TRUE", "FALSE"};
         

@@ -182,13 +182,9 @@ public class MySQLConfigurationController extends DefaultController implements I
 
             @Override
             protected void failed() {
+                super.failed();
                 testConnectionButton.setDisable(false);
                 testConnectionButton.setText(originalText);
-                Throwable ex = getException();
-                if (ex != null) {
-                    String msg = ex.getMessage() != null ? ex.getMessage() : ex.toString();
-                    com.jean.database.api.utils.DialogUtil.error("连接测试失败", new RuntimeException(msg));
-                }
             }
         };
 
