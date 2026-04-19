@@ -77,6 +77,7 @@ mvn compile javafx:run -am
 - MySQLMetadataProvider.getTableDDL 中有 `System.out.println` 调试代码未清理
 
 - [表格复制数据格式扩展](copy_format_future.md) — 当前统一CSV，未来需支持Tab/SQL INSERT/UPDATE/JSON等
+- [MySQL 数据表格已有工具栏](mysql_datatable_toolbar.md) — MySQLDataTableTab 已内置新增/删除/刷新/提交工具栏，避免重复开发
 
 ## 已修复的 Bug（2026-04-08）
 
